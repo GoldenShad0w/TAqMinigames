@@ -1,6 +1,7 @@
-package goldenshadow.taqminigames;
+package goldenshadow.taqminigames.event;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -12,7 +13,6 @@ public class Participant {
 
     private final UUID uuid;
     private final boolean isPlaying;
-    private int globalScore = 0;
 
 
     /**
@@ -23,6 +23,11 @@ public class Participant {
     public Participant(Player player, boolean isPlaying) {
         uuid = player.getUniqueId();
         this.isPlaying = isPlaying;
+        ScoreboardWrapper.queueData(player,
+                " ",
+                ChatColor.AQUA + "Starting soon!",
+                ChatColor.DARK_AQUA + "Role: " + ChatColor.AQUA + (isPlaying ? "Participant" : "Spectator"),
+                " ");
     }
 
     /**
@@ -41,21 +46,6 @@ public class Participant {
         return isPlaying;
     }
 
-    /**
-     * A getter for the players global score
-     * @return The players global score
-     */
-    public int getGlobalScore() {
-        return globalScore;
-    }
-
-    /**
-     * Used to add or remove points from the players score. The score can never drop below zero
-     * @param amount The amount that should be added. Negative amounts will result in the score being lowered
-     */
-    public void addToScore(int amount) {
-        globalScore = Math.max(0, globalScore + amount);
-    }
 
 
 }

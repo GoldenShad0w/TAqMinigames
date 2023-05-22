@@ -1,60 +1,268 @@
-package goldenshadow.taqminigames;
+package goldenshadow.taqminigames.event;
 
+import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
+import goldenshadow.taqminigames.minigames.AuraAndVolley;
+import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
-import net.md_5.bungee.api.ChatMessageType;
+import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Transformation;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * A class used to manage the selection of a new game
+ */
 public class GameSelection {
 
     private final List<Game> possibleGames;
     private int tick = 0;
-    private final int taskID;
-    private final List<TextDisplay> textDisplays = new ArrayList<>();
+    private final List<Player> participants;
+    private int selectionState = 0;
+    private final Game[] chosenGames = new Game[3];
+    private Game actualNextgame;
 
+    /**
+     * This constructor is called when a new game should be selected
+     * @param possibleGames The list of possible games to be selected from. It should never have less than 3 entries
+     */
     public GameSelection(List<Game> possibleGames) {
         this.possibleGames = possibleGames;
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(TAqMinigames.getPlugin(), this::tick, 0, 1L);
+        participants = ParticipantManager.getAll();
+        Bukkit.broadcastMessage("New object created");
     }
 
-    private void tick() {
-        if (tick > 20000) Bukkit.getScheduler().cancelTask(taskID);
+    /**
+     * The tick loop which moves the game selection forward. Should be called every second
+     */
+    public void tick() {
         switch (tick) {
-            case 1 -> {
-                for (Player p : ParticipantManager.getParticipants()) {
-                    p.sendTitle(" ", ChatColor.GOLD + "The next minigame is about to be picked", 10, 20, 10);
+            case 0 -> {
+                for (Player p : participants) {
                     p.teleport(Constants.LOBBY_GAME_SELECTION);
+                    String raw = "The next minigame is about to be selected! Three possible options will be chosen randomly and you will be able to vote for the one you want to play. The game with the least amount of votes will be eliminated for this round. One of the two remaining games will be picked randomly!";
+
+                    List<String> list = new ArrayList<>(Arrays.asList(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Game Selection", " "));
+
+                    for (String s : Utilities.splitString(raw, 50)) {
+                        list.add(ChatColor.YELLOW + s);
+                    }
+                    ChatMessageFactory.sendInfoMessageBlock(p, list.toArray(String[]::new));
                 }
+            }
+            case 5, 9, 13 -> {
+                for (Player p : participants) {
+                    p.sendTitle(" ", ChatColor.YELLOW + "Choosing possible game.", 5, 25, 0);
+                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
+                }
+            }
+            case 6, 10, 14 -> {
+                for (Player p : participants) {
+                    p.sendTitle(" ", ChatColor.YELLOW + "Choosing possible game..", 5, 25, 0);
+                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
+                }
+            }
+            case 7, 11, 15 -> {
+                for (Player p : participants) {
+                    p.sendTitle(" ", ChatColor.YELLOW + "Choosing possible game...", 5, 25, 0);
+                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
+                }
+            }
+            case 8, 12, 16 -> {
+
+                switch (selectionState) {
+                    case 0 -> {
+                        Game game = getPossibleGame();
+                        participants.forEach(p -> p.sendTitle(" ", ChatColor.RED + game.getLabel(), 5, 10, 5));
+                        chosenGames[0] = game;
+                        spawnFireWork(Constants.LOBBY_POSSIBLE_GAME_RED, Color.RED);
+                        spawnTextDisplay(Constants.LOBBY_POSSIBLE_GAME_RED, ChatColor.AQUA + "Possible Game:\n" + ChatColor.RED + ChatColor.BOLD + game.getLabel());
+                        selectionState++;
+                    }
+                    case 1 -> {
+                        Game game = getPossibleGame();
+                        participants.forEach(p -> p.sendTitle(" ", ChatColor.GREEN + game.getLabel(), 5, 10, 5));
+                        chosenGames[1] = game;
+                        spawnFireWork(Constants.LOBBY_POSSIBLE_GAME_LIME, Color.LIME);
+                        spawnTextDisplay(Constants.LOBBY_POSSIBLE_GAME_LIME, ChatColor.AQUA + "Possible Game:\n" + ChatColor.GREEN + ChatColor.BOLD + game.getLabel());
+                        selectionState++;
+                    }
+                    case 2 -> {
+                        Game game = getPossibleGame();
+                        participants.forEach(p -> p.sendTitle(" ", ChatColor.BLUE + game.getLabel(), 5, 10, 5));
+                        chosenGames[2] = game;
+                        spawnFireWork(Constants.LOBBY_POSSIBLE_GAME_BLUE, Color.BLUE);
+                        spawnTextDisplay(Constants.LOBBY_POSSIBLE_GAME_BLUE, ChatColor.AQUA + "Possible Game:\n" + ChatColor.BLUE + ChatColor.BOLD + game.getLabel());
+                        selectionState++;
+                    }
+                }
+            }
+            case 17 -> {
+                for (Player p : participants) {
+                    ChatMessageFactory.sendInfoMessageBlock(p, ChatColor.YELLOW + "The possible games are:",  ChatColor.RED + String.valueOf(ChatColor.BOLD) + chosenGames[0].getLabel(), ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + chosenGames[1].getLabel(), ChatColor.BLUE + String.valueOf(ChatColor.BOLD) + chosenGames[2].getLabel(), " ", ChatColor.YELLOW + "Stand on the platform of the game", ChatColor.YELLOW + "you want to play!");
+                }
+            }
+            case 27, 28, 29 -> {
+                for (Player p : participants) {
+                    String s = tick == 27 ? "." : tick == 28 ? ".." : "...";
+                    p.sendTitle(" ", ChatColor.YELLOW + "Counting players" + s, 5,25,0);
+                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
+                }
+            }
+            case 30 -> {
+                int leastVotes = countVotes();
+                Material block = leastVotes == 0 ? Material.RED_CONCRETE : leastVotes == 1 ? Material.LIME_CONCRETE : Material.BLUE_CONCRETE;
+                Utilities.fillAreaWithBlock(Constants.LOBBY_SELECTION_AREA[0], Constants.LOBBY_SELECTION_AREA[1], Material.STRUCTURE_VOID, block);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Utilities.fillAreaWithBlock(Constants.LOBBY_SELECTION_AREA[0], Constants.LOBBY_SELECTION_AREA[1], block, Material.STRUCTURE_VOID), 200L);
+
+
+                Game game = chosenGames[leastVotes];
+                chosenGames[leastVotes] = null;
+
+                for (Player p : participants) {
+                    p.playSound(p, Sound.ENTITY_WITHER_BREAK_BLOCK, 0.5f,1);
+                    ChatMessageFactory.sendInfoMessageBlock(p,  ChatColor.YELLOW + game.getLabel() + " was eliminated!");
+                }
+            }
+            case 31, 32, 33 -> {
+                for (Player p : participants) {
+                    String s = tick == 31 ? "." : tick == 32 ? ".." : "...";
+                    p.sendTitle(" ", ChatColor.YELLOW + "Picking next game" + s, 5,20,0);
+                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
+                }
+            }
+            case 34 -> {
+                do {
+                    actualNextgame = chosenGames[ThreadLocalRandom.current().nextInt(0, chosenGames.length)];
+                } while (actualNextgame == null);
+                for (Player p : participants) {
+                    p.sendTitle(" ", ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + actualNextgame.getLabel(), 5, 40, 5);
+                    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 1,1);
+                    ChatMessageFactory.sendInfoMessageBlock(p,  ChatColor.YELLOW + "The next minigame will be:", ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + actualNextgame.getLabel());
+                }
+            }
+            case 35, 37, 38, 39 -> {
+
+                if (tick == 35) {
+                    Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Next minigame will start in 5 seconds!"));
+                }
+                else if (tick == 37) {
+                    Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Next minigame will start in 3 seconds!"));
+                }
+                else if (tick == 38) {
+                    Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Next minigame will start in 2 seconds!"));
+                }
+                else {
+                    Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Next minigame will start in 1 second!"));
+                }
+
+            }
+            case 40 -> {
+                Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Teleporting..."));
+                Bukkit.broadcastMessage(ChatColor.RED + "Minigames are not implemented yet :steamhappy:");
+                TAqMinigames.possibleGames.remove(actualNextgame);
+                switch (actualNextgame) {
+                    case AURA_AND_VOLLEY -> TAqMinigames.minigame = new AuraAndVolley();
+                }
+                //TODO make this start the correct minigame once they are implemented
             }
         }
         tick++;
     }
 
 
+    /**
+     * Internal method used to spawn a text display showing a possible minigame
+     * @param location The location it should be spawned at
+     * @param text The text it should contain. New lines can be added with "\n"
+     */
     private void spawnTextDisplay(Location location, String text) {
-        TextDisplay textDisplay = (TextDisplay) location.getWorld().spawnEntity(location, EntityType.TEXT_DISPLAY, false);
+        TextDisplay textDisplay = (TextDisplay) Objects.requireNonNull(location.getWorld()).spawnEntity(location, EntityType.TEXT_DISPLAY, false);
         textDisplay.setText(text);
         textDisplay.setBillboard(Display.Billboard.CENTER);
-        textDisplay.getTransformation().getScale().set(0,0,0);
-        textDisplay.setInterpolationDelay(0);
-        textDisplay.setInterpolationDuration(10);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> textDisplay.getTransformation().getScale().set(1,1,1), 1L);
+        Transformation transformation = textDisplay.getTransformation();
+        transformation.getScale().set(new Vector3f(0.1f,0.1f,0.1f));
+        textDisplay.setTransformation(transformation);
+        textDisplay.setInterpolationDelay(-1);
+        textDisplay.setInterpolationDuration(40);
+
+        Transformation newTransformation = textDisplay.getTransformation();
+        newTransformation.getScale().set(new Vector3f(1f,1f,1f));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> textDisplay.setTransformation(newTransformation), 1L);
+
+
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), textDisplay::remove, 640L);
     }
 
+    /**
+     * Internal method used to spawn a colorful firework with doesn't deal damage
+     * @param location The location it should be spawned at
+     * @param color The color the explosion should have
+     */
     private void spawnFireWork(Location location, Color color) {
-        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREBALL, false);
+        Firework firework = (Firework) Objects.requireNonNull(location.getWorld()).spawnEntity(location, EntityType.FIREWORK, false);
         FireworkMeta fwm = firework.getFireworkMeta();
         fwm.addEffect(FireworkEffect.builder().withColor(color).with(FireworkEffect.Type.BALL).withTrail().build());
         firework.setFireworkMeta(fwm);
         firework.addScoreboardTag("m_firework");
         firework.detonate();
+    }
+
+    /**
+     * Used to get a possible game for the list of possible games
+     * @return A possible game
+     * @throws RuntimeException Throws an exception if the list is empty. To prevent this, never call the constructor of this class with a list that has a size smaller than 3
+     */
+    private Game getPossibleGame() {
+        if (possibleGames.isEmpty()) throw new RuntimeException("List of possible games was empty! This should never happen. If there are less than 8 possible games in total then you need to re-enable some!");
+        Game game = possibleGames.get(ThreadLocalRandom.current().nextInt(0, possibleGames.size()));
+        if (game != null) possibleGames.remove(game);
+        return game;
+    }
+
+    /**
+     * Used to count to votes
+     * @return The game index with the least amount of votes. 0 for blue, 1 for orange and 2 for lime
+     */
+    private int countVotes() {
+        int blueVotes = 0;
+        int orangeVotes = 0;
+        int limeVotes = 0;
+        for (Player p : ParticipantManager.getParticipants()) {
+            if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BLUE_CONCRETE) {
+                blueVotes++;
+                continue;
+            }
+            if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.ORANGE_CONCRETE) {
+                orangeVotes++;
+                continue;
+            }
+            if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.LIME_CONCRETE) {
+                limeVotes++;
+            }
+        }
+        int lowest = Math.min(Math.min(blueVotes, orangeVotes), limeVotes);
+        if (blueVotes == lowest) return 0;
+        if (orangeVotes == lowest) return 1;
+        return 2;
+    }
+
+    /**
+     * Used to check if tick() should continue being called
+     * @return True if it should still be called, false if the game selection is done
+     */
+    public boolean isInProgress() {
+        return tick < 41;
     }
 
 }

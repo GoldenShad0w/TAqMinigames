@@ -1,7 +1,6 @@
 package goldenshadow.taqminigames.enums;
 
-public enum Games {
-    NONE ("---"),
+public enum Game {
     EXCAVATION ("Excavation Site E"),
     SKY_ISLAND_LOOTRUN ("Sky Island Lootrun"),
     NETHER_PVP ("Nether PvP"),
@@ -13,11 +12,17 @@ public enum Games {
 
     private final String label;
 
-    Games(String label) {
+    Game(String label) {
         this.label = label;
     }
 
     public String getLabel() {
         return label;
+    }
+    public static boolean contains(String value) {
+        for (Game g : values()) {
+            if (g.toString().equals(value)) return true;
+        }
+        return false;
     }
 }
