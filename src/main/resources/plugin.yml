@@ -1,0 +1,4 @@
+name: TAqMinigames
+version: '${project.version}'
+main: goldenshadow.taqminigames.TAqMinigames
+api-version: 1.19
