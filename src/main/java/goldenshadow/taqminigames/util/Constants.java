@@ -22,6 +22,7 @@ public class Constants {
     public static Location[] AVOS_MAP_LOCATIONS = {};
     public static BoundingBox[][] AVOS_STAGES = {};
     public static BoundingBox[][] AVOS_COLD_FLOORS = {};
+    public static BoundingBox[] AVOS_FINISH_BOXES = {};
 
 
     public static int AURA_SURVIVE = 600;

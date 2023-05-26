@@ -37,7 +37,7 @@ public class Command implements CommandExecutor {
                             if (TAqMinigames.isRunning()) {
                                 if (TAqMinigames.gameIndex < 5) {
                                     if (TAqMinigames.minigame == null) {
-                                        TAqMinigames.nextMinigame();
+                                        TAqMinigames.nextMinigame(true);
                                         player.sendMessage(ChatMessageFactory.adminInfoMessage("Selecting next minigame!"));
                                         return true;
                                     }

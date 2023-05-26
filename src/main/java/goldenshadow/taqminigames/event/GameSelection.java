@@ -3,6 +3,7 @@ package goldenshadow.taqminigames.event;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.minigames.AuraAndVolley;
+import goldenshadow.taqminigames.minigames.AvosRace;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Utilities;
@@ -30,16 +31,35 @@ public class GameSelection {
     private int selectionState = 0;
     private final Game[] chosenGames = new Game[3];
     private Game actualNextgame;
+    private final boolean weighted;
+    private final Game favor;
 
     /**
      * This constructor is called when a new game should be selected
      * @param possibleGames The list of possible games to be selected from. It should never have less than 3 entries
+     * @param weighted Whether the game selection should suggest more short games at the beginning and longer games at the end
      */
-    public GameSelection(List<Game> possibleGames) {
+    public GameSelection(List<Game> possibleGames, boolean weighted) {
         this.possibleGames = possibleGames;
         participants = ParticipantManager.getAll();
-        Bukkit.broadcastMessage("New object created");
+        this.weighted = weighted;
+        favor = null;
     }
+
+    /**
+     * This constructor is called when a new game should be selected
+     * @param possibleGames The list of possible games to be selected from. It should never have less than 3 entries
+     * @param weighted Whether the game selection should suggest more short games at the beginning and longer games at the end
+     * @param favor A specific game that should be forced to be suggested and if not voted out, forced to be picked
+     */
+    public GameSelection(List<Game> possibleGames, boolean weighted, Game favor) {
+        this.possibleGames = possibleGames;
+        participants = ParticipantManager.getAll();
+        this.weighted = weighted;
+        this.favor = favor;
+        if (!possibleGames.contains(favor)) possibleGames.add(favor);
+    }
+
 
     /**
      * The tick loop which moves the game selection forward. Should be called every second
@@ -172,6 +192,7 @@ public class GameSelection {
                 TAqMinigames.possibleGames.remove(actualNextgame);
                 switch (actualNextgame) {
                     case AURA_AND_VOLLEY -> TAqMinigames.minigame = new AuraAndVolley();
+                    case AVOS_RACE -> TAqMinigames.minigame = new AvosRace();
                 }
                 //TODO make this start the correct minigame once they are implemented
             }
@@ -224,8 +245,18 @@ public class GameSelection {
      * @throws RuntimeException Throws an exception if the list is empty. To prevent this, never call the constructor of this class with a list that has a size smaller than 3
      */
     private Game getPossibleGame() {
-        if (possibleGames.isEmpty()) throw new RuntimeException("List of possible games was empty! This should never happen. If there are less than 8 possible games in total then you need to re-enable some!");
-        Game game = possibleGames.get(ThreadLocalRandom.current().nextInt(0, possibleGames.size()));
+        if (possibleGames.isEmpty()) throw new RuntimeException("List of possible games was empty! This should never happen. If there are less than 8 games in total then you need to re-enable some!");
+        if (favor != null && possibleGames.contains(favor)) {
+            possibleGames.remove(favor);
+            return favor;
+        }
+        Game game;
+        if (weighted) {
+            List<Game> list = Game.getWeightedList(TAqMinigames.gameIndex, possibleGames);
+            game = list.get(ThreadLocalRandom.current().nextInt(0, list.size()));
+        } else {
+            game = possibleGames.get(ThreadLocalRandom.current().nextInt(0, possibleGames.size()));
+        }
         if (game != null) possibleGames.remove(game);
         return game;
     }

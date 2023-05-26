@@ -129,15 +129,31 @@ public class Utilities {
     /**
      * Used to get the suffix of a placement number
      * @param number The number the suffix should be gotten for
-     * @return The suffix (e.g. "st")
+     * @return The number with the appropriate suffix
      */
     public static String getNumberSuffix(int number) {
         if (number % 10 == 1 && number != 11) {
-            return "st";
+            return number + "st";
         } else if (number % 10 == 2 && number != 12) {
-            return "nd";
+            return number + "nd";
         } else {
-            return number % 10 == 3 && number != 13 ? "rd" : "th";
+            return number % 10 == 3 && number != 13 ? number + "rd" : number + "th";
         }
+    }
+
+    /**
+     * Used to convert seconds to milliseconds
+     * @param seconds The seconds that should be converted
+     * @return That amount in milliseconds
+     */
+    public static long secondsToMillis(int seconds) {
+        return seconds * 1000L;
+    }
+
+    /**
+     * Used to register that trigger in the lobby which teleports falling players back onto the island
+     */
+    public static void registerLobbyTrigger() {
+        new Trigger(new BoundingBox(1,1,1,1,1,1), Constants.WORLD, p -> true, p -> p.teleport(Constants.LOBBY), 0, false, false);
     }
 }

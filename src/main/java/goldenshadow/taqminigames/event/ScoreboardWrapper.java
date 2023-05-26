@@ -19,9 +19,11 @@ public class ScoreboardWrapper {
      * @param player The player
      */
     private static void createScoreboard(Player player) {
-        FastBoard board = new FastBoard(player);
-        board.updateTitle(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "TAQ MINIGAMES");
-        boards.put(player.getUniqueId(), board);
+        if (player != null) {
+            FastBoard board = new FastBoard(player);
+            board.updateTitle(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "TAQ MINIGAMES");
+            boards.put(player.getUniqueId(), board);
+        }
     }
 
     /**

@@ -124,8 +124,9 @@ public class AuraAndVolley extends Minigame{
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
                     player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-                    gameState = GameState.RUNNING;
+
                 }
+                gameState = GameState.RUNNING;
             }
             default -> {
                 if (gameState == GameState.RUNNING) {
@@ -136,12 +137,12 @@ public class AuraAndVolley extends Minigame{
                             alivePlayers.forEach(p -> {
                                 p.removePotionEffect(PotionEffectType.JUMP);
                                 p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, PotionEffect.INFINITE_DURATION, 2, true, false, true));
-                                ChatMessageFactory.sendInfoMessageBlock(p, ChatColor.YELLOW + "Your jump height has decreased!");
+                                ChatMessageFactory.sendInfoMessageBlock(p, ChatColor.YELLOW + "Your jump height has decreased and the tower has gotten stronger!");
                             });
                         } else if (timer.getSecondsLeft() == 80) {
                             alivePlayers.forEach(p -> {
                                 p.removePotionEffect(PotionEffectType.JUMP);
-                                ChatMessageFactory.sendInfoMessageBlock(p, ChatColor.YELLOW + "Your jump height has run out!");
+                                ChatMessageFactory.sendInfoMessageBlock(p, ChatColor.YELLOW + "Your jump height has run out and the tower has gotten stronger!");
                             });
                         }
 

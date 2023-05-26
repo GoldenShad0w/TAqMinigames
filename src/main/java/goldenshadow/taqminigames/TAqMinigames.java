@@ -10,9 +10,11 @@ import goldenshadow.taqminigames.event.ScoreboardWrapper;
 import goldenshadow.taqminigames.events.PlayerConnect;
 import goldenshadow.taqminigames.events.PlayerDamage;
 import goldenshadow.taqminigames.events.PlayerLeave;
+import goldenshadow.taqminigames.events.PlayerMoveEvent;
 import goldenshadow.taqminigames.minigames.Minigame;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
+import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -46,6 +48,7 @@ public final class TAqMinigames extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("minigames")).setTabCompleter(new TabComplete());
 
         Bukkit.broadcastMessage(Constants.AURA_TOWER_CENTERS[0].clone().toString());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, Utilities::registerLobbyTrigger, 1L);
     }
 
     @Override
@@ -78,7 +81,7 @@ public final class TAqMinigames extends JavaPlugin {
 
     }
 
-    public static void nextMinigame() {
+    public static void nextMinigame(boolean weighted) {
 
         if (gameIndex > 0) {
             ScoreManager.increaseMultiplier();
@@ -86,7 +89,7 @@ public final class TAqMinigames extends JavaPlugin {
                 ChatMessageFactory.sendInfoMessageBlock(p, " ", ChatColor.YELLOW + "Emerald multiplier increased to " + ScoreManager.getScoreMultiplier() + "!", " ");
             }
         }
-        gameSelection = new GameSelection(possibleGames);
+        gameSelection = new GameSelection(possibleGames, weighted);
         gameIndex++;
     }
 
@@ -95,6 +98,7 @@ public final class TAqMinigames extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerDamage(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerLeave(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerConnect(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerMoveEvent(), plugin);
     }
 
     public static TAqMinigames getPlugin() {

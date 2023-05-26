@@ -6,9 +6,7 @@ import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
 import goldenshadow.taqminigames.event.ScoreboardWrapper;
-import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
-import goldenshadow.taqminigames.util.Timer;
+import goldenshadow.taqminigames.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -51,6 +49,8 @@ public abstract class Minigame {
     public void end() {
         gameState = GameState.ENDING;
         timer = null;
+        Trigger.unregisterAll();
+        Utilities.registerLobbyTrigger();
         TAqMinigames.totalScoreManager.merge(scoreManager);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
             Bukkit.broadcastMessage(ChatColor.DARK_AQUA + String.valueOf(ChatColor.STRIKETHROUGH) + "==================================================");
