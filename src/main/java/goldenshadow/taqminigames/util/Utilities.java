@@ -2,7 +2,9 @@ package goldenshadow.taqminigames.util;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.BoundingBox;
 
 import java.util.ArrayList;
@@ -154,6 +156,21 @@ public class Utilities {
      * Used to register that trigger in the lobby which teleports falling players back onto the island
      */
     public static void registerLobbyTrigger() {
-        new Trigger(new BoundingBox(1,1,1,1,1,1), Constants.WORLD, p -> true, p -> p.teleport(Constants.LOBBY), 0, false, false);
+        new Trigger(new BoundingBox(10, 33, 281, 193, 18, -8), Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.teleport(Constants.LOBBY), 0, false, false);
+    }
+
+    public static void lockArmorStand(ArmorStand stand) {
+        stand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.ADDING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.CHEST, ArmorStand.LockType.ADDING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.CHEST, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.LEGS, ArmorStand.LockType.ADDING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.LEGS, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.FEET, ArmorStand.LockType.ADDING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.FEET, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.ADDING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.ADDING_OR_CHANGING);
+        stand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
     }
 }

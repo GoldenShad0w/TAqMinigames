@@ -42,7 +42,7 @@ public class AuraAndVolley extends Minigame{
     public AuraAndVolley() {
         alivePlayers = ParticipantManager.getParticipants();
         gameState = GameState.STARTING;
-        scoreManager = new ScoreManager("Emeralds");
+        scoreManager = new ScoreManager("Emeralds", true);
         timer = new Timer(0, 30, () -> timer = new Timer(3,0, this::endRound));
         for (Player player : alivePlayers) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));

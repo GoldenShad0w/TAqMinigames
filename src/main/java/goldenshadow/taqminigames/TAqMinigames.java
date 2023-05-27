@@ -7,10 +7,7 @@ import goldenshadow.taqminigames.event.GameSelection;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
 import goldenshadow.taqminigames.event.ScoreboardWrapper;
-import goldenshadow.taqminigames.events.PlayerConnect;
-import goldenshadow.taqminigames.events.PlayerDamage;
-import goldenshadow.taqminigames.events.PlayerLeave;
-import goldenshadow.taqminigames.events.PlayerMoveEvent;
+import goldenshadow.taqminigames.events.*;
 import goldenshadow.taqminigames.minigames.Minigame;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
@@ -60,7 +57,7 @@ public final class TAqMinigames extends JavaPlugin {
         if (!isRunning) {
             isRunning = true;
             gameSelection = null;
-            totalScoreManager = new ScoreManager("Emeralds");
+            totalScoreManager = new ScoreManager("Emeralds", true);
             for (Player p : Bukkit.getOnlinePlayers()) {
                 ParticipantManager.addParticipant(p, p.getGameMode() == GameMode.ADVENTURE);
                 p.sendTitle(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "Welcome", ChatColor.AQUA + String.valueOf(ChatColor.BOLD) + "To TAq Minigames", 20, 100,20);
@@ -99,6 +96,11 @@ public final class TAqMinigames extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerLeave(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerConnect(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerMoveEvent(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerDeath(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteract(), plugin);
+        Bukkit.getPluginManager().registerEvents(new ProjectileEvents(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerMoveEvent(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerGlide(), plugin);
     }
 
     public static TAqMinigames getPlugin() {

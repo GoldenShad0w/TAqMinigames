@@ -12,6 +12,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 /**
  * An abstract class outlining and implementing key mechanic that all minigames must share
  */
@@ -51,7 +55,11 @@ public abstract class Minigame {
         timer = null;
         Trigger.unregisterAll();
         Utilities.registerLobbyTrigger();
-        TAqMinigames.totalScoreManager.merge(scoreManager);
+        if (scoreManager.isGeneric()) {
+            TAqMinigames.totalScoreManager.merge(scoreManager);
+        } else {
+            awardScaledPoints();
+        }
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
             Bukkit.broadcastMessage(ChatColor.DARK_AQUA + String.valueOf(ChatColor.STRIKETHROUGH) + "==================================================");
             Bukkit.broadcastMessage(" ");
@@ -175,4 +183,11 @@ public abstract class Minigame {
      */
     public abstract Game getGame();
 
+    private void awardScaledPoints() {
+        List<UUID> list = new ArrayList<>(scoreManager.getScores().keySet());
+        list.sort(((x,y) -> scoreManager.getScore(y).compareTo(scoreManager.getScore(x))));
+        for (int i = 0; i < list.size(); i++) {
+            TAqMinigames.totalScoreManager.increaseScore(list.get(i), Math.max(Constants.GENERIC_MAX_POINTS - (Constants.GENERIC_FALLOFF * i), (int) (100*ScoreManager.getScoreMultiplier())), true);
+        }
+    }
 }

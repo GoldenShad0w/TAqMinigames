@@ -12,13 +12,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-
+/**
+ * A class representing the avos race minigame
+ */
 public class AvosRace extends Minigame {
 
     private int finishedPlayers = 0;
@@ -28,6 +32,9 @@ public class AvosRace extends Minigame {
     private final int mapIndex;
     private final ScoreManager scoreManager;
 
+    /**
+     * Used to start a new avos race minigame
+     */
     public AvosRace() {
         mapIndex = TAqMinigames.getPlugin().getConfig().getInt("avos-race-next-map");
         if (mapIndex + 1 > TAqMinigames.getPlugin().getConfig().getInt("avos-race-maps")) {
@@ -35,10 +42,14 @@ public class AvosRace extends Minigame {
         } else TAqMinigames.getPlugin().getConfig().set("avos-race-next-map", mapIndex + 1);
         TAqMinigames.getPlugin().saveConfig();
 
+        for (Player player : ParticipantManager.getParticipants()) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));
+        }
+
         assert Constants.WORLD != null;
         Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true);
 
-        scoreManager = new ScoreManager("Emeralds");
+        scoreManager = new ScoreManager("Emeralds", true);
         gameState = GameState.STARTING;
 
         for (Player p : ParticipantManager.getParticipants()) {
@@ -55,6 +66,9 @@ public class AvosRace extends Minigame {
         new Trigger(Constants.AVOS_FINISH_BOXES[mapIndex-1], Constants.WORLD, p -> (p.getGameMode() == GameMode.ADVENTURE), this::finish, Utilities.secondsToMillis(1000), false, false);
     }
 
+    /**
+     * 1hz loop
+     */
     @Override
     public void tick() {
         ParticipantManager.getAll().forEach(this::updateScoreboard);
@@ -107,6 +121,10 @@ public class AvosRace extends Minigame {
         super.tick();
     }
 
+    /**
+     * Used for when a player crashes or lands on a hot floor
+     * @param player The players who died
+     */
     @Override
     public void onDeath(Player player) {
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1,1);
@@ -117,6 +135,10 @@ public class AvosRace extends Minigame {
         player.teleport(Constants.AVOS_MAP_LOCATIONS[mapIndex-1]);
     }
 
+    /**
+     * Used to re-insert a player who reconnected back into the game
+     * @param player The player who reconnected
+     */
     @Override
     public void playerReconnect(Player player) {
         if (playerStages.containsKey(player.getUniqueId())) {
@@ -128,11 +150,20 @@ public class AvosRace extends Minigame {
         player.setGameMode(GameMode.SPECTATOR);
     }
 
+    /**
+     * Getter for the current game
+     * @return The current game
+     */
     @Override
     public Game getGame() {
         return Game.AVOS_RACE;
     }
 
+    /**
+     * Used to check if a floor can be landed on or if the death event should be called
+     * @param player The player whose floor should be checked
+     * @return True if it is a hot floor, otherwise false
+     */
     public boolean isHotFloor(Player player) {
         for (BoundingBox b : Constants.AVOS_COLD_FLOORS[mapIndex-1]) {
             if (Utilities.isInBoundingBox(b, player.getLocation())) {
@@ -142,7 +173,10 @@ public class AvosRace extends Minigame {
         return false;
     }
 
-
+    /**
+     * Utility method used to get the elytra item
+     * @return The elytra item
+     */
     public static ItemStack getElytraItem() {
         ItemStack itemStack = new ItemStack(Material.ELYTRA);
         ItemMeta meta = itemStack.getItemMeta();
@@ -155,10 +189,14 @@ public class AvosRace extends Minigame {
         return itemStack;
     }
 
+    /**
+     * Used for when a player completes the track
+     * @param player The player who completed it
+     */
     private void finish(Player player) {
         playerStages.put(player.getUniqueId(), 5);
         finishedPlayers++;
-        scoreManager.increaseScore(player, Math.max(Constants.AVOS_FINISH - ((finishedPlayers-1) * Constants.AVOS_FALLOFF), 300), Utilities.getNumberSuffix(finishedPlayers) + " to finish the track!", true);
+        scoreManager.increaseScore(player, Math.max(Constants.AVOS_FINISH - ((finishedPlayers-1) * Constants.AVOS_FALLOFF), (int) (300 * ScoreManager.getScoreMultiplier())), Utilities.getNumberSuffix(finishedPlayers) + " to finish the track!", true);
         Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo(player.getName() + " was" + Utilities.getNumberSuffix(finishedPlayers) + "to finish the track!"));
         player.setGameMode(GameMode.SPECTATOR);
         if (Bukkit.getOnlinePlayers().stream().filter(x -> x.getGameMode() == GameMode.ADVENTURE).toArray().length == 0) {
@@ -167,14 +205,21 @@ public class AvosRace extends Minigame {
         
     }
 
+    /**
+     * Used for when a player completes a stage
+     * @param player The player who completed the stage
+     */
     private void stageComplete(Player player) {
         int oldStage = playerStages.get(player.getUniqueId());
         int placement = stageCompletions[oldStage] + 1;
-        scoreManager.increaseScore(player, Math.max(Constants.AVOS_STAGE_COMPLETE - ((placement-1) * Constants.AVOS_FALLOFF), 100), Utilities.getNumberSuffix(placement) + " to complete this stage!", true);
+        scoreManager.increaseScore(player, Math.max(Constants.AVOS_STAGE_COMPLETE - ((placement-1) * Constants.AVOS_FALLOFF), (int) (100 * ScoreManager.getScoreMultiplier())), Utilities.getNumberSuffix(placement) + " to complete this stage!", true);
         stageCompletions[oldStage] = placement;
         playerStages.put(player.getUniqueId(), oldStage+1);
     }
 
+    /**
+     * Used to end the minigame
+     */
     @Override
     public void end() {
         ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Game over!");

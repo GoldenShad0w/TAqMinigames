@@ -23,6 +23,9 @@ public class Constants {
     public static BoundingBox[][] AVOS_STAGES = {};
     public static BoundingBox[][] AVOS_COLD_FLOORS = {};
     public static BoundingBox[] AVOS_FINISH_BOXES = {};
+    public static Location NESAAK_TUTORIAL_LOCATION = null;
+    public static Location[] NESAAK_SPAWN_POINTS = {};
+    public static Location[] NESAAK_POWERUP_NODES = {};
 
 
     public static int AURA_SURVIVE = 600;
@@ -30,5 +33,7 @@ public class Constants {
     public static final int AVOS_FINISH = 500;
     public static final int AVOS_STAGE_COMPLETE = 300;
     public static final int AVOS_FALLOFF = 20;
+    public static final int GENERIC_MAX_POINTS = 2000;
+    public static final int GENERIC_FALLOFF = 200;
 
 }

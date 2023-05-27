@@ -31,10 +31,11 @@ public class ChatMessageFactory {
      * Used to send players who gained points a message
      * @param message The reason they gained the points
      * @param amount The amount they gained. Should be larger than zero
+     * @param descriptor The name of the score being added (e.g. emeralds)
      * @return The correctly formatted string
      */
-    public static String pointsGainedInfo(String message, int amount) {
-        return ChatColor.GREEN + "[+" + amount + " emeralds] " + ChatColor.DARK_GREEN + message;
+    public static String pointsGainedInfo(String message, int amount, String descriptor) {
+        return ChatColor.GREEN + "[+" + amount + " " + descriptor + "] " + ChatColor.DARK_GREEN + message;
     }
 
 

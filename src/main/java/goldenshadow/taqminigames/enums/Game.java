@@ -8,30 +8,26 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public enum Game {
-    EXCAVATION ("Excavation Site E", 30),
-    SKY_ISLAND_LOOTRUN ("Sky Island Lootrun", 20),
-    NETHER_PVP ("Nether PvP", 10),
-    NESAAK_SNOWBALL_FIGHT ("Nesaak Snowball Fight", 15),
-    AVOS_RACE ("Avos Race", 10),
-    PROFFERS_PIT ("Proffer's Pit", 20),
-    CART_RACING ("Aledar Cart Racing", 10),
-    AURA_AND_VOLLEY ("Aura & Volley", 10);
+    EXCAVATION ("Excavation Site E"),
+    SKY_ISLAND_LOOTRUN ("Sky Island Lootrun"),
+    NETHER_PVP ("Nether PvP"),
+    NESAAK_SNOWBALL_FIGHT ("Nesaak Snowball Fight"),
+    AVOS_RACE ("Avos Race"),
+    PROFFERS_PIT ("Proffer's Pit"),
+    CART_RACING ("Aledar Cart Racing"),
+    AURA_AND_VOLLEY ("Aura & Volley");
 
     private final String label;
-    private final int duration;
 
-    Game(String label, int duration) {
+    Game(String label) {
         this.label = label;
-        this.duration = duration;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public int getDuration() {
-        return duration;
-    }
+
 
     public static boolean contains(String value) {
         for (Game g : values()) {

@@ -22,17 +22,20 @@ public class ScoreManager {
     private boolean hasChangeOccurred = false;
     private List<String> sortedDisplayList = new ArrayList<>();
     private final String descriptor;
+    private final boolean generic;
 
 
     /**
      * Used to create a new scoreboard manager
      * @param descriptor How the score should be called (e.g. "Emeralds")
+     * @param generic Whether the score is generic or custom
      */
-    public ScoreManager(String descriptor) {
+    public ScoreManager(String descriptor, boolean generic) {
         for (Player p : ParticipantManager.getParticipants()) {
             scores.put(p.getUniqueId(), 0);
         }
         this.descriptor = descriptor;
+        this.generic = generic;
     }
 
     /**
@@ -42,6 +45,14 @@ public class ScoreManager {
     public static void calculateScores(int players) {
         if (players < 1) players = 1;
         Constants.AURA_SURVIVE /= players;
+    }
+
+    /**
+     * Getter for whether the score is generic or not
+     * @return True if it is, false otherwise
+     */
+    public boolean isGeneric() {
+        return generic;
     }
 
     /**
@@ -76,7 +87,7 @@ public class ScoreManager {
         if (scores.containsKey(uuid)) {
             scores.put(uuid, scores.get(uuid) + amount);
         } else scores.put(uuid, amount);
-        player.sendMessage(ChatMessageFactory.pointsGainedInfo(message, amount));
+        player.sendMessage(ChatMessageFactory.pointsGainedInfo(message, amount, descriptor.toLowerCase()));
     }
 
     /**
@@ -117,10 +128,12 @@ public class ScoreManager {
      * @param uuid The players UUID
      * @return The score of that player
      */
-    public int getScore(UUID uuid) {
+    public Integer getScore(UUID uuid) {
         if (scores.containsKey(uuid)) return scores.get(uuid);
         return 0;
     }
+
+
 
     /**
      * Used to merge another score manager into this one
