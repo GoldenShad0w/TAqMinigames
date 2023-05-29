@@ -11,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,7 @@ public abstract class Minigame {
      * Method that should be called when the game ends
      */
     public void end() {
+        ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Game over!");
         gameState = GameState.ENDING;
         timer = null;
         Trigger.unregisterAll();
@@ -94,11 +97,12 @@ public abstract class Minigame {
             for (Player p : ParticipantManager.getParticipants()) {
                 p.getInventory().clear();
                 p.setGameMode(GameMode.ADVENTURE);
-                p.setHealth(20);
+                p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100, false,false,false));
                 updateToLobbyBoard(p);
             }
             TAqMinigames.minigame = null;
         }, 320L);
+
 
     }
 
@@ -109,6 +113,7 @@ public abstract class Minigame {
     protected void insertPlayer(Player player) {
         ParticipantManager.addParticipant(player, true);
         ScoreManager.calculateScores(ParticipantManager.getParticipants().size());
+        scoreManager.increaseScore(player, 0, false);
     }
 
     /**
@@ -136,19 +141,21 @@ public abstract class Minigame {
      * @param player The player whose scoreboard that should be updated
      */
     protected void updateScoreboard(Player player) {
-        String[] data = scoreManager.getScoreboardLines(player, ChatColor.AQUA, ChatColor.GREEN);
-        ScoreboardWrapper.queueData(player, " ",
-                ChatColor.DARK_AQUA + "Game: " + ChatColor.AQUA + (TAqMinigames.minigame != null ? TAqMinigames.minigame.getGame().getLabel() : "---"), (gameState != GameState.ENDING) ? ChatColor.DARK_AQUA + gameState.getDescriptor() + ChatColor.AQUA + timer.toString() : ChatColor.DARK_AQUA + gameState.getDescriptor(),
-                " ",
-                ChatColor.DARK_AQUA + "Your " + scoreManager.getDescriptor() + ": " + ChatColor.GREEN + scoreManager.getScore(player.getUniqueId()),
-                " ",
-                data[0],
-                " ",
-                data[1],
-                data[2],
-                data[3],
-                " "
-                );
+        if (player != null) {
+            String[] data = scoreManager.getScoreboardLines(player, ChatColor.AQUA, ChatColor.GREEN);
+            ScoreboardWrapper.queueData(player, " ",
+                    ChatColor.DARK_AQUA + "Game: " + ChatColor.AQUA + (TAqMinigames.minigame != null ? TAqMinigames.minigame.getGame().getLabel() : "---"), (gameState != GameState.ENDING) ? ChatColor.DARK_AQUA + gameState.getDescriptor() + ChatColor.AQUA + timer.toString() : ChatColor.DARK_AQUA + gameState.getDescriptor(),
+                    " ",
+                    ChatColor.DARK_AQUA + "Your " + scoreManager.getDescriptor() + ": " + ChatColor.GREEN + scoreManager.getScore(player.getUniqueId()),
+                    " ",
+                    data[0],
+                    " ",
+                    data[1],
+                    data[2],
+                    data[3],
+                    " "
+            );
+        }
     }
 
     /**

@@ -2,7 +2,9 @@ package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
+import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.minigames.AvosRace;
+import goldenshadow.taqminigames.minigames.ProffersPit;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,14 +24,19 @@ public class PlayerDamage implements Listener {
             }
         }
         if (event.getEntity() instanceof Player p) {
-            if (TAqMinigames.minigame != null) {
-                if (TAqMinigames.minigame instanceof AvosRace) {
-                    if (((AvosRace) TAqMinigames.minigame).isHotFloor(p)) {
-                        TAqMinigames.minigame.onDeath(p);
-                        event.setCancelled(true);
-                    }
+
+            if (TAqMinigames.minigame instanceof AvosRace) {
+                if (((AvosRace) TAqMinigames.minigame).isHotFloor(p)) {
+                    TAqMinigames.minigame.onDeath(p);
+                    event.setCancelled(true);
                 }
             }
+            if (TAqMinigames.minigame instanceof ProffersPit game) {
+                if (ParticipantManager.getParticipants().contains(p)) {
+                    game.damageTaken(event);
+                }
+            }
+
         }
     }
 }

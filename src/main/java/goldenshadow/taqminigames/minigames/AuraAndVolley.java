@@ -299,8 +299,6 @@ public class AuraAndVolley extends Minigame{
         } else if (round == 2) {
             timer = new Timer(0, 10, () -> timer = new Timer(3,0, this::end));
         }
-
-        ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Round over!");
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> tick = 25, 120L);
     }
 
@@ -312,6 +310,7 @@ public class AuraAndVolley extends Minigame{
     public void playerReconnect(Player player) {
         for (Player p : alivePlayers) {
             if (p.getUniqueId().equals(player.getUniqueId())) {
+                Bukkit.broadcastMessage("player was an alive player");
                 alivePlayers.remove(p);
                 alivePlayers.add(player);
                 player.teleport(Constants.AURA_MAP_LOCATIONS[round-1]);

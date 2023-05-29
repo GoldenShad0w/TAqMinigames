@@ -3,6 +3,9 @@ package goldenshadow.taqminigames.commands;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.minigames.AuraAndVolley;
+import goldenshadow.taqminigames.minigames.AvosRace;
+import goldenshadow.taqminigames.minigames.NesaakFight;
+import goldenshadow.taqminigames.minigames.ProffersPit;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -64,7 +67,9 @@ public class Command implements CommandExecutor {
                                         Game game = Game.valueOf(args[2]);
                                         switch (game) {
                                             case AURA_AND_VOLLEY -> TAqMinigames.minigame = new AuraAndVolley();
-                                            //TODO fill with more
+                                            case AVOS_RACE -> TAqMinigames.minigame = new AvosRace();
+                                            case NESAAK_SNOWBALL_FIGHT -> TAqMinigames.minigame = new NesaakFight();
+                                            case PROFFERS_PIT -> TAqMinigames.minigame = new ProffersPit();
                                         }
                                         return true;
                                     }

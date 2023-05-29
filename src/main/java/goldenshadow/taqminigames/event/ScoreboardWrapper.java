@@ -53,8 +53,9 @@ public class ScoreboardWrapper {
         for (UUID uuid : queuedData.keySet()) {
             if (!boards.containsKey(uuid)) {
                 createScoreboard(Bukkit.getPlayer(uuid));
+            } else {
+                boards.get(uuid).updateLines(queuedData.get(uuid));
             }
-            boards.get(uuid).updateLines(queuedData.get(uuid));
         }
     }
 

@@ -38,13 +38,13 @@ public class NesaakFight extends Minigame {
 
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Kills", false);
-        timer = new Timer(0, 30, () -> timer = new Timer(10,0, this::end));
+        timer = new Timer(0, 29, () -> timer = new Timer(10,0, this::end));
         for (Player player : ParticipantManager.getParticipants()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));
             assert player.getEquipment() != null;
             player.getEquipment().setChestplate(getHealthLimiter());
         }
-        ParticipantManager.teleportAllPlayers(Constants.AURA_TUTORIAL_LOCATION);
+        ParticipantManager.teleportAllPlayers(Constants.NESAAK_TUTORIAL_LOCATION);
 
     }
 
@@ -60,9 +60,9 @@ public class NesaakFight extends Minigame {
             case 8 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You have 3 hearts, every time you get hit you lose one", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 12 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You can replenish your snowballs by right clicking on snow with your shovel", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 14 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Powerups will spawn around the map for you to collect", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 18 -> ChatMessageFactory.sendInfoBlockToAll("Possible powerups are:", "Speed for 10 seconds", "Regain all lost health", "Multishot for 10 seconds", "Boosted snowball gathering for 20 seconds");
+            case 18 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Possible powerups are:",ChatColor.YELLOW +  "Speed for 10 seconds",ChatColor.YELLOW +  "Regain all lost health", ChatColor.YELLOW + "Multishot for 20 seconds",ChatColor.YELLOW +  "Boosted gathering for 20 seconds");
             case 22 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("After respawning, you will have invulnerability for 5 seconds or until you attack someone", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The player with the most amount of kills wins", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The player with the most kills wins", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
@@ -127,7 +127,7 @@ public class NesaakFight extends Minigame {
         betterGatherers.remove(player.getUniqueId());
         player.getInventory().remove(Material.SNOWBALL);
         player.getInventory().addItem(new ItemStack(Material.SNOWBALL, 12));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100, true, false, true));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100, true, false, true)), 1L);
     }
 
     /**
@@ -163,6 +163,15 @@ public class NesaakFight extends Minigame {
 
     }
 
+    @Override
+    public void insertPlayer(Player player) {
+        super.insertPlayer(player);
+        player.teleport(Constants.NESAAK_SPAWN_POINTS[0]);
+        player.getInventory().addItem(getShovel(), new ItemStack(Material.SNOWBALL, 12));
+        assert player.getEquipment() != null;
+        player.getEquipment().setChestplate(getHealthLimiter());
+    }
+
     /**
      * Getter for the game
      * @return The game
@@ -183,7 +192,7 @@ public class NesaakFight extends Minigame {
         meta.setDisplayName(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "Snow Shovel");
         meta.setLore(List.of(" ", ChatColor.AQUA + "Right click on snow blocks to", ChatColor.AQUA + "collect new snowballs!"));
         meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES);
         itemStack.setItemMeta(meta);
         return itemStack;
     }
@@ -198,7 +207,7 @@ public class NesaakFight extends Minigame {
         assert meta != null;
         meta.setDisplayName(" ");
         meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
-        meta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH, new AttributeModifier("max_health", -16, AttributeModifier.Operation.ADD_NUMBER));
+        meta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH, new AttributeModifier("max_health", -14, AttributeModifier.Operation.ADD_NUMBER));
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
         meta.setCustomModelData(100090);
         itemStack.setItemMeta(meta);
@@ -217,7 +226,7 @@ public class NesaakFight extends Minigame {
             }
         }
         ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND, false);
-        BoundingBox box = armorStand.getBoundingBox();
+        BoundingBox box = new BoundingBox(location.getX()-1, location.getY(), location.getZ() -1, location.getX() +1, location.getY()+2, location.getZ()+1);
         armorStand.setInvisible(true);
         Utilities.lockArmorStand(armorStand);
         armorStand.setCustomNameVisible(true);
@@ -230,6 +239,10 @@ public class NesaakFight extends Minigame {
                 new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
                     p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1,100));
+                    Entity e = Bukkit.getEntity(armorStand.getUniqueId());
+                    if (e != null) {
+                        e.remove();
+                    }
                 }, 1000, true, true);
             }
             case 1 -> {
@@ -238,6 +251,10 @@ public class NesaakFight extends Minigame {
                 new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
                     p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200,1));
+                    Entity e = Bukkit.getEntity(armorStand.getUniqueId());
+                    if (e != null) {
+                        e.remove();
+                    }
                 }, 1000, true, true);
             }
             case 2 -> {
@@ -252,8 +269,12 @@ public class NesaakFight extends Minigame {
                     int id = Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
                         p.sendMessage(ChatMessageFactory.singleLineInfo("Multishot has run out!"));
                         multishoters.remove(p.getUniqueId());
-                        }, 200L);
+                        }, 400L);
                     multishoters.put(p.getUniqueId(), id);
+                    Entity e = Bukkit.getEntity(armorStand.getUniqueId());
+                    if (e != null) {
+                        e.remove();
+                    }
                 }, 1000, true, true);
             }
             case 3 -> {
@@ -270,6 +291,10 @@ public class NesaakFight extends Minigame {
                         betterGatherers.remove(p.getUniqueId());
                     }, 400L);
                     betterGatherers.put(p.getUniqueId(), id);
+                    Entity e = Bukkit.getEntity(armorStand.getUniqueId());
+                    if (e != null) {
+                        e.remove();
+                    }
                 }, 1000, true, true);
             }
         }
@@ -296,12 +321,13 @@ public class NesaakFight extends Minigame {
         if (multishoters.containsKey(player.getUniqueId())) {
             Snowball sb1 = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL, false);
             sb1.setShooter(player);
-            sb1.setVelocity(snowball.getVelocity().rotateAroundY(Math.toRadians(15)));
+            sb1.setVelocity(snowball.getVelocity().rotateAroundY(Math.toRadians(5)));
 
             Snowball sb2 = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL, false);
             sb2.setShooter(player);
-            sb2.setVelocity(snowball.getVelocity().rotateAroundY(Math.toRadians(-15)));
+            sb2.setVelocity(snowball.getVelocity().rotateAroundY(Math.toRadians(-5)));
         }
+        player.setCooldown(Material.SNOWBALL, 10);
     }
 
     /**
@@ -313,23 +339,24 @@ public class NesaakFight extends Minigame {
         ItemStack it = new ItemStack(Material.SNOW_BLOCK);
         Location loc = block.getRelative(BlockFace.UP).getLocation();
         assert loc.getWorld() != null;
-        loc.add(loc.getX() > 0 ? .5 : -.5, 0, loc.getX() > 0 ? .5 : -.5);
+        loc.add(loc.getX() > 0 ? -.5 : .5, 0, loc.getX() > 0 ? -.5 : .5);
         if (player.hasCooldown(Material.NETHERITE_SHOVEL)) {
             player.sendMessage(ChatMessageFactory.singleLineInfo("Your shovel is still on cooldown!"));
             return;
         }
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 100, false, false, false));
         player.setCooldown(Material.NETHERITE_SHOVEL, 100);
-        loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10, it);
+        loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10, 0.2,0,0.2, 0.1, it);
         loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP, 1,1);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
-            loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10, it);
+            loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10, 0.2,0,0.2, 0.1 ,it);
             loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP, 1,1);
         }, 20L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
-            loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10, it);
+            loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10,0.2,0,0.2,0.1, it);
             loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP, 1,1);
-            player.getInventory().addItem(new ItemStack(Material.SNOWBALL, 8));
+
+            player.getInventory().addItem(new ItemStack(Material.SNOWBALL, betterGatherers.containsKey(player.getUniqueId()) ? 16 : 8));
         }, 40L);
 
     }
@@ -339,9 +366,9 @@ public class NesaakFight extends Minigame {
      */
     @Override
     public void end() {
-        ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Game over!");
         for (Player p : ParticipantManager.getParticipants()) {
             p.setGameMode(GameMode.SPECTATOR);
+            p.getInventory().clear();
         }
         for (UUID uuid : registeredPowerups) {
             Entity e = Bukkit.getEntity(uuid);
@@ -352,4 +379,6 @@ public class NesaakFight extends Minigame {
         super.end();
 
     }
+
+
 }

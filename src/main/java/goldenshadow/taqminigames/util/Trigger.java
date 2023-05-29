@@ -16,7 +16,7 @@ public class Trigger {
     private static final List<Trigger> registeredTriggers = new ArrayList<>();
     private final HashMap<UUID, Long> cooldowns = new HashMap<>();
 
-    private final BoundingBox boundingBox;
+    public BoundingBox boundingBox;
     private final Predicate<Player> predicate;
     private final Consumer<Player> task;
     private final long cooldown;
@@ -91,5 +91,13 @@ public class Trigger {
      */
     public static boolean isRegisterEmpty() {
         return registeredTriggers.isEmpty();
+    }
+
+    /**
+     * Used to delete a specific trigger
+     * @param trigger The trigger that should be removed
+     */
+    public static void unregister(Trigger trigger) {
+        registeredTriggers.remove(trigger);
     }
 }

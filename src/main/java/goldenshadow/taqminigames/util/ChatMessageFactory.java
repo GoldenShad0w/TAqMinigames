@@ -35,7 +35,7 @@ public class ChatMessageFactory {
      * @return The correctly formatted string
      */
     public static String pointsGainedInfo(String message, int amount, String descriptor) {
-        return ChatColor.GREEN + "[+" + amount + " " + descriptor + "] " + ChatColor.DARK_GREEN + message;
+        return ChatColor.GREEN + "[" + (amount < 0 ? "" : "+") + amount + " " + descriptor + "] " + ChatColor.DARK_GREEN + message;
     }
 
 

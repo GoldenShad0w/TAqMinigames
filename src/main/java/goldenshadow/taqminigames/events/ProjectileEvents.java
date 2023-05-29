@@ -3,6 +3,7 @@ package goldenshadow.taqminigames.events;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.minigames.NesaakFight;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -36,7 +37,9 @@ public class ProjectileEvents implements Listener {
                 if (event.getEntity() instanceof Snowball snowball) {
                     if (snowball.getShooter() instanceof Player p) {
                         if (ParticipantManager.getParticipants().contains(p)) {
-                            game.snowballShoot(snowball, p);
+                            if (!p.hasCooldown(Material.SNOWBALL)) {
+                                game.snowballShoot(snowball, p);
+                            }
                         }
                     }
                 }

@@ -217,12 +217,19 @@ public class AvosRace extends Minigame {
         playerStages.put(player.getUniqueId(), oldStage+1);
     }
 
+    @Override
+    protected void insertPlayer(Player player) {
+        super.insertPlayer(player);
+        player.teleport(Constants.AVOS_MAP_LOCATIONS[mapIndex-1]);
+        assert player.getEquipment() != null;
+        player.getEquipment().setChestplate(getElytraItem());
+    }
+
     /**
      * Used to end the minigame
      */
     @Override
     public void end() {
-        ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Game over!");
         assert Constants.WORLD != null;
         Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, false);
         for (Player p : ParticipantManager.getParticipants()) {

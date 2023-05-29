@@ -4,6 +4,7 @@ import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.minigames.AuraAndVolley;
 import goldenshadow.taqminigames.minigames.AvosRace;
+import goldenshadow.taqminigames.minigames.NesaakFight;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Utilities;
@@ -193,6 +194,7 @@ public class GameSelection {
                 switch (actualNextgame) {
                     case AURA_AND_VOLLEY -> TAqMinigames.minigame = new AuraAndVolley();
                     case AVOS_RACE -> TAqMinigames.minigame = new AvosRace();
+                    case NESAAK_SNOWBALL_FIGHT -> TAqMinigames.minigame = new NesaakFight();
                 }
                 //TODO make this start the correct minigame once they are implemented
             }

@@ -73,7 +73,7 @@ public class ScoreManager {
     /**
      * Used to increase the score of a player and send them a feedback message
      * @param player The player whose score should be increased
-     * @param amount The amount by which it should be increased. Should be above 0
+     * @param amount The amount by which it should be increased
      * @param message The reason why the player earned the points. This will be displayed to the player
      * @param withMultiplier Whether the score multiplier should be applied
      */
@@ -85,9 +85,9 @@ public class ScoreManager {
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1,1);
         UUID uuid = player.getUniqueId();
         if (scores.containsKey(uuid)) {
-            scores.put(uuid, scores.get(uuid) + amount);
+            scores.put(uuid, Math.max(scores.get(uuid) + amount, 0));
         } else scores.put(uuid, amount);
-        player.sendMessage(ChatMessageFactory.pointsGainedInfo(message, amount, descriptor.toLowerCase()));
+        player.sendMessage(ChatMessageFactory.pointsGainedInfo(message, amount, descriptor));
     }
 
     /**
@@ -103,7 +103,7 @@ public class ScoreManager {
         }
         UUID uuid = player.getUniqueId();
         if (scores.containsKey(uuid)) {
-            scores.put(uuid, scores.get(uuid) + amount);
+            scores.put(uuid, Math.max(scores.get(uuid) + amount, 0));
         } else scores.put(uuid, amount);
     }
 
@@ -119,7 +119,7 @@ public class ScoreManager {
             amount *= scoreMultiplier;
         }
         if (scores.containsKey(uuid)) {
-            scores.put(uuid, scores.get(uuid) + amount);
+            scores.put(uuid, Math.max(scores.get(uuid) + amount, 0));
         } else scores.put(uuid, amount);
     }
 

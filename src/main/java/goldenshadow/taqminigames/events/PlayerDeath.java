@@ -3,6 +3,7 @@ package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.minigames.NesaakFight;
+import goldenshadow.taqminigames.minigames.ProffersPit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -14,6 +15,9 @@ public class PlayerDeath implements Listener {
         if (TAqMinigames.isRunning()) {
             if (TAqMinigames.minigame instanceof NesaakFight nesaakFight) {
                 nesaakFight.onDeath(event.getEntity());
+            }
+            if (TAqMinigames.minigame instanceof ProffersPit pit) {
+                pit.onDeath(event.getEntity());
             }
         }
     }

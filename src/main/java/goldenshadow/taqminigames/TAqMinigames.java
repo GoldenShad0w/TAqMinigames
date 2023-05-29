@@ -101,6 +101,9 @@ public final class TAqMinigames extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ProjectileEvents(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerMoveEvent(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerGlide(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerBreakBlock(), plugin);
+        Bukkit.getPluginManager().registerEvents(new InventoryClick(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteractWithEntity(), plugin);
     }
 
     public static TAqMinigames getPlugin() {
