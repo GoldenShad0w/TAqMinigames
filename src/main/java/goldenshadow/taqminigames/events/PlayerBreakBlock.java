@@ -2,6 +2,7 @@ package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.event.ParticipantManager;
+import goldenshadow.taqminigames.minigames.ExcavationSiteE;
 import goldenshadow.taqminigames.minigames.ProffersPit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,6 +16,11 @@ public class PlayerBreakBlock implements Listener {
             if (TAqMinigames.minigame instanceof ProffersPit game) {
                 if (ParticipantManager.getParticipants().contains(event.getPlayer())) {
                     game.blockMined(event.getPlayer(), event.getBlock());
+                }
+            }
+            if (TAqMinigames.minigame instanceof ExcavationSiteE game) {
+                if (ParticipantManager.getParticipants().contains(event.getPlayer())) {
+                    game.blockBroken(event.getBlock());
                 }
             }
         }

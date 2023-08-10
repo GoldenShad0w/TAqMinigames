@@ -16,10 +16,11 @@ public class GasLeak extends ProfEvent {
     private final Trigger trigger;
     int offset = 1;
 
-    public GasLeak() {
-        super ("A gas leak has occurred somewhere in the %s!");
-        BoundingBox box = new BoundingBox(location.getX()+1,location.getY()+1,location.getZ()+1,location.getX()-1,location.getY()-1,location.getZ()-1);
+    public GasLeak(EventLocation location) {
+        super ("A gas leak has occurred somewhere in the %s!", location);
+        BoundingBox box = new BoundingBox(location.location().getX()+1,location.location().getY()+1,location.location().getZ()+1,location.location().getX()-1,location.location().getY()-1,location.location().getZ()-1);
         trigger = new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 60, 1, false, true,true)), Utilities.secondsToMillis(2), false, false);
+        Trigger.register(trigger);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class GasLeak extends ProfEvent {
         }
         if (tick > 60) {
             Trigger.unregister(trigger);
-            Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("The gas in the " + area + " has dissipated!"));
+            Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("The gas in the " + location.area().getName() + " has dissipated!"));
             isDone = true;
         }
         super.tick();

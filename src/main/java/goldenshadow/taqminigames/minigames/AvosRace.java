@@ -30,12 +30,14 @@ public class AvosRace extends Minigame {
     private final HashMap<UUID, Integer> playerStages = new HashMap<>(); // value >= 5 means finished
     private static final String[] deathMessages = {" flew into a wall!", " needs their flying licence revoked!", " thought they could fly though walls!", " has their eyes closed!", " learned that the wall was stronger than them!", " skill issued!", " has a serious case of skill issue!", " crash landed", " overestimated themselves", " didn't make it!", " needs some flying lessons!"};
     private final int mapIndex;
-    private final ScoreManager scoreManager;
 
     /**
      * Used to start a new avos race minigame
      */
     public AvosRace() {
+        gameState = GameState.STARTING;
+        scoreManager = new ScoreManager("Emeralds", true);
+
         mapIndex = TAqMinigames.getPlugin().getConfig().getInt("avos-race-next-map");
         if (mapIndex + 1 > TAqMinigames.getPlugin().getConfig().getInt("avos-race-maps")) {
             TAqMinigames.getPlugin().getConfig().set("avos-race-next-map", 1);
@@ -49,21 +51,24 @@ public class AvosRace extends Minigame {
         assert Constants.WORLD != null;
         Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true);
 
-        scoreManager = new ScoreManager("Emeralds", true);
-        gameState = GameState.STARTING;
+
+
 
         for (Player p : ParticipantManager.getParticipants()) {
             playerStages.put(p.getUniqueId(), 0);
+            p.setBedSpawnLocation(Constants.AVOS_MAP_LOCATIONS[mapIndex-1], true);
         }
 
         timer = new Timer(0, 30, () -> timer = new Timer(10,0, this::end));
 
         ParticipantManager.teleportAllPlayers(Constants.AVOS_MAP_LOCATIONS[mapIndex-1]);
+        Utilities.fillAreaWithBlock(Constants.AVOS_START_BARRIERS[0], Constants.AVOS_START_BARRIERS[1], Material.BARRIER, Material.AIR);
+        Utilities.fillAreaWithBlock(Constants.AVOS_START_AIR[0], Constants.AVOS_START_AIR[1], Material.AIR, Material.BARRIER);
 
         for (BoundingBox b : Constants.AVOS_STAGES[mapIndex-1]) {
-            new Trigger(b, Constants.WORLD, p -> (p.getGameMode() == GameMode.ADVENTURE), this::stageComplete, Utilities.secondsToMillis(1000), false, false);
+            Trigger.register(new Trigger(b, Constants.WORLD, p -> (p.getGameMode() == GameMode.ADVENTURE), this::stageComplete, Utilities.secondsToMillis(1000), false, false));
         }
-        new Trigger(Constants.AVOS_FINISH_BOXES[mapIndex-1], Constants.WORLD, p -> (p.getGameMode() == GameMode.ADVENTURE), this::finish, Utilities.secondsToMillis(1000), false, false);
+        Trigger.register(new Trigger(Constants.AVOS_FINISH_BOXES[mapIndex-1], Constants.WORLD, p -> (p.getGameMode() == GameMode.ADVENTURE), this::finish, Utilities.secondsToMillis(1000), false, false));
     }
 
     /**
@@ -113,6 +118,7 @@ public class AvosRace extends Minigame {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
                     player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    Utilities.fillAreaWithBlock(Constants.AVOS_START_BARRIERS[0], Constants.AVOS_START_BARRIERS[1], Material.AIR, Material.BARRIER);
 
                 }
                 gameState = GameState.RUNNING;
@@ -132,7 +138,6 @@ public class AvosRace extends Minigame {
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1,1);
         player.sendMessage(ChatMessageFactory.singleLineInfo("You died..."));
         Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + deathMessages[ThreadLocalRandom.current().nextInt(0, deathMessages.length)]);
-        player.teleport(Constants.AVOS_MAP_LOCATIONS[mapIndex-1]);
     }
 
     /**
@@ -166,11 +171,11 @@ public class AvosRace extends Minigame {
      */
     public boolean isHotFloor(Player player) {
         for (BoundingBox b : Constants.AVOS_COLD_FLOORS[mapIndex-1]) {
-            if (Utilities.isInBoundingBox(b, player.getLocation())) {
-                return true;
+            if (b.overlaps(player.getBoundingBox())) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -196,8 +201,8 @@ public class AvosRace extends Minigame {
     private void finish(Player player) {
         playerStages.put(player.getUniqueId(), 5);
         finishedPlayers++;
-        scoreManager.increaseScore(player, Math.max(Constants.AVOS_FINISH - ((finishedPlayers-1) * Constants.AVOS_FALLOFF), (int) (300 * ScoreManager.getScoreMultiplier())), Utilities.getNumberSuffix(finishedPlayers) + " to finish the track!", true);
-        Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo(player.getName() + " was" + Utilities.getNumberSuffix(finishedPlayers) + "to finish the track!"));
+        scoreManager.increaseScore(player, Math.max(Constants.AVOS_FINISH - ((finishedPlayers-1) * Constants.AVOS_FALLOFF), 300), Utilities.getNumberSuffix(finishedPlayers) + " to finish the track!", true);
+        Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo(player.getName() + " was " + Utilities.getNumberSuffix(finishedPlayers) + " to finish the track!"));
         player.setGameMode(GameMode.SPECTATOR);
         if (Bukkit.getOnlinePlayers().stream().filter(x -> x.getGameMode() == GameMode.ADVENTURE).toArray().length == 0) {
             timer.runTaskEarly();

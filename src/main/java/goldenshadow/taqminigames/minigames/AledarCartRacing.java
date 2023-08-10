@@ -1,0 +1,379 @@
+package goldenshadow.taqminigames.minigames;
+
+import com.google.errorprone.annotations.DoNotCall;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import goldenshadow.taqminigames.enums.Game;
+import goldenshadow.taqminigames.enums.GameState;
+import goldenshadow.taqminigames.event.ParticipantManager;
+import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.util.*;
+import org.bukkit.*;
+import org.bukkit.entity.*;
+import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.EulerAngle;
+import org.bukkit.util.Vector;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+
+public class AledarCartRacing extends Minigame {
+
+
+    private final List<UUID> finishedPlayers = new ArrayList<>();
+    private final HashMap<UUID, Integer> antiCheatState = new HashMap<>();
+    private final HashMap<UUID, Integer> currentLap = new HashMap<>();
+    private final List<UUID> gameObjectUUIDs = new ArrayList<>();
+    private final List<Location> crystalLocations = new ArrayList<>();
+
+    public AledarCartRacing() {
+        gameState = GameState.STARTING;
+        scoreManager = new ScoreManager("Emeralds", true);
+
+
+        timer = new Timer(0, 29, () -> timer = new Timer(10,0, this::end));
+        for (Player player : ParticipantManager.getParticipants()) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 500, 0, true, false, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 10, false, false, false));
+        }
+
+        Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getZ(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getZ()), Constants.WORLD, p -> {
+            if (p.getGameMode() != GameMode.ADVENTURE) return false;
+            return antiCheatState.getOrDefault(p.getUniqueId(), 0) == 0;
+        }, p -> {
+            antiCheatState.put(p.getUniqueId(), 1);
+        }, 0, false, false));
+
+        Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getZ(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getZ()), Constants.WORLD, p -> {
+            if (p.getGameMode() != GameMode.ADVENTURE) return false;
+            return antiCheatState.getOrDefault(p.getUniqueId(), 0) == 1;
+        }, p -> {
+            antiCheatState.put(p.getUniqueId(), 2);
+        }, 0, false, false));
+
+        Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_LAP_LINE[0].getX(), Constants.CART_RACING_LAP_LINE[0].getY(), Constants.CART_RACING_LAP_LINE[0].getZ(), Constants.CART_RACING_LAP_LINE[1].getX(), Constants.CART_RACING_LAP_LINE[1].getY(), Constants.CART_RACING_LAP_LINE[1].getZ()), Constants.WORLD, p -> {
+            if (p.getGameMode() != GameMode.ADVENTURE) return false;
+            return antiCheatState.getOrDefault(p.getUniqueId(), 0) == 2;
+        }, p -> {
+            antiCheatState.put(p.getUniqueId(), 0);
+            lapCompleted(p);
+        }, 0, false, false));
+
+        ParticipantManager.teleportAllPlayers(Constants.CART_RACING_TUTORIAL_LOCATION);
+    }
+
+    @Override
+    public void tick() {
+        ParticipantManager.getAll().forEach(this::updateScoreboard);
+        switch (tick) {
+            case 0 -> ChatMessageFactory.sendInfoBlockToAll(" ", ChatColor.AQUA + String.valueOf(ChatColor.BOLD) + "Aledar Cart Racing", " ");
+            case 4 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The goal of this minigame is to escort Aledar through the silent expanse", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 8 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You must complete 5 laps to finish the track", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 12 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Along the way, you can collect powerups. These are the powerups that exist:", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 14 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Emerald Crate", " ", ChatColor.YELLOW + "Gain " + ((int) (Constants.CART_RACING_CRATE * ScoreManager.getScoreMultiplier())) + " emeralds!");
+            case 16 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Toxic Slime", " ", ChatColor.YELLOW + "Place a slime behind you that slows down", ChatColor.YELLOW + "players who hit it!");
+            case 18 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Dernic Dash", " ", ChatColor.YELLOW + "Boosts the speed of your cart for", ChatColor.YELLOW + "a short while!");
+            case 20 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Eldritch Blast", " ", ChatColor.YELLOW + "Slow down all players near you in a single", ChatColor.YELLOW + "large explosion!");
+            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Each lap will reward you with " + ((int) (Constants.CART_RACING_LAP * ScoreManager.getScoreMultiplier())) + " emeralds, and you also get emeralds for completing the entire track!", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 25 -> {
+                for (Player player : ParticipantManager.getAll()) {
+                    player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.teleport(Constants.CART_RACING_START_LOCATION);
+                    Boat b = buildCart();
+                    b.addPassenger(player);
+                }
+                Utilities.fillAreaWithBlock(Constants.CART_RACING_START_BARRIERS[0], Constants.CART_RACING_START_BARRIERS[1], Material.BARRIER, Material.AIR);
+            }
+            case 27 -> {
+                for (Player player : ParticipantManager.getAll()) {
+                    player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                }
+            }
+            case 28 -> {
+                for (Player player : ParticipantManager.getAll()) {
+                    player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                }
+            }
+            case 29 -> {
+                for (Player player : ParticipantManager.getAll()) {
+                    player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                }
+            }
+            case 30 -> {
+                for (Player player : ParticipantManager.getAll()) {
+                    player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    Utilities.fillAreaWithBlock(Constants.CART_RACING_START_BARRIERS[0], Constants.CART_RACING_START_BARRIERS[1], Material.AIR, Material.BARRIER);
+                }
+                gameState = GameState.RUNNING;
+                spawnPowerups();
+            }
+        }
+        if (tick > 30) {
+            for (Player p : ParticipantManager.getParticipants()) {
+                ChatMessageFactory.sendActionbarMessage(p, net.md_5.bungee.api.ChatColor.YELLOW + "Lap [" + (currentLap.getOrDefault(p.getUniqueId(), 0)) + "/5]");
+            }
+        }
+
+        if (tick > 50) {
+            if (gameState == GameState.RUNNING) {
+                spawnPowerups();
+            }
+            tick = 30;
+        }
+        super.tick();
+
+    }
+
+    @Override
+    @DoNotCall
+    public void onDeath(Player player) {
+    }
+
+    @Override
+    public void playerReconnect(Player player) {
+        if (finishedPlayers.contains(player.getUniqueId())) {
+            player.setGameMode(GameMode.SPECTATOR);
+        }
+    }
+
+    private void lapCompleted(Player player) {
+        int lap = currentLap.getOrDefault(player.getUniqueId(), 0);
+
+        player.sendTitle("", ChatColor.YELLOW + "[" + (lap+1) + "/5] Laps Completed", 5,40,5);
+        Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo(player.getName() + " has completed lap " + (lap + 1) + "!"));
+        scoreManager.increaseScore(player, Constants.CART_RACING_LAP, "You completed a lap!", true);
+        if (lap == 4) {
+            trackCompleted(player);
+        } else {
+            currentLap.put(player.getUniqueId(), lap+1);
+        }
+    }
+
+    private void trackCompleted(Player player) {
+        Bukkit.broadcastMessage(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + player.getName() + " has successfully escorted Aledar through the Silent Expanse!");
+        int reward = Math.max(Constants.CART_RACING_COMPLETE - (Constants.GENERIC_FALLOFF * finishedPlayers.size()), 300);
+        scoreManager.increaseScore(player, reward, "You finished " + Utilities.getNumberSuffix(finishedPlayers.size()+1)+ "!", true);
+        currentLap.put(player.getUniqueId(), 5);
+        Entity vehicle = player.getVehicle();
+        if (vehicle != null) {
+            for (Entity e : vehicle.getPassengers()) {
+                if (!(e instanceof Player)) {
+                    e.remove();
+                }
+            }
+            vehicle.removePassenger(player);
+            vehicle.remove();
+        }
+        player.setGameMode(GameMode.SPECTATOR);
+        finishedPlayers.add(player.getUniqueId());
+
+    }
+
+    private void spawnPowerups() {
+        for (Location location : Constants.CART_RACING_POWERUP_LOCATIONS) {
+            assert location.getWorld() != null;
+            if (!crystalLocations.contains(location)) {
+                crystalLocations.add(location);
+                EnderCrystal crystal = (EnderCrystal) location.getWorld().spawnEntity(location.clone().add(0,.5,0), EntityType.ENDER_CRYSTAL, false);
+                crystal.setShowingBottom(false);
+                gameObjectUUIDs.add(crystal.getUniqueId());
+                Trigger t = new Trigger(new BoundingBox(location.getX()-1, location.getY()-1, location.getZ()-1, location.getX()+1, location.getY()+1, location.getZ()+1), location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                    powerupCollected(p);
+                    crystal.remove();
+                    crystalLocations.remove(location);
+                }, 1000, true, true);
+                Trigger.register(t);
+
+            }
+        }
+    }
+
+    @Override
+    public Game getGame() {
+        return Game.CART_RACING;
+    }
+
+    private void powerupCollected(Player player) {
+        player.getInventory().clear();
+        switch (ThreadLocalRandom.current().nextInt(0,4)) {
+            case 0 -> scoreManager.increaseScore(player, Constants.CART_RACING_CRATE, "You found an emerald crate!", true);
+            case 1 -> {
+                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Toxic Slime", "", ChatColor.YELLOW + "Right click to place a slime behind you", ChatColor.YELLOW + "that slows down players who hit it!");
+                player.sendTitle(" ", ChatColor.GREEN + "Toxic Slime " + ChatColor.GRAY + "[Press Drop Key to use]", 5,40,5);
+                Utilities.giveAurumItem(player, "m_racing_slime");
+            }
+            case 2 -> {
+                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Dernic Dash", "", ChatColor.YELLOW + "Right click to get a powerful boost", ChatColor.YELLOW + "to you cart!");
+                player.sendTitle(" ", ChatColor.AQUA + "Dernic Dash " + ChatColor.GRAY + "[Press Drop Key to use]", 5,40,5);
+                Utilities.giveAurumItem(player, "m_racing_dash");
+            }
+            case 3 -> {
+                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Eldritch Blast", "", ChatColor.YELLOW + "Right click to slow down all players", ChatColor.YELLOW + "near you!");
+                player.sendTitle(" ", ChatColor.GOLD + "Eldritch Blast " + ChatColor.GRAY + "[Press Drop Key to use]", 5,40,5);
+                Utilities.giveAurumItem(player, "m_racing_blast");
+            }
+        }
+    }
+
+
+    public void abilityUsed(Player player, Material material) {
+        player.getInventory().clear();
+        if (material == Material.SLIME_BALL) {
+            Entity v = player.getVehicle();
+            if (v != null) {
+                Slime slime = (Slime) player.getWorld().spawnEntity(v.getLocation().clone().add(v.getLocation().getDirection().multiply(-5)), EntityType.SLIME, false);
+                slime.addScoreboardTag("m_racing_slime");
+                slime.setInvulnerable(true);
+                slime.setRemoveWhenFarAway(false);
+                slime.setAI(false);
+                slime.setSize(2);
+                gameObjectUUIDs.add(slime.getUniqueId());
+                player.playSound(player, Sound.BLOCK_SLIME_BLOCK_BREAK, 1,1);
+            }
+
+        } else if (material == Material.BLAZE_POWDER) {
+            Entity casterVehicle = player.getVehicle();
+            if (casterVehicle != null) {
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 100, 6, 2, 6, 0);
+                for (Entity e : player.getWorld().getNearbyEntities(player.getLocation(), 10, 10, 10)) {
+                    if (e instanceof Player p) {
+                        Entity v = p.getVehicle();
+                        if (v != null && !(v.getUniqueId().equals(casterVehicle.getUniqueId()))) {
+                            v.setVelocity(new Vector(0, 0, 0));
+                        }
+                    }
+                }
+            }
+        } else if (material == Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE) {
+            Entity e = player.getVehicle();
+            if (e != null) {
+                e.setVelocity(e.getLocation().getDirection().multiply(5));
+                player.playSound(player, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
+            }
+        }
+    }
+
+    public void boatCollide(VehicleEntityCollisionEvent event) {
+        if (event.getEntity() instanceof Slime s) {
+            if (s.getScoreboardTags().contains("m_racing_slime")) {
+                event.getVehicle().setVelocity(new Vector(0,0,0));
+                s.getWorld().playSound(s.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 1,1);
+                gameObjectUUIDs.remove(s.getUniqueId());
+                s.remove();
+            }
+        }
+    }
+
+    public void boatExit(VehicleExitEvent event) {
+        if (event.getExited() instanceof Player p) {
+            if (currentLap.getOrDefault(p.getUniqueId(), 0) < 5) {
+                if (p.getGameMode() == GameMode.ADVENTURE) {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+
+
+    private Boat buildCart() {
+        assert Constants.CART_RACING_START_LOCATION.getWorld() != null;
+        Boat cart = (Boat) Constants.CART_RACING_START_LOCATION.getWorld().spawnEntity(Constants.CART_RACING_START_LOCATION, EntityType.BOAT, false);
+        cart.setBoatType(Boat.Type.SPRUCE);
+        cart.setInvulnerable(true);
+
+        ArmorStand armorStand = (ArmorStand) Constants.CART_RACING_START_LOCATION.getWorld().spawnEntity(Constants.CART_RACING_START_LOCATION, EntityType.ARMOR_STAND, false);
+        armorStand.setArms(true);
+        armorStand.setBasePlate(false);
+        armorStand.setLeftArmPose(new EulerAngle(284, 0, -10));
+        armorStand.setRightArmPose(new EulerAngle(287,0,10));
+        armorStand.setLeftLegPose(new EulerAngle(272, 342,0));
+        armorStand.setRightLegPose(new EulerAngle(273, 19, 1));
+        armorStand.setInvulnerable(true);
+        assert armorStand.getEquipment() != null;
+        armorStand.getEquipment().setHelmet(getHead());
+        armorStand.getEquipment().setChestplate(getArmor(Material.LEATHER_CHESTPLATE));
+        armorStand.getEquipment().setLeggings(getArmor(Material.LEATHER_LEGGINGS));
+        armorStand.getEquipment().setBoots(getArmor(Material.LEATHER_BOOTS));
+        armorStand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        armorStand.addEquipmentLock(EquipmentSlot.CHEST, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        armorStand.addEquipmentLock(EquipmentSlot.LEGS, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        armorStand.addEquipmentLock(EquipmentSlot.FEET, ArmorStand.LockType.REMOVING_OR_CHANGING);
+        armorStand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.ADDING_OR_CHANGING);
+        armorStand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.ADDING_OR_CHANGING);
+
+        cart.addPassenger(armorStand);
+        return cart;
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    private ItemStack getHead() {
+        ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+        assert meta != null;
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "");
+        gameProfile.getProperties().put("textures", new Property("textures", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ZkNjRmZDAxZWFlNGIxMjZmOWZhZTU4NjgwNDE5MmM0MmRhOGE3ZTNjYmEwOGExOGVhMmM0MGQwYTNkNDk3ZSJ9fX0="));
+        Field profileField;
+        try {
+            profileField = meta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(meta, gameProfile);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+    private ItemStack getArmor(Material material) {
+        ItemStack itemStack = new ItemStack(material);
+        LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
+        assert meta != null;
+        meta.setColor(Color.fromARGB(1,32, 72, 60));
+        itemStack.setItemMeta(meta);
+        return itemStack;
+    }
+
+    @Override
+    public void end() {
+        Trigger.unregisterAll();
+        Utilities.registerLobbyTrigger();
+        for (UUID uuid : gameObjectUUIDs) {
+            Entity e = Bukkit.getEntity(uuid);
+            if (e != null) e.remove();
+        }
+        for (Player player : ParticipantManager.getParticipants()) {
+            Entity vehicle = player.getVehicle();
+            if (vehicle != null) {
+                for (Entity e : vehicle.getPassengers()) {
+                    if (!(e instanceof Player)) {
+                        e.remove();
+                    }
+                }
+                vehicle.removePassenger(player);
+                vehicle.remove();
+            }
+            player.setGameMode(GameMode.SPECTATOR);
+        }
+
+        super.end();
+    }
+}

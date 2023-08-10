@@ -128,6 +128,7 @@ public class NesaakFight extends Minigame {
         player.getInventory().remove(Material.SNOWBALL);
         player.getInventory().addItem(new ItemStack(Material.SNOWBALL, 12));
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100, true, false, true)), 1L);
+        player.setBedSpawnLocation(getRandomSpawn(), true);
     }
 
     /**
@@ -137,7 +138,9 @@ public class NesaakFight extends Minigame {
      */
     public void playerHit(Player player, Player attacker) {
         if (player.getHealth() <= 2) {
-            killAchieved(attacker, player.getName());
+            if (player.getNoDamageTicks() == 0) {
+                killAchieved(attacker, player.getName());
+            }
         }
         player.damage(2);
     }
@@ -149,6 +152,7 @@ public class NesaakFight extends Minigame {
      */
     public void killAchieved(Player player, String victimName) {
         scoreManager.increaseScore(player, 1, false);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1,100));
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1,1);
         player.sendMessage(ChatMessageFactory.pointsGainedInfo("You killed " + victimName, 1, "kill"));
         Bukkit.broadcastMessage(ChatColor.GOLD + String.format(deathMessages[ThreadLocalRandom.current().nextInt(0, deathMessages.length)], victimName, player.getName()));
@@ -232,35 +236,36 @@ public class NesaakFight extends Minigame {
         armorStand.setCustomNameVisible(true);
         registeredPowerups.add(armorStand.getUniqueId());
         assert armorStand.getEquipment() != null;
-        switch (ThreadLocalRandom.current().nextInt(0,4)) {
+        Random r = new Random();
+        switch (r.nextInt(0,4)) {
             case 0 -> {
                 armorStand.setCustomName(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + ">> " + ChatColor.AQUA + ChatColor.BOLD + "Heal" + ChatColor.DARK_AQUA + ChatColor.BOLD + " <<");
                 armorStand.getEquipment().setHelmet(new ItemStack(Material.RED_GLAZED_TERRACOTTA));
-                new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                Trigger.register(new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
                     p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1,100));
                     Entity e = Bukkit.getEntity(armorStand.getUniqueId());
                     if (e != null) {
                         e.remove();
                     }
-                }, 1000, true, true);
+                }, 1000, true, true));
             }
             case 1 -> {
                 armorStand.setCustomName(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + ">> " + ChatColor.AQUA + ChatColor.BOLD + "Speed" + ChatColor.DARK_AQUA + ChatColor.BOLD + " <<");
                 armorStand.getEquipment().setHelmet(new ItemStack(Material.ICE));
-                new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                Trigger.register(new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
                     p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200,1));
                     Entity e = Bukkit.getEntity(armorStand.getUniqueId());
                     if (e != null) {
                         e.remove();
                     }
-                }, 1000, true, true);
+                }, 1000, true, true));
             }
             case 2 -> {
                 armorStand.setCustomName(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + ">> " + ChatColor.AQUA + ChatColor.BOLD + "Multishot" + ChatColor.DARK_AQUA + ChatColor.BOLD + " <<");
                 armorStand.getEquipment().setHelmet(new ItemStack(Material.TARGET));
-                new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                Trigger.register(new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     if (multishoters.containsKey(p.getUniqueId())) {
                         Bukkit.getScheduler().cancelTask(multishoters.get(p.getUniqueId()));
                     }
@@ -275,12 +280,12 @@ public class NesaakFight extends Minigame {
                     if (e != null) {
                         e.remove();
                     }
-                }, 1000, true, true);
+                }, 1000, true, true));
             }
             case 3 -> {
                 armorStand.setCustomName(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + ">> " + ChatColor.AQUA + ChatColor.BOLD + "Gathering Boost" + ChatColor.DARK_AQUA + ChatColor.BOLD + " <<");
                 armorStand.getEquipment().setHelmet(new ItemStack(Material.BARREL));
-                new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                Trigger.register(new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     if (betterGatherers.containsKey(p.getUniqueId())) {
                         Bukkit.getScheduler().cancelTask(betterGatherers.get(p.getUniqueId()));
                     }
@@ -295,7 +300,7 @@ public class NesaakFight extends Minigame {
                     if (e != null) {
                         e.remove();
                     }
-                }, 1000, true, true);
+                }, 1000, true, true));
             }
         }
 
@@ -327,7 +332,7 @@ public class NesaakFight extends Minigame {
             sb2.setShooter(player);
             sb2.setVelocity(snowball.getVelocity().rotateAroundY(Math.toRadians(-5)));
         }
-        player.setCooldown(Material.SNOWBALL, 10);
+        player.setCooldown(Material.SNOWBALL, 5);
     }
 
     /**
@@ -341,7 +346,7 @@ public class NesaakFight extends Minigame {
         assert loc.getWorld() != null;
         loc.add(loc.getX() > 0 ? -.5 : .5, 0, loc.getX() > 0 ? -.5 : .5);
         if (player.hasCooldown(Material.NETHERITE_SHOVEL)) {
-            player.sendMessage(ChatMessageFactory.singleLineInfo("Your shovel is still on cooldown!"));
+            ChatMessageFactory.sendActionbarMessage(player,net.md_5.bungee.api.ChatColor.YELLOW + " Your shovel is still on cooldown!");
             return;
         }
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 100, false, false, false));
@@ -370,6 +375,8 @@ public class NesaakFight extends Minigame {
             p.setGameMode(GameMode.SPECTATOR);
             p.getInventory().clear();
         }
+        Trigger.unregisterAll();
+        Utilities.registerLobbyTrigger();
         for (UUID uuid : registeredPowerups) {
             Entity e = Bukkit.getEntity(uuid);
             if (e != null) {

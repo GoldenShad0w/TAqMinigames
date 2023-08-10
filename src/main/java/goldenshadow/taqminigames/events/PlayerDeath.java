@@ -2,6 +2,8 @@ package goldenshadow.taqminigames.events;
 
 
 import goldenshadow.taqminigames.TAqMinigames;
+import goldenshadow.taqminigames.minigames.AvosRace;
+import goldenshadow.taqminigames.minigames.ExcavationSiteE;
 import goldenshadow.taqminigames.minigames.NesaakFight;
 import goldenshadow.taqminigames.minigames.ProffersPit;
 import org.bukkit.event.EventHandler;
@@ -18,6 +20,12 @@ public class PlayerDeath implements Listener {
             }
             if (TAqMinigames.minigame instanceof ProffersPit pit) {
                 pit.onDeath(event.getEntity());
+            }
+            if (TAqMinigames.minigame instanceof ExcavationSiteE e) {
+                e.onDeath(event.getEntity());
+            }
+            if (TAqMinigames.minigame instanceof AvosRace r) {
+                r.onDeath(event.getEntity());
             }
         }
     }

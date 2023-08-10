@@ -1,6 +1,6 @@
 package goldenshadow.taqminigames.event;
 
-import fr.mrmicky.fastboard.FastBoard;
+import goldenshadow.taqminigames.fastboard.FastBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

@@ -94,7 +94,7 @@ public class AuraAndVolley extends Minigame{
                 activeAttacks.add(new Volley(Constants.AURA_MAP_LOCATIONS[0]));
             }
             case 20 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("There are three rounds. During each round, the attacks will slowly get faster and your jump height will decrease", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You gain " + (Constants.AURA_SURVIVE * ScoreManager.getScoreMultiplier()) + " Emeralds every time someone dies", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You gain " + ((int) (Constants.AURA_SURVIVE * ScoreManager.getScoreMultiplier())) + " Emeralds every time someone dies", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
                 initRound();
                 for (Player player : ParticipantManager.getAll()) {
@@ -239,6 +239,8 @@ public class AuraAndVolley extends Minigame{
         if (alivePlayers.size() <= 1) {
             if (alivePlayers.size() == 1) {
                 scoreManager.increaseScore(alivePlayers.get(0), Constants.AURA_WIN, "You are the last person alive!", true);
+                ChatMessageFactory.sendInfoBlockToAll(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Winner of this round:", ChatColor.YELLOW + player.getName());
+
             }
             if (gameState == GameState.RUNNING) {
                 timer.runTaskEarly();

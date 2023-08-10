@@ -3,7 +3,7 @@ version: '${project.version}'
 authors: [ _GoldenShadow ]
 description: Plugin used for TAq Minigames
 main: goldenshadow.taqminigames.TAqMinigames
-api-version: 1.19
+api-version: 1.20
 commands:
   minigames:
     description: An all round admin command used for TAq Minigames

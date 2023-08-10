@@ -8,7 +8,7 @@ public class DoubleXP extends ProfEvent {
     private final String mat;
 
     public DoubleXP(String materialName) {
-        super("A profession XP bomb has been thrown! Mining " + materialName + " will yield 3x as much XP for the next 2 minutes!");
+        super("A profession XP bomb has been thrown! Mining " + materialName + " will yield 3x as much XP for the next 2 minutes!", null);
         mat = materialName;
     }
 

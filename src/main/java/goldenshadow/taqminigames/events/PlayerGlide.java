@@ -4,6 +4,7 @@ package goldenshadow.taqminigames.events;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.minigames.AvosRace;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,9 +17,11 @@ public class PlayerGlide implements Listener {
         if (TAqMinigames.minigame != null) {
             if (TAqMinigames.minigame instanceof AvosRace) {
                 if (event.getEntity() instanceof Player player) {
-                    if (!event.isGliding()) {
-                        if (((AvosRace) TAqMinigames.minigame).isHotFloor(player)) {
-                            TAqMinigames.minigame.onDeath(player);
+                    if (Bukkit.getOnlinePlayers().contains(player)) {
+                        if (!event.isGliding()) {
+                            if (((AvosRace) TAqMinigames.minigame).isHotFloor(player)) {
+                                player.setHealth(0);
+                            }
                         }
                     }
                 }

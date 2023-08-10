@@ -54,7 +54,7 @@ public class ProffersPit extends Minigame {
         for (Player player : ParticipantManager.getParticipants()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));
             player.setBedSpawnLocation(Constants.PROF_START_LOCATION, true);
-            player.setLevel(100);
+            player.setLevel(105);
             highestMined.put(player.getUniqueId(), 0);
         }
         ParticipantManager.teleportAllPlayers(Constants.PROF_TUTORIAL_LOCATION);
@@ -109,41 +109,43 @@ public class ProffersPit extends Minigame {
                 }
                 gameState = GameState.RUNNING;
             }
-            case 150 -> {
+            case 100 -> {
                 if (gameState == GameState.RUNNING) {
-                    currentEvents.add(new GasLeak());
-                    /*
-                    switch (ThreadLocalRandom.current().nextInt(0,3)) {
-                        case 0 -> currentEvents.add(new GasLeak());
-                        case 1 -> currentEvents.add(new MobTotem());
-                        case 2 -> {
-                            switch (ThreadLocalRandom.current().nextInt(0,5)) {
-                                case 0 -> {
+
+                    int i = ThreadLocalRandom.current().nextInt(0, Constants.PROF_EVENT_LOCATIONS.length);
+                    EventLocation eventLocation = Constants.PROF_EVENT_LOCATIONS[i];
+                    switch (eventLocation.eventType()) {
+                        case GAS -> currentEvents.add(new GasLeak(eventLocation));
+                        case TOTEM -> currentEvents.add(new MobTotem(eventLocation));
+                        case EARTHQUAKE -> currentEvents.add(new Earthquake(eventLocation));
+                        case XP -> {
+                            switch (eventLocation.area()) {
+                                case COPPER -> {
                                     currentEvents.add(new DoubleXP("Copper"));
                                     xpBombMaterials.add(Material.RAW_COPPER_BLOCK);
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> xpBombMaterials.remove(Material.RAW_COPPER_BLOCK), 2399L);
                                 }
-                                case 1 -> {
+                                case IRON -> {
                                     currentEvents.add(new DoubleXP("Iron"));
                                     xpBombMaterials.add(Material.RAW_IRON_BLOCK);
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> xpBombMaterials.remove(Material.RAW_IRON_BLOCK), 2399L);
                                 }
-                                case 2 -> {
+                                case GOLD -> {
                                     currentEvents.add(new DoubleXP("Gold"));
                                     xpBombMaterials.add(Material.RAW_GOLD_BLOCK);
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> xpBombMaterials.remove(Material.RAW_GOLD_BLOCK), 2399L);
                                 }
-                                case 3 -> {
+                                case COBALT -> {
                                     currentEvents.add(new DoubleXP("Cobalt"));
                                     xpBombMaterials.add(Material.LAPIS_ORE);
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> xpBombMaterials.remove(Material.LAPIS_ORE), 2399L);
                                 }
-                                case 4 -> {
+                                case DIAMOND -> {
                                     currentEvents.add(new DoubleXP("Diamond"));
                                     xpBombMaterials.add(Material.DIAMOND_ORE);
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> xpBombMaterials.remove(Material.DIAMOND_ORE), 2399L);
                                 }
-                                case 5 -> {
+                                case MOLTEN -> {
                                     currentEvents.add(new DoubleXP("Molten"));
                                     xpBombMaterials.add(Material.DEEPSLATE_REDSTONE_ORE);
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> xpBombMaterials.remove(Material.DEEPSLATE_REDSTONE_ORE), 2399L);
@@ -151,11 +153,10 @@ public class ProffersPit extends Minigame {
                             }
                         }
                     }
-                    */
                 }
             }
         }
-        if (tick > 150) {
+        if (tick > 100) {
             tick = 30;
         }
         if (gameState == GameState.RUNNING) {
@@ -172,10 +173,11 @@ public class ProffersPit extends Minigame {
 
     @Override
     public void onDeath(Player player) {
-        scoreManager.increaseScore(player, -200,false);
-        player.sendMessage(ChatColor.DARK_RED + "[-200 Prof XP] " + ChatColor.RED + "You died!");
+        int amount = (int) (scoreManager.getScore(player.getUniqueId()) * 0.1);
+        scoreManager.increaseScore(player, amount * -1,false);
+        player.sendMessage(ChatColor.DARK_RED + "[-" + amount + " Prof XP] " + ChatColor.RED + "You died!");
         huntedPlayers.remove(player.getUniqueId());
-        player.setGlowing(false);
+        player.removePotionEffect(PotionEffectType.GLOWING);
         huntedColorTeam.removeEntry(player.getName());
         player.setWorldBorder(null);
     }
@@ -202,8 +204,7 @@ public class ProffersPit extends Minigame {
             if (huntedPlayers.contains(player.getUniqueId())) {
                 huntedPlayers.remove(player.getUniqueId());
                 player.playSound(player, Sound.ENTITY_RAVAGER_STUNNED, 1, 1);
-                player.setGlowing(false);
-                huntedColorTeam.removeEntry(player.getName());
+                player.removePotionEffect(PotionEffectType.GLOWING);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100, false, false, false));
                 player.setWorldBorder(null);
                 player.sendMessage(ChatMessageFactory.singleLineInfo("You have exited out of hunted mode!"));
@@ -211,7 +212,7 @@ public class ProffersPit extends Minigame {
                 huntedPlayers.add(player.getUniqueId());
                 player.playSound(player, Sound.ENTITY_RAVAGER_ROAR, 1, 1);
                 huntedColorTeam.addEntry(player.getName());
-                player.setGlowing(true);
+                player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 0, false, false, false));
                 player.setWorldBorder(TAqMinigames.getPlugin().getServer().createWorldBorder());
                 assert player.getWorldBorder() != null;
                 player.getWorldBorder().setWarningDistance(Integer.MAX_VALUE);
@@ -226,7 +227,7 @@ public class ProffersPit extends Minigame {
         double multiplier = 1;
 
         switch (block.getType()) {
-            case RAW_COPPER_BLOCK -> amount = xpBombMaterials.contains(block.getType()) ? 2 : 1;
+            case RAW_COPPER_BLOCK -> amount = 1;
             case RAW_IRON_BLOCK -> {
                 amount = 2;
                 if (!(highestMined.containsKey(player.getUniqueId()) && highestMined.get(player.getUniqueId()) > 1)) {
@@ -239,7 +240,7 @@ public class ProffersPit extends Minigame {
                     highestMined.put(player.getUniqueId(), 2);
                 }
             }
-            case LAPIS_ORE -> {
+            case DEEPSLATE_LAPIS_ORE -> {
                 amount = 8;
                 if (!(highestMined.containsKey(player.getUniqueId()) && highestMined.get(player.getUniqueId()) > 3)) {
                     highestMined.put(player.getUniqueId(), 3);
@@ -262,9 +263,8 @@ public class ProffersPit extends Minigame {
         if (xpBombMaterials.contains(block.getType())) multiplier += 2;
         if (huntedPlayers.contains(player.getUniqueId())) multiplier += .5;
 
-        amount *= multiplier;
-
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(net.md_5.bungee.api.ChatColor.YELLOW + "+" + amount + " Prof XP" + (multiplier > 1 ? net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + " [" + multiplier + "x]" : "")));
+        amount = (int) (amount * multiplier);
+        ChatMessageFactory.sendActionbarMessage(player, net.md_5.bungee.api.ChatColor.YELLOW + "+" + amount + " Prof XP" + (multiplier > 1 ? net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + " [" + multiplier + "x]" : ""));
         scoreManager.increaseScore(player, amount, false);
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1,1);
         Material type = block.getType();
@@ -296,6 +296,10 @@ public class ProffersPit extends Minigame {
         }
     }
 
+    public boolean isValidPlayerAttack(Player player) {
+        return huntedPlayers.contains(player.getUniqueId());
+    }
+
     @Override
     public Game getGame() {
         return Game.PROFFERS_PIT;
@@ -307,9 +311,11 @@ public class ProffersPit extends Minigame {
         for (Player p : ParticipantManager.getParticipants()) {
             p.setLevel(0);
             p.getInventory().clear();
+            p.getActivePotionEffects().clear();
             p.setGameMode(GameMode.SPECTATOR);
             p.setWorldBorder(null);
             huntedColorTeam.removeEntry(p.getName());
+
         }
         Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, false);
         Constants.WORLD.setGameRule(GameRule.FIRE_DAMAGE, false);

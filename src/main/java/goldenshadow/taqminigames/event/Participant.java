@@ -38,6 +38,10 @@ public class Participant {
         return Bukkit.getPlayer(uuid);
     }
 
+    public UUID getPlayerUUID() {
+        return uuid;
+    }
+
     /**
      * A getter for whether the player is playing or spectating
      * @return True if they are playing, false otherwise

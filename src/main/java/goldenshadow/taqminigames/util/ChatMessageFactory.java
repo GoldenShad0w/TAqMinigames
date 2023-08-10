@@ -1,6 +1,8 @@
 package goldenshadow.taqminigames.util;
 
 import goldenshadow.taqminigames.enums.DefaultFontInfo;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -96,6 +98,8 @@ public class ChatMessageFactory {
         player.sendMessage(sb + message);
     }
 
-
+    public static void sendActionbarMessage(Player player, String message) {
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
+    }
 
 }

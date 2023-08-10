@@ -2,9 +2,13 @@ package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.event.ParticipantManager;
+import goldenshadow.taqminigames.minigames.AledarCartRacing;
 import goldenshadow.taqminigames.minigames.NesaakFight;
 import goldenshadow.taqminigames.minigames.ProffersPit;
+import goldenshadow.taqminigames.util.ChatMessageFactory;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -20,7 +24,7 @@ public class PlayerInteract implements Listener {
                 if (event.hasBlock()) {
                     if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                         if (event.getClickedBlock() != null) {
-                            if (event.getClickedBlock().getType() == Material.SNOW_BLOCK) {
+                            if (event.getClickedBlock().getType() == Material.SNOW_BLOCK || event.getClickedBlock().getType() == Material.SNOW) {
                                 if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.NETHERITE_SHOVEL) {
                                     if (event.getHand() == EquipmentSlot.HAND) {
                                         game.snowClicked(event.getPlayer(), event.getClickedBlock());
@@ -36,7 +40,13 @@ public class PlayerInteract implements Listener {
                     if (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.FIRE_CHARGE) {
                         if (event.getHand() == EquipmentSlot.HAND) {
                             if (ParticipantManager.getParticipants().contains(event.getPlayer())) {
-                                game.huntedToggled(event.getPlayer());
+                                for (Entity e : event.getPlayer().getWorld().getNearbyEntities(event.getPlayer().getLocation(), 3,2,3)) {
+                                    if (e.getScoreboardTags().contains("m_prof_shop")) {
+                                        game.huntedToggled(event.getPlayer());
+                                        return;
+                                    }
+                                }
+                                event.getPlayer().sendMessage(ChatMessageFactory.singleLineInfo("You need to be closer to a tool merchant to toggle hunted mode!"));
                             }
                         }
                     }

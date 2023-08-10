@@ -67,7 +67,7 @@ public class Utilities {
         StringBuilder currentSegment = new StringBuilder();
 
         for (String word : words) {
-            if (currentSegment.length() == 0) {
+            if (currentSegment.isEmpty()) {
                 currentSegment.append(word.trim());
             } else if (currentSegment.length() + 1 + word.trim().length() <= maxChars) {
                 currentSegment.append(" ").append(word.trim());
@@ -93,21 +93,6 @@ public class Utilities {
             l.add(color + s);
         }
         return l;
-    }
-
-    /**
-     * Used to check if a location is within the given bounding box
-     * @param boundingBox The bounding box
-     * @param location The location
-     * @return True if the world matches the WORLD_NAME and the location is within the bounding box, otherwise false
-     */
-    public static boolean isInBoundingBox(BoundingBox boundingBox, Location location) {
-        if (location.getWorld() != null) {
-            if (location.getWorld().toString().equals(Constants.WORLD_NAME)) {
-                return boundingBox.contains(location.toVector());
-            }
-        }
-        return false;
     }
 
     /**
@@ -148,15 +133,15 @@ public class Utilities {
      * @param seconds The seconds that should be converted
      * @return That amount in milliseconds
      */
-    public static long secondsToMillis(int seconds) {
-        return seconds * 1000L;
+    public static long secondsToMillis(double seconds) {
+        return (long) (seconds * 1000L);
     }
 
     /**
      * Used to register that trigger in the lobby which teleports falling players back onto the island
      */
     public static void registerLobbyTrigger() {
-        new Trigger(new BoundingBox(10, 33, 281, 193, 18, -8), Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.teleport(Constants.LOBBY), 0, false, false);
+        Trigger.register(new Trigger(new BoundingBox(10, 33, 281, 193, 18, -8), Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.teleport(Constants.LOBBY), 0, false, false));
     }
 
     public static void lockArmorStand(ArmorStand stand) {

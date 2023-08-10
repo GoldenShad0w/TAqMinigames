@@ -2,9 +2,7 @@ package goldenshadow.taqminigames.event;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
-import goldenshadow.taqminigames.minigames.AuraAndVolley;
-import goldenshadow.taqminigames.minigames.AvosRace;
-import goldenshadow.taqminigames.minigames.NesaakFight;
+import goldenshadow.taqminigames.minigames.*;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Utilities;
@@ -189,14 +187,15 @@ public class GameSelection {
             }
             case 40 -> {
                 Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Teleporting..."));
-                Bukkit.broadcastMessage(ChatColor.RED + "Minigames are not implemented yet :steamhappy:");
                 TAqMinigames.possibleGames.remove(actualNextgame);
                 switch (actualNextgame) {
                     case AURA_AND_VOLLEY -> TAqMinigames.minigame = new AuraAndVolley();
                     case AVOS_RACE -> TAqMinigames.minigame = new AvosRace();
                     case NESAAK_SNOWBALL_FIGHT -> TAqMinigames.minigame = new NesaakFight();
+                    case PROFFERS_PIT -> TAqMinigames.minigame = new ProffersPit();
+                    case EXCAVATION -> TAqMinigames.minigame = new ExcavationSiteE();
+                    case CART_RACING -> TAqMinigames.minigame = new AledarCartRacing();
                 }
-                //TODO make this start the correct minigame once they are implemented
             }
         }
         tick++;

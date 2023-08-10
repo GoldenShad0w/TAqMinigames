@@ -19,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.util.*;
 
@@ -58,10 +60,10 @@ public final class TAqMinigames extends JavaPlugin {
             isRunning = true;
             gameSelection = null;
             totalScoreManager = new ScoreManager("Emeralds", true);
+            ScoreManager.updateLobbyLeaderboard(totalScoreManager.getSortedDisplayList(ChatColor.AQUA, ChatColor.GREEN));
             for (Player p : Bukkit.getOnlinePlayers()) {
                 ParticipantManager.addParticipant(p, p.getGameMode() == GameMode.ADVENTURE);
                 p.sendTitle(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "Welcome", ChatColor.AQUA + String.valueOf(ChatColor.BOLD) + "To TAq Minigames", 20, 100,20);
-                //TODO: enable scoreboard for player
             }
             ScoreManager.calculateScores(ParticipantManager.getParticipants().size());
         }
@@ -75,6 +77,7 @@ public final class TAqMinigames extends JavaPlugin {
         Bukkit.getOnlinePlayers().forEach(ScoreboardWrapper::removeScoreboard);
         ParticipantManager.resetAll();
         possibleGames = new ArrayList<>(Arrays.asList(Game.values()));
+        ScoreManager.updateLobbyLeaderboard(new ArrayList<>());
 
     }
 
@@ -104,6 +107,10 @@ public final class TAqMinigames extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerBreakBlock(), plugin);
         Bukkit.getPluginManager().registerEvents(new InventoryClick(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerInteractWithEntity(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerItemConsume(), plugin);
+        Bukkit.getPluginManager().registerEvents(new VehicleExit(), plugin);
+        Bukkit.getPluginManager().registerEvents(new VehicleEntityCollision(), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerDropItem(), plugin);
     }
 
     public static TAqMinigames getPlugin() {

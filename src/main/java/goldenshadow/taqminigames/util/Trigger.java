@@ -1,5 +1,8 @@
 package goldenshadow.taqminigames.util;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
@@ -44,9 +47,6 @@ public class Trigger {
         this.isCooldownGlobal = isCooldownGlobal;
         this.removeIfTriggered = removeIfTriggered;
 
-        registeredTriggers.add(this);
-
-
     }
 
     /**
@@ -58,7 +58,17 @@ public class Trigger {
         while (it.hasNext()) {
             Trigger trigger = it.next();
             if (player.getWorld().equals(trigger.world)) {
-                if (trigger.boundingBox.contains(player.getBoundingBox())) {
+                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
+
+                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
+                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
+
+                if (trigger.boundingBox.overlaps(player.getBoundingBox())) {
                     if (trigger.predicate.test(player)) {
                         if (trigger.globalCooldown <= System.currentTimeMillis()) {
                             if (!trigger.cooldowns.containsKey(player.getUniqueId()) || trigger.cooldowns.get(player.getUniqueId()) <= System.currentTimeMillis()) {
@@ -75,6 +85,16 @@ public class Trigger {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Used to register a new trigger
+     * @param trigger The trigger to be registered
+     */
+    public static void register(Trigger trigger) {
+        if (!registeredTriggers.contains(trigger)) {
+            registeredTriggers.add(trigger);
         }
     }
 
@@ -99,5 +119,9 @@ public class Trigger {
      */
     public static void unregister(Trigger trigger) {
         registeredTriggers.remove(trigger);
+    }
+
+    public static String getTriggersForDebug() {
+        return String.valueOf(registeredTriggers.size());
     }
 }

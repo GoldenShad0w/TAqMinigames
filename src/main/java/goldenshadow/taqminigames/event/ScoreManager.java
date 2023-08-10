@@ -5,7 +5,9 @@ import goldenshadow.taqminigames.util.Constants;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,7 +82,7 @@ public class ScoreManager {
     public void increaseScore(Player player, int amount, String message, boolean withMultiplier) {
         hasChangeOccurred = true;
         if (withMultiplier) {
-            amount *= scoreMultiplier;
+            amount = (int) (amount * scoreMultiplier);
         }
         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1,1);
         UUID uuid = player.getUniqueId();
@@ -99,7 +101,7 @@ public class ScoreManager {
     public void increaseScore(Player player, int amount, boolean withMultiplier) {
         hasChangeOccurred = true;
         if (withMultiplier) {
-            amount *= scoreMultiplier;
+            amount = (int) (amount * scoreMultiplier);
         }
         UUID uuid = player.getUniqueId();
         if (scores.containsKey(uuid)) {
@@ -116,7 +118,7 @@ public class ScoreManager {
     public void increaseScore(UUID uuid, int amount, boolean withMultiplier) {
         hasChangeOccurred = true;
         if (withMultiplier) {
-            amount *= scoreMultiplier;
+            amount = (int) (amount * scoreMultiplier);
         }
         if (scores.containsKey(uuid)) {
             scores.put(uuid, Math.max(scores.get(uuid) + amount, 0));
@@ -206,14 +208,14 @@ public class ScoreManager {
         }
         int placement = getPlacement(player);
         String[] array = new String[4];
-        array[0] = sortedDisplayList.size() > 0 ? sortedDisplayList.get(0) : "1." + nameColor + " ---";
+        array[0] = !sortedDisplayList.isEmpty() ? sortedDisplayList.get(0) : "1." + nameColor + " ---";
 
         if (placement == 0) {   //edge case: player is first place
             array[1] = sortedDisplayList.get(0);
             array[2] = sortedDisplayList.size() > 1 ? sortedDisplayList.get(1) : "2." + nameColor + " ---";
             array[3] = sortedDisplayList.size() > 2 ? sortedDisplayList.get(2) : "3." + nameColor + " ---";
         } else if (placement == -1) { //edge case: player is spectator
-            array[1] = sortedDisplayList.size() > 0 ? sortedDisplayList.get(0) : "1." + nameColor + " ---";
+            array[1] = !sortedDisplayList.isEmpty() ? sortedDisplayList.get(0) : "1." + nameColor + " ---";
             array[2] = sortedDisplayList.size() > 1 ? sortedDisplayList.get(1) : "2." + nameColor + " ---";
             array[3] = sortedDisplayList.size() > 2 ? sortedDisplayList.get(2) : "3." + nameColor + " ---";
         } else { //normal case: player is not first
@@ -222,5 +224,22 @@ public class ScoreManager {
             array[3] = sortedDisplayList.size() > (placement + 1) ? sortedDisplayList.get(placement + 1) : (placement + 2) + "." + nameColor + " ---";
         }
         return array;
+    }
+
+    public static void updateLobbyLeaderboard(List<String> sortedList) {
+        Entity e = Bukkit.getEntity(Constants.LOBBY_LEADERBOARD_UUID);
+        if (e != null) {
+            TextDisplay t = (TextDisplay) e;
+            StringBuilder text = new StringBuilder(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "LEADERBOARD\n" + ChatColor.RESET);
+            for (int i = 0; i < 10; i++) {
+                text.append("\n");
+                if (sortedList.size() > i) {
+                    text.append(sortedList.get(i));
+                } else {
+                    text.append(ChatColor.WHITE).append(i+1).append(". ").append(ChatColor.AQUA).append("---");
+                }
+            }
+            t.setText(text.toString());
+        }
     }
 }

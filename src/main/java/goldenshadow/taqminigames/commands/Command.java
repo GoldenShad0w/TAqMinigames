@@ -2,10 +2,7 @@ package goldenshadow.taqminigames.commands;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
-import goldenshadow.taqminigames.minigames.AuraAndVolley;
-import goldenshadow.taqminigames.minigames.AvosRace;
-import goldenshadow.taqminigames.minigames.NesaakFight;
-import goldenshadow.taqminigames.minigames.ProffersPit;
+import goldenshadow.taqminigames.minigames.*;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -70,6 +67,8 @@ public class Command implements CommandExecutor {
                                             case AVOS_RACE -> TAqMinigames.minigame = new AvosRace();
                                             case NESAAK_SNOWBALL_FIGHT -> TAqMinigames.minigame = new NesaakFight();
                                             case PROFFERS_PIT -> TAqMinigames.minigame = new ProffersPit();
+                                            case EXCAVATION -> TAqMinigames.minigame = new ExcavationSiteE();
+                                            case CART_RACING -> TAqMinigames.minigame = new AledarCartRacing();
                                         }
                                         return true;
                                     }

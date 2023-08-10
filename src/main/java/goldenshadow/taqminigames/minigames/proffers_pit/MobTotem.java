@@ -17,8 +17,8 @@ public class MobTotem extends ProfEvent {
 
     private final UUID totemUUID;
 
-    public MobTotem() {
-        super("Someone has placed a mob totem in the %s! Dangerous mobs will now spawn there!");
+    public MobTotem(EventLocation location) {
+        super("Someone has placed a mob totem in the %s! Dangerous mobs will now spawn there!", location);
         totemUUID = spawnTotem();
     }
 
@@ -32,15 +32,15 @@ public class MobTotem extends ProfEvent {
         if (tick > 60) {
             isDone = true;
             deleteTotem();
-            Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("The mob totem in the " + area + " has run out!"));
+            Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("The mob totem in the " + location.area().getName() + " has run out!"));
         }
         super.tick();
 
     }
 
     private UUID spawnTotem() {
-        assert location.getWorld() != null;
-        ArmorStand a = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND, false);
+        assert location.location().getWorld() != null;
+        ArmorStand a = (ArmorStand) location.location().getWorld().spawnEntity(location.location(), EntityType.ARMOR_STAND, false);
         assert a.getEquipment() != null;
         ItemStack i = new ItemStack(Material.STICK);
         ItemMeta meta = i.getItemMeta();
@@ -54,10 +54,10 @@ public class MobTotem extends ProfEvent {
     }
 
     private void spawnMob() {
-        assert location.getWorld() != null;
-        ZombieVillager mob = (ZombieVillager) location.getWorld().spawnEntity(location, EntityType.ZOMBIE_VILLAGER, false);
+        assert location.location().getWorld() != null;
+        ZombieVillager mob = (ZombieVillager) location.location().getWorld().spawnEntity(location.location(), EntityType.ZOMBIE_VILLAGER, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "aurum api spawn_mob " + location.getWorld().getName() + " " + location.getX() + " " + location.getY() + " " + location.getZ() + " " + Constants.PROF_MOB_NAME + " " + mob.getUniqueId());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "aurum api spawn_mob " + location.location().getWorld().getName() + " " + location.location().getX() + " " + location.location().getY() + " " + location.location().getZ() + " " + Constants.PROF_MOB_NAME + " " + mob.getUniqueId());
             mob.setVelocity(getRandomVelocityVector());
         }, 1L);
 

@@ -1,10 +1,12 @@
 package goldenshadow.taqminigames.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ParticipantManager {
 
@@ -15,7 +17,7 @@ public class ParticipantManager {
      * @param location The location that should be teleported to
      */
     public static void teleportAllPlayers(Location location) {
-        participantList.forEach(x -> x.getPlayer().teleport(location));
+        getAll().forEach(x -> x.teleport(location));
     }
 
     /**
@@ -34,7 +36,9 @@ public class ParticipantManager {
     public static List<Player> getParticipants() {
         List<Player> players = new ArrayList<>();
         for (Participant p : participantList) {
-            if (p.isPlaying()) players.add(p.getPlayer());
+            if (isOnline(p)) {
+                if (p.isPlaying()) players.add(p.getPlayer());
+            }
         }
         return players;
     }
@@ -46,7 +50,9 @@ public class ParticipantManager {
     public static List<Player> getAll() {
         List<Player> players = new ArrayList<>();
         for (Participant p : participantList) {
-            players.add(p.getPlayer());
+            if (isOnline(p)) {
+                players.add(p.getPlayer());
+            }
         }
         return players;
     }
@@ -56,6 +62,24 @@ public class ParticipantManager {
      */
     public static void resetAll() {
         participantList.clear();
+    }
+
+    /**
+     * Used to check if a player is online
+     * @param uuid The uuid of the player to be checked
+     * @return True if they are, otherwise false
+     */
+    public static boolean isOnline(UUID uuid) {
+        return Bukkit.getPlayer(uuid) != null;
+    }
+
+    /**
+     * Used to check if a participant is online
+     * @param p The participant
+     * @return Tue if they are, otherwise false
+     */
+    public static boolean isOnline(Participant p) {
+        return isOnline(p.getPlayerUUID());
     }
 
 }

@@ -23,6 +23,8 @@ import java.util.UUID;
  */
 public abstract class Minigame {
 
+
+
     protected int tick = 0;
     protected int fastTick = 0;
     protected GameState gameState;
@@ -103,7 +105,7 @@ public abstract class Minigame {
             TAqMinigames.minigame = null;
         }, 320L);
 
-
+        ScoreManager.updateLobbyLeaderboard(TAqMinigames.totalScoreManager.getSortedDisplayList(ChatColor.AQUA, ChatColor.GREEN));
     }
 
     /**
