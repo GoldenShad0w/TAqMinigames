@@ -49,7 +49,7 @@ public class ExcavationSiteE extends Minigame {
 
 
 
-        timer = new Timer(0, 29, () -> timer = new Timer(45,0, this::end));
+        timer = new Timer(0, 29, () -> timer = new Timer(44,59, this::end));
         for (Player player : ParticipantManager.getParticipants()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 500, 0, true, false, false));
             player.setBedSpawnLocation(Constants.EXCAVATION_START_LOC, true);
@@ -200,10 +200,18 @@ public class ExcavationSiteE extends Minigame {
 
     @Override
     public void playerReconnect(Player player) {
+        if (gameState != GameState.RUNNING) {
+            player.setGameMode(GameMode.SPECTATOR);
+        }
         player.setBedSpawnLocation(Constants.EXCAVATION_START_LOC, true);
         if (completedPlayers.contains(player.getUniqueId())) {
             player.setGameMode(GameMode.SPECTATOR);
         }
+    }
+
+    @Override
+    public void playerDisconnect(Player player) {
+
     }
 
     @Override
@@ -259,7 +267,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedCrystalMap.containsKey(player.getUniqueId())) {
                 list = collectedCrystalMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already collected this crystal!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected this crystal!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -279,7 +287,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedEmeraldMap.containsKey(player.getUniqueId())) {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already collected these emeralds!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -298,7 +306,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedEmeraldMap.containsKey(player.getUniqueId())) {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already collected these emeralds!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -317,7 +325,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedEmeraldMap.containsKey(player.getUniqueId())) {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already collected these emeralds!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -336,7 +344,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already picked up this sword!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this sword!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -357,7 +365,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already picked up this chestplate!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this chestplate!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -377,7 +385,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already picked up these boots!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up these boots!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -395,8 +403,7 @@ public class ExcavationSiteE extends Minigame {
         if (interaction.getScoreboardTags().contains("m_exca_totem")) {
 
             if (player.getInventory().contains(Material.TOTEM_OF_UNDYING)) {
-
-                player.sendMessage(ChatMessageFactory.singleLineInfo("You can only carry one ancient idol!"));
+                ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You can only carry one ancient idol!");
                 player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                 return;
 
@@ -414,7 +421,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already picked up this key!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -430,7 +437,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already picked up this key!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -446,7 +453,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already picked up this key!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -462,7 +469,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already picked up this key!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -478,7 +485,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already picked up this item!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this item!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }
@@ -499,7 +506,7 @@ public class ExcavationSiteE extends Minigame {
                         ItemMeta meta = i.getItemMeta();
                         assert meta != null;
                         if (meta.getDisplayName().contains("Speed Potion")) {
-                            player.sendMessage(ChatMessageFactory.singleLineInfo("You can only carry one speed potion!"));
+                            ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You can only carry one speed potion!");
                             player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                             return;
                         }
@@ -527,7 +534,7 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    player.sendMessage(ChatMessageFactory.singleLineInfo("You already received a blessing!"));
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already received a blessing!");
                     player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
                     return;
                 }

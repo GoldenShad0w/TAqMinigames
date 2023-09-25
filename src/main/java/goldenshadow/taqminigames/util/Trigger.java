@@ -1,8 +1,5 @@
 package goldenshadow.taqminigames.util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
@@ -27,6 +24,7 @@ public class Trigger {
     private long globalCooldown = 0;
     private final World world;
     private final boolean removeIfTriggered;
+    private final UUID uuid;
 
     /**
      * Used to create a new trigger. The new object will automatically be saved in a list
@@ -46,6 +44,7 @@ public class Trigger {
         this.cooldown = cooldown;
         this.isCooldownGlobal = isCooldownGlobal;
         this.removeIfTriggered = removeIfTriggered;
+        uuid = UUID.randomUUID();
 
     }
 
@@ -58,6 +57,7 @@ public class Trigger {
         while (it.hasNext()) {
             Trigger trigger = it.next();
             if (player.getWorld().equals(trigger.world)) {
+                /*
                 player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
                 player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
                 player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
@@ -68,6 +68,7 @@ public class Trigger {
                 player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
                 player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
 
+                 */
                 if (trigger.boundingBox.overlaps(player.getBoundingBox())) {
                     if (trigger.predicate.test(player)) {
                         if (trigger.globalCooldown <= System.currentTimeMillis()) {
@@ -99,6 +100,14 @@ public class Trigger {
     }
 
     /**
+     * Used to get the triggers uuid
+     * @return The UUID
+     */
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    /**
      * Used to delete all triggers
      */
     public static void unregisterAll() {
@@ -119,9 +128,5 @@ public class Trigger {
      */
     public static void unregister(Trigger trigger) {
         registeredTriggers.remove(trigger);
-    }
-
-    public static String getTriggersForDebug() {
-        return String.valueOf(registeredTriggers.size());
     }
 }

@@ -10,14 +10,14 @@ import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Timer;
 import goldenshadow.taqminigames.util.Utilities;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
@@ -50,7 +50,7 @@ public class ProffersPit extends Minigame {
         Constants.WORLD.setGameRule(GameRule.FREEZE_DAMAGE, true);
         Constants.WORLD.setGameRule(GameRule.DROWNING_DAMAGE, true);
 
-        timer = new Timer(0, 29, () -> timer = new Timer(20,0, this::end));
+        timer = new Timer(0, 29, () -> timer = new Timer(19,59, this::end));
         for (Player player : ParticipantManager.getParticipants()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));
             player.setBedSpawnLocation(Constants.PROF_START_LOCATION, true);
@@ -112,8 +112,13 @@ public class ProffersPit extends Minigame {
             case 100 -> {
                 if (gameState == GameState.RUNNING) {
 
-                    int i = ThreadLocalRandom.current().nextInt(0, Constants.PROF_EVENT_LOCATIONS.length);
+                    int i = getRelevantEventLocationIndex();
                     EventLocation eventLocation = Constants.PROF_EVENT_LOCATIONS[i];
+                    if (eventLocation.eventType() == EventLocation.EventType.XP) {
+                        if (doesXPBombExistAlready(eventLocation)) {
+                            eventLocation = Constants.PROF_EVENT_LOCATIONS[i-1];
+                        }
+                    }
                     switch (eventLocation.eventType()) {
                         case GAS -> currentEvents.add(new GasLeak(eventLocation));
                         case TOTEM -> currentEvents.add(new MobTotem(eventLocation));
@@ -174,6 +179,9 @@ public class ProffersPit extends Minigame {
     @Override
     public void onDeath(Player player) {
         int amount = (int) (scoreManager.getScore(player.getUniqueId()) * 0.1);
+        if (player.getKiller() != null) {
+            scoreManager.increaseScore(player.getKiller(), (int) (amount * 0.1), "You killed " + player.getName(), false);
+        }
         scoreManager.increaseScore(player, amount * -1,false);
         player.sendMessage(ChatColor.DARK_RED + "[-" + amount + " Prof XP] " + ChatColor.RED + "You died!");
         huntedPlayers.remove(player.getUniqueId());
@@ -184,11 +192,18 @@ public class ProffersPit extends Minigame {
 
     @Override
     public void playerReconnect(Player player) {
+        if (gameState != GameState.RUNNING) {
+            player.setGameMode(GameMode.SPECTATOR);
+        }
         player.setWorldBorder(null);
         huntedPlayers.remove(player.getUniqueId());
         huntedColorTeam.removeEntry(player.getName());
         player.setCooldown(Material.FIRE_CHARGE, 200);
+    }
 
+    @Override
+    public void playerDisconnect(Player player) {
+        huntedColorTeam.removeEntry(player.getName());
     }
 
     @Override
@@ -205,6 +220,7 @@ public class ProffersPit extends Minigame {
                 huntedPlayers.remove(player.getUniqueId());
                 player.playSound(player, Sound.ENTITY_RAVAGER_STUNNED, 1, 1);
                 player.removePotionEffect(PotionEffectType.GLOWING);
+                huntedColorTeam.removeEntry(player.getName());
                 player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100, false, false, false));
                 player.setWorldBorder(null);
                 player.sendMessage(ChatMessageFactory.singleLineInfo("You have exited out of hunted mode!"));
@@ -223,6 +239,7 @@ public class ProffersPit extends Minigame {
     }
 
     public void blockMined(Player player, Block block) {
+        if (player.getGameMode() != GameMode.ADVENTURE) return;
         int amount = 0;
         double multiplier = 1;
 
@@ -275,20 +292,23 @@ public class ProffersPit extends Minigame {
         if (gameState == GameState.RUNNING) {
             if (event.getEntity() instanceof Player p) {
                 if (event instanceof EntityDamageByEntityEvent damageByEntityEvent) {
-                    if (damageByEntityEvent.getDamager() instanceof Player attacker) {
-                        if (!(huntedPlayers.contains(attacker.getUniqueId()) && huntedPlayers.contains(p.getUniqueId()))) {
+                    if (damageByEntityEvent.getDamager() instanceof Player attacker && damageByEntityEvent.getEntity() instanceof Player) {
+                        if (isHunted(p) && isHunted(attacker)) {
+                            if (p.getCooldown(Material.FIRE_CHARGE) < 200) {
+                                p.setCooldown(Material.FIRE_CHARGE, 200);
+                            }
+                        } else {
+                            event.setCancelled(true);
                             return;
-                        }
-                        if (p.getCooldown(Material.FIRE_CHARGE) < 200) {
-                            p.setCooldown(Material.FIRE_CHARGE, 200);
                         }
                     }
                 }
                 if (ParticipantManager.getParticipants().contains(p)) {
-                    int damage = (int) Math.max(1, (event.getDamage() * (highestMined.getOrDefault(p.getUniqueId(), 1))));
-                    scoreManager.increaseScore(p, -damage,false);
-                    p.sendMessage(ChatColor.DARK_RED + "[-" + damage + " Prof XP] " + ChatColor.RED + "You took damage!");
-                    if (!huntedPlayers.contains(p.getUniqueId())) {
+                    int damage = (int) Math.max(1, event.getDamage());
+                    int amount = (int) Math.max(scoreManager.getScore(p.getUniqueId()) * ((double) damage/100), 1);
+                    scoreManager.increaseScore(p, amount * -1,false);
+                    p.sendMessage(ChatColor.DARK_RED + "[-" + amount + " Prof XP] " + ChatColor.RED + "You took damage!");
+                    if (!isHunted(p)) {
                         event.setDamage(0);
                     }
                 }
@@ -296,7 +316,9 @@ public class ProffersPit extends Minigame {
         }
     }
 
-    public boolean isValidPlayerAttack(Player player) {
+
+
+    public boolean isHunted(Player player) {
         return huntedPlayers.contains(player.getUniqueId());
     }
 
@@ -404,8 +426,9 @@ public class ProffersPit extends Minigame {
                     if (event.getCurrentItem().getType() == Material.IRON_PICKAXE) {
 
                         if (Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getCustomModelData() == 2) {
-                            if (score >= Constants.PROF_T2_PRICE) {
+                            if (score >= Constants.PROF_T2_PRICE && hasPickaxe(player, 1)) {
                                 scoreManager.increaseScore(player, -Constants.PROF_T2_PRICE, false);
+                                player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t2");
                                 player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
                             } else {
@@ -413,8 +436,9 @@ public class ProffersPit extends Minigame {
                             }
                         }
                         else if (Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getCustomModelData() == 3) {
-                            if (score >= Constants.PROF_T3_PRICE) {
+                            if (score >= Constants.PROF_T3_PRICE && hasPickaxe(player, 2)) {
                                 scoreManager.increaseScore(player, -Constants.PROF_T3_PRICE, false);
+                                player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t3");
                                 player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
                             } else {
@@ -422,8 +446,9 @@ public class ProffersPit extends Minigame {
                             }
                         }
                         else if (Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getCustomModelData() == 4) {
-                            if (score >= Constants.PROF_T4_PRICE) {
+                            if (score >= Constants.PROF_T4_PRICE && hasPickaxe(player, 3)) {
                                 scoreManager.increaseScore(player, -Constants.PROF_T4_PRICE, false);
+                                player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t4");
                                 player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
                             } else {
@@ -432,8 +457,9 @@ public class ProffersPit extends Minigame {
                         }
                     }
                     if (event.getCurrentItem().getType() == Material.DIAMOND_PICKAXE) {
-                        if (score >= Constants.PROF_T5_PRICE) {
+                        if (score >= Constants.PROF_T5_PRICE && hasPickaxe(player, 4)) {
                             scoreManager.increaseScore(player, -Constants.PROF_T5_PRICE, false);
+                            player.getInventory().remove(Material.IRON_PICKAXE);
                             Utilities.giveAurumItem(player, "m_prof_t5");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
                         } else {
@@ -442,8 +468,9 @@ public class ProffersPit extends Minigame {
                         return;
                     }
                     if (event.getCurrentItem().getType() == Material.NETHERITE_PICKAXE) {
-                        if (score >= Constants.PROF_T6_PRICE) {
+                        if (score >= Constants.PROF_T6_PRICE && hasPickaxe(player, 5)) {
                             scoreManager.increaseScore(player, -Constants.PROF_T6_PRICE, false);
+                            player.getInventory().remove(Material.DIAMOND_PICKAXE);
                             Utilities.giveAurumItem(player, "m_prof_t6");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
                         } else {
@@ -454,5 +481,60 @@ public class ProffersPit extends Minigame {
                 }
             }
         }
+    }
+
+    private boolean hasPickaxe(Player player, int tier) {
+
+        Material mat = tier < 5 ? Material.IRON_PICKAXE : tier < 6 ? Material.DIAMOND_PICKAXE : Material.NETHERITE_PICKAXE;
+
+        if (player.getInventory().contains(mat)) {
+            for (ItemStack i : player.getInventory().getContents()) {
+                if (i != null) {
+                    if (i.getType() == mat) {
+                        ItemMeta meta = i.getItemMeta();
+                        assert meta != null;
+                        if (meta.hasCustomModelData()) {
+                            return meta.getCustomModelData() == tier;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private int getRelevantEventLocationIndex() {
+        if (timer.getMinutesLeft() > 15) {
+            if (ThreadLocalRandom.current().nextInt(0, 3) == 0) {
+                return ThreadLocalRandom.current().nextInt(0, 11);
+            } else {
+                return ThreadLocalRandom.current().nextInt(0, 7);
+            }
+        } else if (timer.getMinutesLeft() > 10) {
+            if (ThreadLocalRandom.current().nextInt(0, 3) == 0) {
+                return ThreadLocalRandom.current().nextInt(3,15);
+            } else {
+                return ThreadLocalRandom.current().nextInt(7,17);
+            }
+        } else if (timer.getMinutesLeft() > 5) {
+            if (ThreadLocalRandom.current().nextInt(0, 3) == 0) {
+                return ThreadLocalRandom.current().nextInt(10, 18);
+            } else {
+                return ThreadLocalRandom.current().nextInt(12, 20);
+            }
+        } else {
+            return ThreadLocalRandom.current().nextInt(13, 20);
+        }
+    }
+
+    private boolean doesXPBombExistAlready(EventLocation location) {
+        return switch (location.area()) {
+            case COPPER -> xpBombMaterials.contains(Material.RAW_COPPER_BLOCK);
+            case IRON -> xpBombMaterials.contains(Material.RAW_IRON_BLOCK);
+            case GOLD -> xpBombMaterials.contains(Material.RAW_GOLD_BLOCK);
+            case COBALT -> xpBombMaterials.contains(Material.DEEPSLATE_LAPIS_ORE);
+            case DIAMOND -> xpBombMaterials.contains(Material.DIAMOND_ORE);
+            case MOLTEN -> xpBombMaterials.contains(Material.DEEPSLATE_REDSTONE_ORE);
+        };
     }
 }

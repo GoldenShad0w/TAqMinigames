@@ -1,5 +1,7 @@
 package goldenshadow.taqminigames.enums;
 
+import org.bukkit.Bukkit;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -34,7 +36,7 @@ public enum Game {
     }
 
     public static List<Game> getWeightedList(int gameIndex, List<Game> possibleGames) {
-        if (possibleGames.size() < 3) throw new RuntimeException("List received had a size smaller than 3! This should never happen!");
+        if (possibleGames.isEmpty()) throw new RuntimeException("List received by getWeightedList was empty! This should never happen!");
         List<Game> list = new ArrayList<>();
         if (gameIndex < 3) {
             if (possibleGames.contains(AURA_AND_VOLLEY)) list.add(AURA_AND_VOLLEY);
@@ -50,9 +52,10 @@ public enum Game {
             if (possibleGames.contains(PROFFERS_PIT)) list.add(PROFFERS_PIT);
             if (possibleGames.contains(EXCAVATION)) list.add(EXCAVATION);
         }
-        while (list.size() < 3) {
-            List<Game> fillUp = possibleGames.stream().filter(x -> !list.contains(x)).toList();
-            if (fillUp.size() < 1) throw new RuntimeException("Fill up list was empty!");
+        while (list.isEmpty()) {
+            Bukkit.broadcastMessage("filling up...");
+            List<Game> fillUp = new ArrayList<>(possibleGames);
+            if (fillUp.isEmpty()) throw new RuntimeException("Fill up list was empty!");
             list.add(fillUp.get(ThreadLocalRandom.current().nextInt(0,fillUp.size())));
         }
         return list;

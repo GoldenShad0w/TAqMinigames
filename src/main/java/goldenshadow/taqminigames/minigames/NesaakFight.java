@@ -38,7 +38,7 @@ public class NesaakFight extends Minigame {
 
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Kills", false);
-        timer = new Timer(0, 29, () -> timer = new Timer(10,0, this::end));
+        timer = new Timer(0, 29, () -> timer = new Timer(9,59, this::end));
         for (Player player : ParticipantManager.getParticipants()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));
             assert player.getEquipment() != null;
@@ -113,6 +113,11 @@ public class NesaakFight extends Minigame {
         if (tick >= 80) {
             tick = 59;
         }
+        if (gameState == GameState.RUNNING) {
+            for (Player p : ParticipantManager.getParticipants()) {
+                p.getInventory().remove(Material.SNOW_BLOCK);
+            }
+        }
         super.tick();
     }
 
@@ -129,6 +134,7 @@ public class NesaakFight extends Minigame {
         player.getInventory().addItem(new ItemStack(Material.SNOWBALL, 12));
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100, true, false, true)), 1L);
         player.setBedSpawnLocation(getRandomSpawn(), true);
+        killAchieved(player.getKiller(), player.getName());
     }
 
     /**
@@ -137,12 +143,9 @@ public class NesaakFight extends Minigame {
      * @param attacker The owner of the snowball that hit them
      */
     public void playerHit(Player player, Player attacker) {
-        if (player.getHealth() <= 2) {
-            if (player.getNoDamageTicks() == 0) {
-                killAchieved(attacker, player.getName());
-            }
+        if (!player.getUniqueId().equals(attacker.getUniqueId())) {
+            player.damage(2, attacker);
         }
-        player.damage(2);
     }
 
     /**
@@ -164,7 +167,13 @@ public class NesaakFight extends Minigame {
      */
     @Override
     public void playerReconnect(Player player) {
+        if (gameState != GameState.RUNNING) {
+            player.setGameMode(GameMode.SPECTATOR);
+        }
+    }
 
+    @Override
+    public void playerDisconnect(Player player) {
     }
 
     @Override
@@ -212,6 +221,7 @@ public class NesaakFight extends Minigame {
         meta.setDisplayName(" ");
         meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
         meta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH, new AttributeModifier("max_health", -14, AttributeModifier.Operation.ADD_NUMBER));
+        meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new AttributeModifier("attack_damage", -10, AttributeModifier.Operation.ADD_NUMBER));
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
         meta.setCustomModelData(100090);
         itemStack.setItemMeta(meta);

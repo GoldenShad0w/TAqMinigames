@@ -2,9 +2,13 @@ package goldenshadow.taqminigames.util;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BoundingBox;
 
 import java.util.ArrayList;
@@ -157,5 +161,23 @@ public class Utilities {
         stand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
         stand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.ADDING_OR_CHANGING);
         stand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
+    }
+
+    public static ItemStack getVictoryCrown() {
+        ItemStack itemStack = new ItemStack(Material.CARVED_PUMPKIN);
+        ItemMeta meta = itemStack.getItemMeta();
+        assert meta != null;
+        meta.setCustomModelData(17);
+        meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
+        meta.setDisplayName(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Victory Crown");
+        List<String> lore = new ArrayList<>();
+        lore.add(" ");
+        lore.add(ChatColor.YELLOW + "A crown awarded to the winner");
+        lore.add(ChatColor.YELLOW + "of TAq Minigames");
+        lore.add(ChatColor.DARK_GRAY + "(Not for resale on forum)");
+        meta.setLore(lore);
+        meta.addItemFlags(ItemFlag.values());
+        itemStack.setItemMeta(meta);
+        return itemStack;
     }
 }

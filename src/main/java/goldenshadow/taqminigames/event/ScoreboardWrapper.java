@@ -1,6 +1,8 @@
 package goldenshadow.taqminigames.event;
 
-import goldenshadow.taqminigames.fastboard.FastBoard;
+
+
+import fr.mrmicky.fastboard.FastBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,12 +20,14 @@ public class ScoreboardWrapper {
      * Internal method used to create a scoreboard for a player who does not have one yet
      * @param player The player
      */
-    private static void createScoreboard(Player player) {
+    private static FastBoard createScoreboard(Player player) {
         if (player != null) {
             FastBoard board = new FastBoard(player);
-            board.updateTitle(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "TAQ MINIGAMES");
+            board.updateTitle(ChatColor.AQUA + String.valueOf(ChatColor.BOLD) + "TAQ MINIGAMES");
             boards.put(player.getUniqueId(), board);
+            return board;
         }
+        return null;
     }
 
     /**
@@ -52,7 +56,11 @@ public class ScoreboardWrapper {
     public static void updateBoards() {
         for (UUID uuid : queuedData.keySet()) {
             if (!boards.containsKey(uuid)) {
-                createScoreboard(Bukkit.getPlayer(uuid));
+                FastBoard fb = createScoreboard(Bukkit.getPlayer(uuid));
+                if (fb != null) {
+                    fb.updateLines(queuedData.get(uuid));
+                }
+
             } else {
                 boards.get(uuid).updateLines(queuedData.get(uuid));
             }

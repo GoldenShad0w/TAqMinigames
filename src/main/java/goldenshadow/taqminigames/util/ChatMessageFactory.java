@@ -63,7 +63,7 @@ public class ChatMessageFactory {
      * @author SirSpoodles on spigotmc.org
      */
     private static void sendCenteredMessage(Player player, String message){
-        if(message == null || message.equals("")) {
+        if(message == null || message.isEmpty()) {
             player.sendMessage("");
             return;
         }

@@ -2,6 +2,7 @@ package goldenshadow.taqminigames.event;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -27,6 +28,13 @@ public class ParticipantManager {
      */
     public static void addParticipant(Player player, boolean isPlaying) {
         participantList.add(new Participant(player, isPlaying));
+    }
+
+    public static boolean isRegistered(Player player) {
+        for (Participant p : participantList) {
+            if (p.getPlayerUUID().equals(player.getUniqueId())) return true;
+        }
+        return false;
     }
 
     /**
@@ -58,6 +66,24 @@ public class ParticipantManager {
     }
 
     /**
+     * Used to get a players participant object.
+     * @param player The player
+     * @return The participant or null if none exists
+     */
+    public static Participant getParticipant(Player player) {
+        if (isOnline(player.getUniqueId())) {
+            for (Participant p : participantList) {
+                if (p.getPlayerUUID().equals(player.getUniqueId())) {
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
+
+
+    /**
      * Used to unregister all players
      */
     public static void resetAll() {
@@ -70,7 +96,8 @@ public class ParticipantManager {
      * @return True if they are, otherwise false
      */
     public static boolean isOnline(UUID uuid) {
-        return Bukkit.getPlayer(uuid) != null;
+        OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
+        return p.isOnline();
     }
 
     /**

@@ -3,6 +3,7 @@ package goldenshadow.taqminigames.minigames;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
+import goldenshadow.taqminigames.event.BossbarWrapper;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
 import goldenshadow.taqminigames.minigames.aura_and_volley.Attack;
@@ -14,6 +15,8 @@ import goldenshadow.taqminigames.util.Timer;
 import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -21,6 +24,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -29,7 +33,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AuraAndVolley extends Minigame{
 
     public List<Player> alivePlayers;
-    private boolean hasPlayerCountChanged = false;
+    public UUID barUUID;
 
     private final List<Attack> activeAttacks = new ArrayList<>();
 
@@ -43,7 +47,7 @@ public class AuraAndVolley extends Minigame{
         alivePlayers = ParticipantManager.getParticipants();
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
-        timer = new Timer(0, 30, () -> timer = new Timer(3,0, this::endRound));
+        timer = new Timer(0, 29, () -> timer = new Timer(2,59, this::endRound));
         for (Player player : alivePlayers) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));
         }
@@ -124,13 +128,21 @@ public class AuraAndVolley extends Minigame{
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
                     player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-
                 }
                 gameState = GameState.RUNNING;
             }
             default -> {
                 if (gameState == GameState.RUNNING) {
                     if (tick > 30) {
+
+                        if (timer.getSecondsLeft() >= 150) {
+                            BossbarWrapper.updateTitle(barUUID,ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + "Jump Height decrease in " + (timer.getSecondsLeft() - 150) + " seconds " + ChatColor.AQUA + ChatColor.BOLD + "[VI -> III]");
+                            BossbarWrapper.updateProgress(barUUID,((double) (timer.getSecondsLeft() - 150)) / 30);
+                        } else if (timer.getSecondsLeft() >= 80) {
+                            BossbarWrapper.updateTitle(barUUID,ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + "Jump Height decrease in " + (timer.getSecondsLeft() - 80) + " seconds " + ChatColor.AQUA + ChatColor.BOLD + "[III -> None]");
+                            BossbarWrapper.updateProgress(barUUID,((double) (timer.getSecondsLeft() - 80)) / 70);
+                        }
+
 
                         //jump height decay
                         if (timer.getSecondsLeft() == 150) {
@@ -144,6 +156,7 @@ public class AuraAndVolley extends Minigame{
                                 p.removePotionEffect(PotionEffectType.JUMP);
                                 ChatMessageFactory.sendInfoMessageBlock(p, ChatColor.YELLOW + "Your jump height has run out and the tower has gotten stronger!");
                             });
+                            BossbarWrapper.destroyBossbar(barUUID);
                         }
 
                         //Wave timings
@@ -179,10 +192,9 @@ public class AuraAndVolley extends Minigame{
 
             alivePlayers = ParticipantManager.getParticipants();
             ParticipantManager.teleportAllPlayers(Constants.AURA_MAP_LOCATIONS[round]);
-            if (hasPlayerCountChanged) {
-                ScoreManager.calculateScores(ParticipantManager.getParticipants().size());
-                hasPlayerCountChanged = false;
-            }
+
+            BossbarWrapper.destroyAll();
+            barUUID = BossbarWrapper.createBossbar(ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + "Jump Height decrease in 30 seconds " + ChatColor.AQUA + ChatColor.BOLD + "[VI -> III]", BarColor.GREEN, BarStyle.SOLID, 1);
 
             for (Player p : ParticipantManager.getParticipants()) {
                 p.setGameMode(GameMode.ADVENTURE);
@@ -233,13 +245,13 @@ public class AuraAndVolley extends Minigame{
         player.sendMessage(ChatMessageFactory.singleLineInfo("You died..."));
         Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + deathMessages[ThreadLocalRandom.current().nextInt(0, deathMessages.length)]);
         for (Player p : alivePlayers) {
-            scoreManager.increaseScore(p, Constants.AURA_SURVIVE, "A player has died!" ,true);
+            scoreManager.increaseScore(p, Constants.AURA_SURVIVE / Math.max(ParticipantManager.getParticipants().size()-1, 1), "A player has died!" ,true);
         }
         player.setGameMode(GameMode.SPECTATOR);
         if (alivePlayers.size() <= 1) {
             if (alivePlayers.size() == 1) {
                 scoreManager.increaseScore(alivePlayers.get(0), Constants.AURA_WIN, "You are the last person alive!", true);
-                ChatMessageFactory.sendInfoBlockToAll(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Winner of this round:", ChatColor.YELLOW + player.getName());
+                ChatMessageFactory.sendInfoBlockToAll(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Winner of this round:", ChatColor.YELLOW + alivePlayers.get(0).getName());
 
             }
             if (gameState == GameState.RUNNING) {
@@ -263,11 +275,9 @@ public class AuraAndVolley extends Minigame{
      */
     @Override
     public void insertPlayer(Player player) {
-        hasPlayerCountChanged = true;
         player.setGameMode(GameMode.SPECTATOR);
         player.teleport(Constants.AURA_MAP_LOCATIONS[round-1]);
         player.sendMessage(ChatMessageFactory.singleLineInfo("You will be able to join after this round has ended!"));
-        ParticipantManager.addParticipant(player, true);
     }
 
     /**
@@ -310,16 +320,12 @@ public class AuraAndVolley extends Minigame{
      */
     @Override
     public void playerReconnect(Player player) {
-        for (Player p : alivePlayers) {
-            if (p.getUniqueId().equals(player.getUniqueId())) {
-                Bukkit.broadcastMessage("player was an alive player");
-                alivePlayers.remove(p);
-                alivePlayers.add(player);
-                player.teleport(Constants.AURA_MAP_LOCATIONS[round-1]);
-                return;
-            }
-        }
         player.setGameMode(GameMode.SPECTATOR);
+    }
+
+    @Override
+    public void playerDisconnect(Player player) {
+        alivePlayers.remove(player);
     }
 
     /**

@@ -2,10 +2,7 @@ package goldenshadow.taqminigames.events;
 
 
 import goldenshadow.taqminigames.TAqMinigames;
-import goldenshadow.taqminigames.minigames.AvosRace;
-import goldenshadow.taqminigames.minigames.ExcavationSiteE;
-import goldenshadow.taqminigames.minigames.NesaakFight;
-import goldenshadow.taqminigames.minigames.ProffersPit;
+import goldenshadow.taqminigames.minigames.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -26,6 +23,15 @@ public class PlayerDeath implements Listener {
             }
             if (TAqMinigames.minigame instanceof AvosRace r) {
                 r.onDeath(event.getEntity());
+            }
+            if (TAqMinigames.minigame instanceof NetherPvP pvp) {
+                pvp.onDeath(event.getEntity());
+                if (event.getEntity().getKiller() != null) {
+                    pvp.killAchieved(event.getEntity().getKiller(), event.getEntity());
+                }
+            }
+            if (TAqMinigames.minigame instanceof SkyIslandLootrun lr) {
+                lr.onDeath(event.getEntity());
             }
         }
     }

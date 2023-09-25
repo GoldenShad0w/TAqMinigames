@@ -59,7 +59,7 @@ public class AvosRace extends Minigame {
             p.setBedSpawnLocation(Constants.AVOS_MAP_LOCATIONS[mapIndex-1], true);
         }
 
-        timer = new Timer(0, 30, () -> timer = new Timer(10,0, this::end));
+        timer = new Timer(0, 29, () -> timer = new Timer(9,59, this::end));
 
         ParticipantManager.teleportAllPlayers(Constants.AVOS_MAP_LOCATIONS[mapIndex-1]);
         Utilities.fillAreaWithBlock(Constants.AVOS_START_BARRIERS[0], Constants.AVOS_START_BARRIERS[1], Material.BARRIER, Material.AIR);
@@ -82,8 +82,8 @@ public class AvosRace extends Minigame {
             case 4 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The goal of this minigame is to reach the end of this track as fast as possible", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 8 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Hitting a wall or landing before you reach the end will reset you to the beginning", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 12 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The track is split up into multiple stages. Completing a stage and finishing will earn you emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 14 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Completing a stage can give you up to " + (Constants.AVOS_STAGE_COMPLETE * ScoreManager.getScoreMultiplier()) + " emeralds, with the reward decreasing by " + (Constants.AVOS_FALLOFF * ScoreManager.getScoreMultiplier()) + " emeralds every time someone else completes the stage before you", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 18 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Finishing will earn you " + (Constants.AVOS_FINISH * ScoreManager.getScoreMultiplier()) + " emeralds, with the same decrease as the stage completion reward", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 14 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Completing a stage can give you up to " + (int) (Constants.AVOS_STAGE_COMPLETE * ScoreManager.getScoreMultiplier()) + " emeralds, with the reward decreasing by " + (int) (Constants.AVOS_FALLOFF * ScoreManager.getScoreMultiplier()) + " emeralds every time someone else completes the stage before you", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 18 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Finishing will earn you " + (int) (Constants.AVOS_FINISH * ScoreManager.getScoreMultiplier()) + " emeralds, with the same decrease as the stage completion reward", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 22 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Remember that you have you to jump mid-air to open your elytra", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Once you are gliding, there only way to regain momentum is to glide downhill", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
@@ -146,13 +146,22 @@ public class AvosRace extends Minigame {
      */
     @Override
     public void playerReconnect(Player player) {
-        if (playerStages.containsKey(player.getUniqueId())) {
-            if (playerStages.get(player.getUniqueId()) < 5) {
-                onDeath(player);
-                return;
+        if (gameState != GameState.RUNNING) {
+            player.setGameMode(GameMode.SPECTATOR);
+        } else {
+            if (playerStages.containsKey(player.getUniqueId())) {
+                if (playerStages.get(player.getUniqueId()) < 5) {
+                    onDeath(player);
+                    return;
+                }
             }
+            player.setGameMode(GameMode.SPECTATOR);
         }
-        player.setGameMode(GameMode.SPECTATOR);
+    }
+
+    @Override
+    public void playerDisconnect(Player player) {
+
     }
 
     /**

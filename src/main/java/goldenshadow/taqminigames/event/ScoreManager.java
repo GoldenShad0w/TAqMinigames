@@ -40,14 +40,6 @@ public class ScoreManager {
         this.generic = generic;
     }
 
-    /**
-     * A class method that is used to calculate how many points certain things should give depending on the amount of players
-     * @param players How many player are competing
-     */
-    public static void calculateScores(int players) {
-        if (players < 1) players = 1;
-        Constants.AURA_SURVIVE /= players;
-    }
 
     /**
      * Getter for whether the score is generic or not
@@ -109,6 +101,7 @@ public class ScoreManager {
         } else scores.put(uuid, amount);
     }
 
+
     /**
      * Used to increase the score of a player
      * @param uuid The uuid of the player whose score should be increased
@@ -135,7 +128,15 @@ public class ScoreManager {
         return 0;
     }
 
-
+    /**
+     * Used to set the score of a player to a specific amount
+     * @param player The player
+     * @param amount The amount
+     */
+    public void setScore(Player player, int amount) {
+        hasChangeOccurred = true;
+        scores.put(player.getUniqueId(), Math.max(amount, 0));
+    }
 
     /**
      * Used to merge another score manager into this one
@@ -177,6 +178,21 @@ public class ScoreManager {
     }
 
     /**
+     * Used to get the winning player
+     * @return The winning player or null if none exists
+     */
+    public UUID getFirst() {
+        List<UUID> sorted = new ArrayList<>(scores.keySet());
+        sorted.sort((x,y) -> scores.get(y).compareTo(scores.get(x)));
+        if (!sorted.isEmpty()) {
+            if (ParticipantManager.isOnline(sorted.get(0))) {
+                return sorted.get(0);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Used to get the placement of a certain player
      * @param player The player whose placement should be returned
      * @return The placement of the player
@@ -203,27 +219,31 @@ public class ScoreManager {
      * @return The four lines
      */
     public String[] getScoreboardLines(Player player, ChatColor nameColor, ChatColor scoreColor) {
-        if (hasChangeOccurred || sortedDisplayList.isEmpty()) {
-            sortedDisplayList = getSortedDisplayList(nameColor, scoreColor);
-        }
-        int placement = getPlacement(player);
-        String[] array = new String[4];
-        array[0] = !sortedDisplayList.isEmpty() ? sortedDisplayList.get(0) : "1." + nameColor + " ---";
+        try {
+            if (hasChangeOccurred || sortedDisplayList.isEmpty()) {
+                sortedDisplayList = getSortedDisplayList(nameColor, scoreColor);
+            }
+            int placement = getPlacement(player);
+            String[] array = new String[4];
+            array[0] = !sortedDisplayList.isEmpty() ? sortedDisplayList.get(0) : "1." + nameColor + " ---";
 
-        if (placement == 0) {   //edge case: player is first place
-            array[1] = sortedDisplayList.get(0);
-            array[2] = sortedDisplayList.size() > 1 ? sortedDisplayList.get(1) : "2." + nameColor + " ---";
-            array[3] = sortedDisplayList.size() > 2 ? sortedDisplayList.get(2) : "3." + nameColor + " ---";
-        } else if (placement == -1) { //edge case: player is spectator
-            array[1] = !sortedDisplayList.isEmpty() ? sortedDisplayList.get(0) : "1." + nameColor + " ---";
-            array[2] = sortedDisplayList.size() > 1 ? sortedDisplayList.get(1) : "2." + nameColor + " ---";
-            array[3] = sortedDisplayList.size() > 2 ? sortedDisplayList.get(2) : "3." + nameColor + " ---";
-        } else { //normal case: player is not first
-            array[1] = sortedDisplayList.get(placement - 1);
-            array[2] = sortedDisplayList.get(placement);
-            array[3] = sortedDisplayList.size() > (placement + 1) ? sortedDisplayList.get(placement + 1) : (placement + 2) + "." + nameColor + " ---";
+            if (placement == 0) {   //edge case: player is first place
+                array[1] = sortedDisplayList.get(0);
+                array[2] = sortedDisplayList.size() > 1 ? sortedDisplayList.get(1) : "2." + nameColor + " ---";
+                array[3] = sortedDisplayList.size() > 2 ? sortedDisplayList.get(2) : "3." + nameColor + " ---";
+            } else if (placement == -1) { //edge case: player is spectator
+                array[1] = !sortedDisplayList.isEmpty() ? sortedDisplayList.get(0) : "1." + nameColor + " ---";
+                array[2] = sortedDisplayList.size() > 1 ? sortedDisplayList.get(1) : "2." + nameColor + " ---";
+                array[3] = sortedDisplayList.size() > 2 ? sortedDisplayList.get(2) : "3." + nameColor + " ---";
+            } else { //normal case: player is not first
+                array[1] = sortedDisplayList.size() > (placement -1) ? sortedDisplayList.get(placement - 1) : (placement - 1) + ". " + nameColor + "---";
+                array[2] = sortedDisplayList.size() > placement ? sortedDisplayList.get(placement) : placement + ". " + nameColor + "---";
+                array[3] = sortedDisplayList.size() > (placement + 1) ? sortedDisplayList.get(placement + 1) : (placement + 2) + "." + nameColor + " ---";
+            }
+            return array;
+        } catch (IndexOutOfBoundsException e) {
+            return new String[]{"error"};
         }
-        return array;
     }
 
     public static void updateLobbyLeaderboard(List<String> sortedList) {
@@ -232,7 +252,7 @@ public class ScoreManager {
             TextDisplay t = (TextDisplay) e;
             StringBuilder text = new StringBuilder(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "LEADERBOARD\n" + ChatColor.RESET);
             for (int i = 0; i < 10; i++) {
-                text.append("\n");
+                text.append("\n").append(ChatColor.RESET);
                 if (sortedList.size() > i) {
                     text.append(sortedList.get(i));
                 } else {

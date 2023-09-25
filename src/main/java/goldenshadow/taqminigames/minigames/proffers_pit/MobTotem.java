@@ -1,10 +1,14 @@
 package goldenshadow.taqminigames.minigames.proffers_pit;
 
 import goldenshadow.taqminigames.TAqMinigames;
+import goldenshadow.taqminigames.event.BossbarWrapper;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -16,22 +20,24 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MobTotem extends ProfEvent {
 
     private final UUID totemUUID;
+    private final UUID barUUID;
 
     public MobTotem(EventLocation location) {
-        super("Someone has placed a mob totem in the %s! Dangerous mobs will now spawn there!", location);
+        super("Someone has placed a mob totem in the %s! Dangerous mobs will now spawn there!", location, true);
         totemUUID = spawnTotem();
+        barUUID = BossbarWrapper.createBossbar(ChatColor.RED +"Mob Totem in the " + location.area().getName(), BarColor.RED, BarStyle.SOLID, 1);
     }
 
     @Override
     public void tick() {
-        if (tick % 5 == 0) {
-            spawnMob();
+        if (tick % 12 == 0) {
             spawnMob();
             spawnMob();
         }
         if (tick > 60) {
             isDone = true;
             deleteTotem();
+            BossbarWrapper.destroyBossbar(barUUID);
             Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("The mob totem in the " + location.area().getName() + " has run out!"));
         }
         super.tick();

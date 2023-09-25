@@ -43,7 +43,7 @@ public class AledarCartRacing extends Minigame {
         scoreManager = new ScoreManager("Emeralds", true);
 
 
-        timer = new Timer(0, 29, () -> timer = new Timer(10,0, this::end));
+        timer = new Timer(0, 29, () -> timer = new Timer(9,59, this::end));
         for (Player player : ParticipantManager.getParticipants()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 500, 0, true, false, false));
             player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 10, false, false, false));
@@ -52,16 +52,12 @@ public class AledarCartRacing extends Minigame {
         Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getZ(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getZ()), Constants.WORLD, p -> {
             if (p.getGameMode() != GameMode.ADVENTURE) return false;
             return antiCheatState.getOrDefault(p.getUniqueId(), 0) == 0;
-        }, p -> {
-            antiCheatState.put(p.getUniqueId(), 1);
-        }, 0, false, false));
+        }, p -> antiCheatState.put(p.getUniqueId(), 1), 0, false, false));
 
         Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getZ(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getZ()), Constants.WORLD, p -> {
             if (p.getGameMode() != GameMode.ADVENTURE) return false;
             return antiCheatState.getOrDefault(p.getUniqueId(), 0) == 1;
-        }, p -> {
-            antiCheatState.put(p.getUniqueId(), 2);
-        }, 0, false, false));
+        }, p -> antiCheatState.put(p.getUniqueId(), 2), 0, false, false));
 
         Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_LAP_LINE[0].getX(), Constants.CART_RACING_LAP_LINE[0].getY(), Constants.CART_RACING_LAP_LINE[0].getZ(), Constants.CART_RACING_LAP_LINE[1].getX(), Constants.CART_RACING_LAP_LINE[1].getY(), Constants.CART_RACING_LAP_LINE[1].getZ()), Constants.WORLD, p -> {
             if (p.getGameMode() != GameMode.ADVENTURE) return false;
@@ -84,7 +80,7 @@ public class AledarCartRacing extends Minigame {
             case 12 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Along the way, you can collect powerups. These are the powerups that exist:", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 14 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Emerald Crate", " ", ChatColor.YELLOW + "Gain " + ((int) (Constants.CART_RACING_CRATE * ScoreManager.getScoreMultiplier())) + " emeralds!");
             case 16 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Toxic Slime", " ", ChatColor.YELLOW + "Place a slime behind you that slows down", ChatColor.YELLOW + "players who hit it!");
-            case 18 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Dernic Dash", " ", ChatColor.YELLOW + "Boosts the speed of your cart for", ChatColor.YELLOW + "a short while!");
+            case 18 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Dernic Dash", " ", ChatColor.YELLOW + "50% chance to boosts the speed of your cart for", ChatColor.YELLOW + "a short while!");
             case 20 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Eldritch Blast", " ", ChatColor.YELLOW + "Slow down all players near you in a single", ChatColor.YELLOW + "large explosion!");
             case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Each lap will reward you with " + ((int) (Constants.CART_RACING_LAP * ScoreManager.getScoreMultiplier())) + " emeralds, and you also get emeralds for completing the entire track!", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
@@ -92,7 +88,9 @@ public class AledarCartRacing extends Minigame {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
                     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
                     player.teleport(Constants.CART_RACING_START_LOCATION);
-                    Boat b = buildCart();
+                }
+                for (Player player : ParticipantManager.getParticipants()) {
+                    Boat b = buildCart(Constants.CART_RACING_START_LOCATION);
                     b.addPassenger(player);
                 }
                 Utilities.fillAreaWithBlock(Constants.CART_RACING_START_BARRIERS[0], Constants.CART_RACING_START_BARRIERS[1], Material.BARRIER, Material.AIR);
@@ -148,8 +146,29 @@ public class AledarCartRacing extends Minigame {
 
     @Override
     public void playerReconnect(Player player) {
+        if (gameState != GameState.RUNNING) {
+            player.setGameMode(GameMode.SPECTATOR);
+            return;
+        }
         if (finishedPlayers.contains(player.getUniqueId())) {
             player.setGameMode(GameMode.SPECTATOR);
+        } else {
+            Boat b = buildCart(player.getLocation());
+            b.addPassenger(player);
+        }
+    }
+
+    @Override
+    public void playerDisconnect(Player player) {
+        Entity vehicle = player.getVehicle();
+        if (vehicle != null) {
+            for (Entity e : vehicle.getPassengers()) {
+                if (!(e instanceof Player)) {
+                    e.remove();
+                }
+            }
+            vehicle.removePassenger(player);
+            vehicle.remove();
         }
     }
 
@@ -215,18 +234,18 @@ public class AledarCartRacing extends Minigame {
         switch (ThreadLocalRandom.current().nextInt(0,4)) {
             case 0 -> scoreManager.increaseScore(player, Constants.CART_RACING_CRATE, "You found an emerald crate!", true);
             case 1 -> {
-                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Toxic Slime", "", ChatColor.YELLOW + "Right click to place a slime behind you", ChatColor.YELLOW + "that slows down players who hit it!");
-                player.sendTitle(" ", ChatColor.GREEN + "Toxic Slime " + ChatColor.GRAY + "[Press Drop Key to use]", 5,40,5);
+                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Toxic Slime", "", ChatColor.YELLOW + "Offhand to place a slime behind you", ChatColor.YELLOW + "that slows down players who hit it!");
+                player.sendTitle(" ", ChatColor.GREEN + "Toxic Slime " + ChatColor.GRAY + "[Press Offhand Key to use]", 5,40,5);
                 Utilities.giveAurumItem(player, "m_racing_slime");
             }
             case 2 -> {
-                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Dernic Dash", "", ChatColor.YELLOW + "Right click to get a powerful boost", ChatColor.YELLOW + "to you cart!");
-                player.sendTitle(" ", ChatColor.AQUA + "Dernic Dash " + ChatColor.GRAY + "[Press Drop Key to use]", 5,40,5);
+                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Dernic Dash", "", ChatColor.YELLOW + "Offhand for chance to get a powerful boost", ChatColor.YELLOW + "to you cart!");
+                player.sendTitle(" ", ChatColor.AQUA + "Dernic Dash " + ChatColor.GRAY + "[Press Offhand Key to use]", 5,40,5);
                 Utilities.giveAurumItem(player, "m_racing_dash");
             }
             case 3 -> {
-                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Eldritch Blast", "", ChatColor.YELLOW + "Right click to slow down all players", ChatColor.YELLOW + "near you!");
-                player.sendTitle(" ", ChatColor.GOLD + "Eldritch Blast " + ChatColor.GRAY + "[Press Drop Key to use]", 5,40,5);
+                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Eldritch Blast", "", ChatColor.YELLOW + "Offhand to slow down all players", ChatColor.YELLOW + "near you!");
+                player.sendTitle(" ", ChatColor.GOLD + "Eldritch Blast " + ChatColor.GRAY + "[Press Offhand Key to use]", 5,40,5);
                 Utilities.giveAurumItem(player, "m_racing_blast");
             }
         }
@@ -294,19 +313,20 @@ public class AledarCartRacing extends Minigame {
 
 
 
-    private Boat buildCart() {
-        assert Constants.CART_RACING_START_LOCATION.getWorld() != null;
-        Boat cart = (Boat) Constants.CART_RACING_START_LOCATION.getWorld().spawnEntity(Constants.CART_RACING_START_LOCATION, EntityType.BOAT, false);
+    private Boat buildCart(Location location) {
+        assert location.getWorld() != null;
+        Boat cart = (Boat) location.getWorld().spawnEntity(location, EntityType.BOAT, false);
         cart.setBoatType(Boat.Type.SPRUCE);
         cart.setInvulnerable(true);
 
-        ArmorStand armorStand = (ArmorStand) Constants.CART_RACING_START_LOCATION.getWorld().spawnEntity(Constants.CART_RACING_START_LOCATION, EntityType.ARMOR_STAND, false);
+        ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND, false);
         armorStand.setArms(true);
         armorStand.setBasePlate(false);
-        armorStand.setLeftArmPose(new EulerAngle(284, 0, -10));
-        armorStand.setRightArmPose(new EulerAngle(287,0,10));
-        armorStand.setLeftLegPose(new EulerAngle(272, 342,0));
-        armorStand.setRightLegPose(new EulerAngle(273, 19, 1));
+        armorStand.setLeftArmPose(new EulerAngle(5.44, 0.0, 0.0));
+        armorStand.setRightArmPose(new EulerAngle(5.32,0.0,0.0));
+        armorStand.setLeftLegPose(new EulerAngle(4.66, 6.05,0.0));
+        armorStand.setRightLegPose(new EulerAngle(4.72, 0.52, 0.0));
+        armorStand.setHeadPose(new EulerAngle(6.03, 0.35, 0.0));
         armorStand.setInvulnerable(true);
         assert armorStand.getEquipment() != null;
         armorStand.getEquipment().setHelmet(getHead());
@@ -319,6 +339,9 @@ public class AledarCartRacing extends Minigame {
         armorStand.addEquipmentLock(EquipmentSlot.FEET, ArmorStand.LockType.REMOVING_OR_CHANGING);
         armorStand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.ADDING_OR_CHANGING);
         armorStand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.ADDING_OR_CHANGING);
+
+        gameObjectUUIDs.add(cart.getUniqueId());
+        gameObjectUUIDs.add(armorStand.getUniqueId());
 
         cart.addPassenger(armorStand);
         return cart;
@@ -356,10 +379,7 @@ public class AledarCartRacing extends Minigame {
     public void end() {
         Trigger.unregisterAll();
         Utilities.registerLobbyTrigger();
-        for (UUID uuid : gameObjectUUIDs) {
-            Entity e = Bukkit.getEntity(uuid);
-            if (e != null) e.remove();
-        }
+
         for (Player player : ParticipantManager.getParticipants()) {
             Entity vehicle = player.getVehicle();
             if (vehicle != null) {
@@ -372,6 +392,11 @@ public class AledarCartRacing extends Minigame {
                 vehicle.remove();
             }
             player.setGameMode(GameMode.SPECTATOR);
+        }
+
+        for (UUID uuid : gameObjectUUIDs) {
+            Entity e = Bukkit.getEntity(uuid);
+            if (e != null) e.remove();
         }
 
         super.end();

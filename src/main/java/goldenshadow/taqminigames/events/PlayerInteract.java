@@ -2,11 +2,10 @@ package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.event.ParticipantManager;
-import goldenshadow.taqminigames.minigames.AledarCartRacing;
 import goldenshadow.taqminigames.minigames.NesaakFight;
 import goldenshadow.taqminigames.minigames.ProffersPit;
+import goldenshadow.taqminigames.minigames.SkyIslandLootrun;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -49,6 +48,13 @@ public class PlayerInteract implements Listener {
                                 event.getPlayer().sendMessage(ChatMessageFactory.singleLineInfo("You need to be closer to a tool merchant to toggle hunted mode!"));
                             }
                         }
+                    }
+                }
+            }
+            if (TAqMinigames.minigame instanceof SkyIslandLootrun game) {
+                if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    if (event.getHand() == EquipmentSlot.HAND) {
+                        game.itemUsed(event.getPlayer(), event.getMaterial());
                     }
                 }
             }

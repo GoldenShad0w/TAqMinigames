@@ -1,7 +1,9 @@
 package goldenshadow.taqminigames.event;
 
+import goldenshadow.taqminigames.enums.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -13,6 +15,8 @@ public class Participant {
 
     private final UUID uuid;
     private final boolean isPlaying;
+    public Game lastGame;
+    public GameMode lastGameMode;
 
 
     /**

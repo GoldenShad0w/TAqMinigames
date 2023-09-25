@@ -40,9 +40,11 @@ public class Timer {
         if (seconds < 0) {
             seconds = 59;
             minutes--;
+
         }
         if (minutes == 0 && seconds == 0) {
-            Bukkit.getScheduler().runTask(TAqMinigames.getPlugin(), endTask);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), endTask, 40L);
+            //Bukkit.getScheduler().runTask(TAqMinigames.getPlugin(), endTask);
         }
     }
 
@@ -53,6 +55,7 @@ public class Timer {
      */
     @Override
     public String toString() {
+        if (minutes < 0) return "00:00";
         return (minutes < 10 ? "0" + minutes : minutes) +
                 ":" +
                 (seconds < 10 ? "0" + seconds : seconds);

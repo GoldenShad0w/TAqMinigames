@@ -1,7 +1,6 @@
 package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.TAqMinigames;
-import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.minigames.AledarCartRacing;
 import goldenshadow.taqminigames.minigames.AvosRace;
@@ -23,13 +22,6 @@ public class PlayerDamage implements Listener {
             if (byEntityEvent.getDamager() instanceof Firework) {
                 if (byEntityEvent.getDamager().getScoreboardTags().contains("m_firework")) {
                     event.setCancelled(true);
-                }
-            }
-            if (byEntityEvent.getDamager() instanceof Player p) {
-                if (TAqMinigames.minigame instanceof ProffersPit pit) {
-                    if (!pit.isValidPlayerAttack(p)) {
-                        event.setCancelled(true);
-                    }
                 }
             }
             if (TAqMinigames.minigame instanceof AledarCartRacing) {

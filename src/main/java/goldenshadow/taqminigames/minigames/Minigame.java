@@ -3,9 +3,7 @@ package goldenshadow.taqminigames.minigames;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
-import goldenshadow.taqminigames.event.ParticipantManager;
-import goldenshadow.taqminigames.event.ScoreManager;
-import goldenshadow.taqminigames.event.ScoreboardWrapper;
+import goldenshadow.taqminigames.event.*;
 import goldenshadow.taqminigames.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,8 +26,8 @@ public abstract class Minigame {
     protected int tick = 0;
     protected int fastTick = 0;
     protected GameState gameState;
-    protected Timer timer;
-    protected ScoreManager scoreManager;
+    public Timer timer;
+    public ScoreManager scoreManager;
 
     /**
      * Main loop of the minigame. This should usually run on a 1hz clock
@@ -56,6 +54,7 @@ public abstract class Minigame {
      */
     public void end() {
         ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Game over!");
+        BossbarWrapper.destroyAll();
         gameState = GameState.ENDING;
         timer = null;
         Trigger.unregisterAll();
@@ -100,8 +99,13 @@ public abstract class Minigame {
                 p.getInventory().clear();
                 p.setGameMode(GameMode.ADVENTURE);
                 p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100, false,false,false));
-                updateToLobbyBoard(p);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
+                    for (PotionEffectType effectType : PotionEffectType.values()) {
+                        p.removePotionEffect(effectType);
+                    }
+                }, 10L);
             }
+            ParticipantManager.getAll().forEach(Minigame::updateToLobbyBoard);
             TAqMinigames.minigame = null;
         }, 320L);
 
@@ -114,7 +118,6 @@ public abstract class Minigame {
      */
     protected void insertPlayer(Player player) {
         ParticipantManager.addParticipant(player, true);
-        ScoreManager.calculateScores(ParticipantManager.getParticipants().size());
         scoreManager.increaseScore(player, 0, false);
     }
 
@@ -165,6 +168,8 @@ public abstract class Minigame {
      * @param player The player who reconnected
      */
     public abstract void playerReconnect(Player player);
+
+    public abstract void playerDisconnect(Player player);
 
     /**
      * Used to update the players scoreboard to how it should be displayed while in the lobby

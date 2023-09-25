@@ -2,7 +2,6 @@ package goldenshadow.taqminigames.event;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
-import goldenshadow.taqminigames.minigames.*;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Utilities;
@@ -39,7 +38,7 @@ public class GameSelection {
      * @param weighted Whether the game selection should suggest more short games at the beginning and longer games at the end
      */
     public GameSelection(List<Game> possibleGames, boolean weighted) {
-        this.possibleGames = possibleGames;
+        this.possibleGames = new ArrayList<>(possibleGames);
         participants = ParticipantManager.getAll();
         this.weighted = weighted;
         favor = null;
@@ -52,7 +51,7 @@ public class GameSelection {
      * @param favor A specific game that should be forced to be suggested and if not voted out, forced to be picked
      */
     public GameSelection(List<Game> possibleGames, boolean weighted, Game favor) {
-        this.possibleGames = possibleGames;
+        this.possibleGames = new ArrayList<>(possibleGames);
         participants = ParticipantManager.getAll();
         this.weighted = weighted;
         this.favor = favor;
@@ -138,14 +137,14 @@ public class GameSelection {
                 }
             }
             case 30 -> {
-                int leastVotes = countVotes();
-                Material block = leastVotes == 0 ? Material.RED_CONCRETE : leastVotes == 1 ? Material.LIME_CONCRETE : Material.BLUE_CONCRETE;
+                VoteColor leastVotes = countVotes();
+                Material block = leastVotes == VoteColor.RED ? Material.RED_CONCRETE : leastVotes == VoteColor.LIME ? Material.LIME_CONCRETE : Material.BLUE_CONCRETE;
                 Utilities.fillAreaWithBlock(Constants.LOBBY_SELECTION_AREA[0], Constants.LOBBY_SELECTION_AREA[1], Material.STRUCTURE_VOID, block);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Utilities.fillAreaWithBlock(Constants.LOBBY_SELECTION_AREA[0], Constants.LOBBY_SELECTION_AREA[1], block, Material.STRUCTURE_VOID), 200L);
 
 
-                Game game = chosenGames[leastVotes];
-                chosenGames[leastVotes] = null;
+                Game game = chosenGames[leastVotes.ordinal()];
+                chosenGames[leastVotes.ordinal()] = null;
 
                 for (Player p : participants) {
                     p.playSound(p, Sound.ENTITY_WITHER_BREAK_BLOCK, 0.5f,1);
@@ -188,14 +187,7 @@ public class GameSelection {
             case 40 -> {
                 Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Teleporting..."));
                 TAqMinigames.possibleGames.remove(actualNextgame);
-                switch (actualNextgame) {
-                    case AURA_AND_VOLLEY -> TAqMinigames.minigame = new AuraAndVolley();
-                    case AVOS_RACE -> TAqMinigames.minigame = new AvosRace();
-                    case NESAAK_SNOWBALL_FIGHT -> TAqMinigames.minigame = new NesaakFight();
-                    case PROFFERS_PIT -> TAqMinigames.minigame = new ProffersPit();
-                    case EXCAVATION -> TAqMinigames.minigame = new ExcavationSiteE();
-                    case CART_RACING -> TAqMinigames.minigame = new AledarCartRacing();
-                }
+                TAqMinigames.parseMinigame(actualNextgame);
             }
         }
         tick++;
@@ -254,7 +246,11 @@ public class GameSelection {
         Game game;
         if (weighted) {
             List<Game> list = Game.getWeightedList(TAqMinigames.gameIndex, possibleGames);
-            game = list.get(ThreadLocalRandom.current().nextInt(0, list.size()));
+            if (list.size() > 1) {
+                game = list.get(ThreadLocalRandom.current().nextInt(0, list.size()));
+            } else {
+                game = list.get(0);
+            }
         } else {
             game = possibleGames.get(ThreadLocalRandom.current().nextInt(0, possibleGames.size()));
         }
@@ -264,29 +260,33 @@ public class GameSelection {
 
     /**
      * Used to count to votes
-     * @return The game index with the least amount of votes. 0 for blue, 1 for orange and 2 for lime
+     * @return The game index with the least amount of votes. 0 for blue, 1 for red and 2 for lime
      */
-    private int countVotes() {
+    private VoteColor countVotes() {
         int blueVotes = 0;
-        int orangeVotes = 0;
+        int redVotes = 0;
         int limeVotes = 0;
         for (Player p : ParticipantManager.getParticipants()) {
             if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.BLUE_CONCRETE) {
                 blueVotes++;
                 continue;
             }
-            if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.ORANGE_CONCRETE) {
-                orangeVotes++;
+            if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.RED_CONCRETE) {
+                redVotes++;
                 continue;
             }
             if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.LIME_CONCRETE) {
                 limeVotes++;
             }
         }
-        int lowest = Math.min(Math.min(blueVotes, orangeVotes), limeVotes);
-        if (blueVotes == lowest) return 0;
-        if (orangeVotes == lowest) return 1;
-        return 2;
+        int lowest = Math.min(Math.min(blueVotes, redVotes), limeVotes);
+        if (blueVotes == lowest) {
+            return VoteColor.BLUE;
+        }
+        if (limeVotes == lowest) {
+            return VoteColor.LIME;
+        }
+        return VoteColor.RED;
     }
 
     /**
@@ -295,6 +295,12 @@ public class GameSelection {
      */
     public boolean isInProgress() {
         return tick < 41;
+    }
+
+    public enum VoteColor {
+        RED,
+        LIME,
+        BLUE
     }
 
 }

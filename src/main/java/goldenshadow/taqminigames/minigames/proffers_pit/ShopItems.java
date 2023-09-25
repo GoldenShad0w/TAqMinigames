@@ -75,7 +75,7 @@ public class ShopItems {
                 " ",
                 ChatColor.DARK_AQUA + "Gathering Tool",
                 " ",
-                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP"
+                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP + Tier 1 Pickaxe"
         ));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.setCustomModelData(2);
@@ -98,7 +98,7 @@ public class ShopItems {
                 " ",
                 ChatColor.DARK_AQUA + "Gathering Tool",
                 " ",
-                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP"
+                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP  + Tier 2 Pickaxe"
         ));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.setCustomModelData(3);
@@ -122,7 +122,7 @@ public class ShopItems {
                 " ",
                 ChatColor.DARK_AQUA + "Gathering Tool",
                 " ",
-                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP"
+                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP + Tier 3 Pickaxe"
         ));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.setCustomModelData(4);
@@ -147,7 +147,7 @@ public class ShopItems {
                 " ",
                 ChatColor.DARK_AQUA + "Gathering Tool",
                 " ",
-                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP"
+                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP + Tier 4 Pickaxe"
         ));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.setCustomModelData(5);
@@ -173,7 +173,7 @@ public class ShopItems {
                 " ",
                 ChatColor.DARK_AQUA + "Gathering Tool",
                 " ",
-                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP"
+                ChatColor.DARK_PURPLE + "Price: " + ChatColor.LIGHT_PURPLE + price + " Prof XP + Tier 5 Pickaxe"
         ));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.setCustomModelData(6);
@@ -213,7 +213,7 @@ public class ShopItems {
                 " ",
                 ChatColor.GRAY + "Minimum Level Req: " + ChatColor.WHITE + "100",
                 " ",
-                ChatColor.YELLOW + "Haste for 30 seconds",
+                ChatColor.YELLOW + "Haste II for 30 seconds",
                 " ",
                 ChatColor.BLUE + "Consumable Item",
                 " ",
@@ -256,7 +256,7 @@ public class ShopItems {
                 ChatColor.GRAY + "but other hunted players will be able",
                 ChatColor.GRAY + "to " + ChatColor.RED + "attack and kill you!",
                 " ",
-                ChatColor.GRAY + "Dying will cost you " + ChatColor.RED + "200 Prof XP",
+                ChatColor.GRAY + "Dying will cost you " + ChatColor.RED + "10$ of your Prof XP",
                 ChatColor.GRAY + "Activation Cooldown: " + ChatColor.RED + "30 seconds",
                 " ",
                 ChatColor.RED + "Right click to toggle"
@@ -276,7 +276,7 @@ public class ShopItems {
                 ChatColor.GRAY + "but other hunted players will be able",
                 ChatColor.GRAY + "to " + ChatColor.RED + "attack and kill you!",
                 " ",
-                ChatColor.GRAY + "Dying will cost you " + ChatColor.RED + "200 Prof XP",
+                ChatColor.GRAY + "Dying will cost you " + ChatColor.RED + "10% of your Prof XP",
                 ChatColor.GRAY + "Activation Cooldown: " + ChatColor.RED + "30 seconds",
                 " ",
                 ChatColor.RED + "Right click to toggle",
