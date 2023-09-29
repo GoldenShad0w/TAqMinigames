@@ -33,7 +33,6 @@ public class ExcavationSiteE extends Minigame {
 
     private Shockwave currentShockwave = null;
     private final List<UUID> exitConfirmStage = new ArrayList<>();
-    private UUID exitInteractionUUID = null;
     private boolean areFlamethrowersActive = false;
     private static final String[] deathMessages = {" fell to tge ancient spirit's wrath!"," was unable to outrun the curse!"," was caught by the curse!", " couldn't escape their doom!", " skill issued!", " had a serious case of skill issue!", " get scared to death!", " overestimated themselves!", " didn't make it!", " got too greedy!", "needs to re-watch Indiana Jones!"};
 
@@ -113,9 +112,9 @@ public class ExcavationSiteE extends Minigame {
                 }
                 gameState = GameState.RUNNING;
             }
-            case 320 -> spawnExitInteraction();
         }
         if (30 < tick && tick < 320) {
+
             if (tick % 3 == 0) {
                 //Dart trap
                 for (DartTrapData d : Constants.EXCAVATION_DART_TRAPS) {
@@ -124,6 +123,10 @@ public class ExcavationSiteE extends Minigame {
                     arrow.setPickupStatus(AbstractArrow.PickupStatus.CREATIVE_ONLY);
                     arrow.setCritical(true);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), arrow::remove, 100L);
+                }
+                for (Location loc : Constants.EXCAVATION_GLITTER_LOCATIONS) {
+                    assert loc.getWorld() != null;
+                    loc.getWorld().spawnParticle(Particle.WAX_OFF, loc, 10, 0.3,0.3,0.3,0);
                 }
             }
             if ((tick % 6 == 0)) {
@@ -175,7 +178,7 @@ public class ExcavationSiteE extends Minigame {
                 currentShockwave.tick();
                 if (currentShockwave.isDone) currentShockwave = null;
             }
-            if (fastTick % 2 == 0) {
+            if (fastTick % 4 == 0) {
                 if (areFlamethrowersActive) {
                     for (Location[] l : Constants.EXCAVATION_FLAMETHROWER_BOXES) {
                         BoundingBox b = new BoundingBox(l[0].getX(), l[0].getY(), l[0].getZ(), l[1].getX(), l[1].getY(), l[1].getZ());
@@ -238,10 +241,7 @@ public class ExcavationSiteE extends Minigame {
         Trigger.unregisterAll();
         Utilities.registerLobbyTrigger();
 
-        if (exitInteractionUUID != null) {
-            Entity e = Bukkit.getEntity(exitInteractionUUID);
-            if (e != null) e.remove();
-        }
+
         ParticipantManager.teleportAllPlayers(Constants.EXCAVATION_END_LOCATION);
         ParticipantManager.getParticipants().forEach(x -> {
             x.setGameMode(GameMode.ADVENTURE);
@@ -659,12 +659,18 @@ public class ExcavationSiteE extends Minigame {
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_exit")) {
-            if (exitConfirmStage.contains(player.getUniqueId())) {
-                playerExit(player);
+            if (timer.getMinutesLeft() > 30) {
+                player.sendMessage(" ");
+                player.sendMessage(ChatColor.YELLOW + "You haven't spent a lot of time exploring yet, " + ChatColor.AQUA + ChatColor.BOLD + "come back later " + ChatColor.YELLOW + "to talk to me again and then I'll let you exit");
+                player.sendMessage(" ");
             } else {
-                ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.YELLOW + "Are you sure you want to exit?", ChatColor.YELLOW + "This will end the game for you!", " ", ChatColor.GOLD + "Click again to confirm");
-                exitConfirmStage.add(player.getUniqueId());
-                Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> exitConfirmStage.remove(player.getUniqueId()), 200L);
+                if (exitConfirmStage.contains(player.getUniqueId())) {
+                    playerExit(player);
+                } else {
+                    ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.YELLOW + "Are you sure you want to exit?", ChatColor.YELLOW + "This will end the game for you!", " ", ChatColor.GOLD + "Click again to confirm");
+                    exitConfirmStage.add(player.getUniqueId());
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> exitConfirmStage.remove(player.getUniqueId()), 200L);
+                }
             }
         }
     }
@@ -692,15 +698,6 @@ public class ExcavationSiteE extends Minigame {
 
     public void potionUsed(Player player) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.getInventory().remove(Material.GLASS_BOTTLE), 1L);
-    }
-
-    private void spawnExitInteraction() {
-        assert Constants.WORLD != null;
-        Interaction interaction = (Interaction) Constants.WORLD.spawnEntity(Constants.EXCAVATION_EXIT_LOCATION, EntityType.INTERACTION);
-        interaction.addScoreboardTag("m_exca_exit");
-        interaction.setInteractionWidth(1.2f);
-        interaction.setInteractionHeight(2.2f);
-        exitInteractionUUID = interaction.getUniqueId();
     }
 
     @SuppressWarnings("deprecation")

@@ -159,9 +159,20 @@ public class GameSelection {
                 }
             }
             case 34 -> {
-                do {
-                    actualNextgame = chosenGames[ThreadLocalRandom.current().nextInt(0, chosenGames.length)];
-                } while (actualNextgame == null);
+                boolean chosen = false;
+                if (favor != null) {
+                    for (Game g : chosenGames) {
+                        if (g == favor) {
+                            actualNextgame = g;
+                            chosen = true;
+                        }
+                    }
+                }
+                if (!chosen) {
+                    do {
+                        actualNextgame = chosenGames[ThreadLocalRandom.current().nextInt(0, chosenGames.length)];
+                    } while (actualNextgame == null);
+                }
                 for (Player p : participants) {
                     p.sendTitle(" ", ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + actualNextgame.getLabel(), 5, 40, 5);
                     p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 1,1);

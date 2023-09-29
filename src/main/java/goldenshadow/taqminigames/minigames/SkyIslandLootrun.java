@@ -10,6 +10,8 @@ import goldenshadow.taqminigames.util.*;
 import org.bukkit.*;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
@@ -280,13 +282,22 @@ public class SkyIslandLootrun extends Minigame{
             case 1 -> {
                 double d = ThreadLocalRandom.current().nextDouble(0,1);
                 if (d < 0.05) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.DOUBLE_FABLED);
                 } else if (d < 0.2) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.INGREDIENT);
                 } else if (d < 0.22) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.MYTHIC);
                 } else if (d < 0.37) {
                     giveBonusItem(player, BonusItem.SPEED);
@@ -297,13 +308,22 @@ public class SkyIslandLootrun extends Minigame{
             case 2 -> {
                 double d = ThreadLocalRandom.current().nextDouble(0,1);
                 if (d < 0.07) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.DOUBLE_FABLED);
                 } else if (d < 0.22) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.INGREDIENT);
                 } else if (d < 0.25) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.MYTHIC);
                 } else if (d < 0.45) {
                     giveBonusItem(player, BonusItem.SPEED);
@@ -314,13 +334,22 @@ public class SkyIslandLootrun extends Minigame{
             case 3 -> {
                 double d = ThreadLocalRandom.current().nextDouble(0,1);
                 if (d < 0.1) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.DOUBLE_FABLED);
                 } else if (d < 0.3) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.INGREDIENT);
                 } else if (d < 0.35) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.MYTHIC);
                 } else if (d < 0.55) {
                     giveBonusItem(player, BonusItem.SPEED);
@@ -331,13 +360,22 @@ public class SkyIslandLootrun extends Minigame{
             case 4 -> {
                 double d = ThreadLocalRandom.current().nextDouble(0,1);
                 if (d < 0.1) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.DOUBLE_FABLED);
                 } else if (d < 0.3) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.INGREDIENT);
                 } else if (d < 0.37) {
-                    if (list.contains(uuid)) giveBonusItem(player, BonusItem.SPEED);
+                    if (list.contains(uuid)) {
+                        giveBonusItem(player, BonusItem.SPEED);
+                        return;
+                    }
                     giveBonusItem(player, BonusItem.MYTHIC);
                 } else if (d < 0.62) {
                     giveBonusItem(player, BonusItem.SPEED);
@@ -364,6 +402,22 @@ public class SkyIslandLootrun extends Minigame{
                 Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "[" + ChatColor.LIGHT_PURPLE + "!" + ChatColor.DARK_PURPLE + "] " + ChatColor.LIGHT_PURPLE + player.getName() + " found a " + ChatColor.DARK_PURPLE + "mythic!");
                 player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1,1);
                 player.getWorld().spawnParticle(Particle.SPELL_WITCH, player.getLocation(), 20, 0.3,0.3,0.3,0.1);
+                ItemStack old = player.getInventory().getItemInMainHand();
+                ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
+                ItemMeta meta = totem.getItemMeta();
+                assert meta != null;
+                meta.setCustomModelData(2);
+                totem.setItemMeta(meta);
+                player.getInventory().setItemInMainHand(totem);
+                player.damage(30);
+                player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
+                player.removePotionEffect(PotionEffectType.REGENERATION);
+                player.removePotionEffect(PotionEffectType.ABSORPTION);
+                player.setHealth(20);
+                player.getInventory().setItemInMainHand(old);
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.stopSound(Sound.ITEM_TOTEM_USE);
+                }
             }
             case SPEED -> {
                 player.sendMessage(ChatMessageFactory.singleLineInfo("You found a speed potion!"));

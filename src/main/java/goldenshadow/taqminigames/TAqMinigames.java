@@ -123,7 +123,7 @@ public final class TAqMinigames extends JavaPlugin {
 
             String[] data = TAqMinigames.totalScoreManager.getScoreboardLines(p, ChatColor.AQUA, ChatColor.GREEN);
             ScoreboardWrapper.queueData(p, " ",
-                    ChatColor.AQUA + "TAq Minigames is over - Thanks for playing!",
+                    ChatColor.AQUA + "Thanks for playing!",
                     " ",
                     ChatColor.DARK_AQUA + "Your " + TAqMinigames.totalScoreManager.getDescriptor() + ": " + ChatColor.GREEN + TAqMinigames.totalScoreManager.getScore(p.getUniqueId()),
                     " ",

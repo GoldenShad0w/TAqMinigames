@@ -21,6 +21,7 @@ public class Earthquake extends ProfEvent {
     private final BlockData dirt = Material.DIRT.createBlockData();
     private final BoundingBox box;
     private final UUID barUUID;
+    private final String formatted;
 
     public Earthquake(EventLocation location) {
         super ("An earthquake has occurred somewhere in the %s!", location, true);
@@ -31,7 +32,10 @@ public class Earthquake extends ProfEvent {
             p.setVelocity(new Vector(ThreadLocalRandom.current().nextDouble(0,0.2),ThreadLocalRandom.current().nextDouble(0,0.2),ThreadLocalRandom.current().nextDouble(0,0.2)));
         }, Utilities.secondsToMillis(1), true, false);
         Trigger.register(trigger);
-        barUUID = BossbarWrapper.createBossbar( ChatColor.LIGHT_PURPLE + "Earthquake in the " + location.area().getName(), BarColor.PURPLE, BarStyle.SOLID, 1);
+
+        formatted = ChatColor.LIGHT_PURPLE + String.valueOf(ChatColor.BOLD) + "Earthquake in the " + location.area().getName() + " " +  ChatColor.RESET + ChatColor.GRAY + "[%ds]";
+        barUUID = BossbarWrapper.createBossbar(String.format(formatted, 60) , BarColor.PURPLE, BarStyle.SOLID, 1);
+
     }
 
     @Override
@@ -43,6 +47,9 @@ public class Earthquake extends ProfEvent {
             Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("The earthquake in the " + location.area().getName() + " has ended!"));
             BossbarWrapper.destroyBossbar(barUUID);
             isDone = true;
+        } else {
+            BossbarWrapper.updateTitle(barUUID, String.format(formatted, 60 - tick));
+            BossbarWrapper.updateProgress(barUUID, 1 - ((double) tick) / 60);
         }
         super.tick();
     }

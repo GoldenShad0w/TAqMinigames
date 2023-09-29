@@ -46,6 +46,7 @@ public class PlayerConnect implements Listener {
                         }
                     } else {
                         //not registered
+                        event.getPlayer().teleport(Constants.LOBBY);
                         Bukkit.getOnlinePlayers().stream().filter(ServerOperator::isOp).forEach(x -> x.sendMessage(ChatMessageFactory.adminInfoMessage(event.getPlayer().getName() + " has joined that game and is neither a participant or spectator!")));
                     }
                 }, 5L);

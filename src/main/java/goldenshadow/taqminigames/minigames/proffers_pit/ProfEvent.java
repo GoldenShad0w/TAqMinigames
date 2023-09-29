@@ -13,15 +13,16 @@ public abstract class ProfEvent {
 
     public ProfEvent(String formattedString, EventLocation location, boolean formatted) {
         this.location = location;
-        if (location != null) {
-            if (formatted) {
-                ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString(formattedString.formatted(location.area().getName()), 50), ChatColor.YELLOW).toArray(String[]::new));
-            } else {
-                ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString(formattedString, 50), ChatColor.YELLOW).toArray(String[]::new));
-            }
-        }
 
+        if (formatted) {
+            if (location != null) {
+                ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString(formattedString.formatted(location.area().getName()), 50), ChatColor.YELLOW).toArray(String[]::new));
+            }
+        } else {
+            ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString(formattedString, 50), ChatColor.YELLOW).toArray(String[]::new));
+        }
     }
+
 
     public void tick() {
         tick++;

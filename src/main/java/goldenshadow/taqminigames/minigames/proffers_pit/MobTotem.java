@@ -21,11 +21,15 @@ public class MobTotem extends ProfEvent {
 
     private final UUID totemUUID;
     private final UUID barUUID;
+    private final String formatted;
 
     public MobTotem(EventLocation location) {
         super("Someone has placed a mob totem in the %s! Dangerous mobs will now spawn there!", location, true);
         totemUUID = spawnTotem();
-        barUUID = BossbarWrapper.createBossbar(ChatColor.RED +"Mob Totem in the " + location.area().getName(), BarColor.RED, BarStyle.SOLID, 1);
+
+        formatted = ChatColor.RED + String.valueOf(ChatColor.BOLD) + "Mob Totem in the " + location.area().getName() + " " +  ChatColor.RESET + ChatColor.GRAY + "[%ds]";
+        barUUID = BossbarWrapper.createBossbar(String.format(formatted, 60) , BarColor.RED, BarStyle.SOLID, 1);
+
     }
 
     @Override
@@ -39,6 +43,9 @@ public class MobTotem extends ProfEvent {
             deleteTotem();
             BossbarWrapper.destroyBossbar(barUUID);
             Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("The mob totem in the " + location.area().getName() + " has run out!"));
+        } else {
+            BossbarWrapper.updateTitle(barUUID, String.format(formatted, 60 - tick));
+            BossbarWrapper.updateProgress(barUUID, 1 - ((double) tick) / 60);
         }
         super.tick();
 

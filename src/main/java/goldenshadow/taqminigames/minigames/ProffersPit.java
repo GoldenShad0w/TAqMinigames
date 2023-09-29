@@ -68,7 +68,7 @@ public class ProffersPit extends Minigame {
             case 0 -> ChatMessageFactory.sendInfoBlockToAll(" ", ChatColor.AQUA + String.valueOf(ChatColor.BOLD) + "Proffer's Pit", " ");
             case 4 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The goal of this minigame is to get as much Prof XP as possible. Taking damage will cause you to lose some XP!", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 8 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Mine resources to gain XP and use it to purchase pickaxe upgrades", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 12 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Each better tier of resource doubles the XP rewarded for mining it", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 12 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "This is how much XP each ore will give:", " ",ChatColor.YELLOW +  "Copper: 1 XP",ChatColor.YELLOW +  "Iron: 2 XP",ChatColor.YELLOW +  "Gold: 4 XP",ChatColor.YELLOW +  "Cobalt: 8 XP",ChatColor.YELLOW +  "Diamond: 12 XP",ChatColor.YELLOW +  "Molten: 20 XP");
             case 14 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You can buy pickaxe upgrades at merchants all over the map. These allow you to mine higher level resources", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 18 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("They also sell other small trinkets and the ability to enter hunted mode. Players in hunted mode can attack and kill each other", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 22 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Special events will occur during the minigame, causing certain areas to become more dangerous or more profitable", 50), ChatColor.YELLOW).toArray(String[]::new));
@@ -244,6 +244,7 @@ public class ProffersPit extends Minigame {
         double multiplier = 1;
 
         switch (block.getType()) {
+            //  1,2,4,8,12,16 ??
             case RAW_COPPER_BLOCK -> amount = 1;
             case RAW_IRON_BLOCK -> {
                 amount = 2;
@@ -264,13 +265,13 @@ public class ProffersPit extends Minigame {
                 }
             }
             case DIAMOND_ORE -> {
-                amount = 16;
+                amount = 12;
                 if (!(highestMined.containsKey(player.getUniqueId()) && highestMined.get(player.getUniqueId()) > 4)) {
                     highestMined.put(player.getUniqueId(), 4);
                 }
             }
             case DEEPSLATE_REDSTONE_ORE -> {
-                amount = 32;
+                amount = 20;
                 if (!(highestMined.containsKey(player.getUniqueId()) && highestMined.get(player.getUniqueId()) > 5)) {
                     highestMined.put(player.getUniqueId(), 5);
                 }
@@ -299,8 +300,8 @@ public class ProffersPit extends Minigame {
                             }
                         } else {
                             event.setCancelled(true);
-                            return;
                         }
+                        return;
                     }
                 }
                 if (ParticipantManager.getParticipants().contains(p)) {

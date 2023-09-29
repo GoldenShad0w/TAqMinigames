@@ -53,7 +53,6 @@ public enum Game {
             if (possibleGames.contains(EXCAVATION)) list.add(EXCAVATION);
         }
         while (list.isEmpty()) {
-            Bukkit.broadcastMessage("filling up...");
             List<Game> fillUp = new ArrayList<>(possibleGames);
             if (fillUp.isEmpty()) throw new RuntimeException("Fill up list was empty!");
             list.add(fillUp.get(ThreadLocalRandom.current().nextInt(0,fillUp.size())));
