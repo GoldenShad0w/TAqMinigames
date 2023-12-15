@@ -45,7 +45,7 @@ public class ProffersPit extends Minigame {
         huntedColorTeam.setAllowFriendlyFire(true);
 
         assert Constants.WORLD != null;
-        Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true), 5L);
         Constants.WORLD.setGameRule(GameRule.FIRE_DAMAGE, true);
         Constants.WORLD.setGameRule(GameRule.FREEZE_DAMAGE, true);
         Constants.WORLD.setGameRule(GameRule.DROWNING_DAMAGE, true);

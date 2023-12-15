@@ -146,6 +146,14 @@ public class Utilities {
      */
     public static void registerLobbyTrigger() {
         Trigger.register(new Trigger(new BoundingBox(10, 33, 281, 193, 18, -8), Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.teleport(Constants.LOBBY), 0, false, false));
+        for (Location loc : Constants.LOBBY_JUMP_PADS) {
+            BoundingBox box = new BoundingBox(loc.getX()+1.5, loc.getY()+1, loc.getZ()+1.5, loc.getX()-1.5, loc.getY(), loc.getZ()-1.5);
+            Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                p.setVelocity(p.getLocation().getDirection().multiply(2.2).setY(1.5));
+                assert p.getLocation().getWorld() != null;
+                p.playSound(p.getLocation(), Sound.ITEM_TRIDENT_HIT_GROUND, 1,1);
+            }, Utilities.secondsToMillis(2), false, false));
+        }
     }
 
     public static void lockArmorStand(ArmorStand stand) {

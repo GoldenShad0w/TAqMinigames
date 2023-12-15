@@ -49,7 +49,9 @@ public class AvosRace extends Minigame {
         }
 
         assert Constants.WORLD != null;
-        Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true);
+
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true), 5L);
 
 
 

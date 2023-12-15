@@ -34,14 +34,14 @@ public class ExcavationSiteE extends Minigame {
     private Shockwave currentShockwave = null;
     private final List<UUID> exitConfirmStage = new ArrayList<>();
     private boolean areFlamethrowersActive = false;
-    private static final String[] deathMessages = {" fell to tge ancient spirit's wrath!"," was unable to outrun the curse!"," was caught by the curse!", " couldn't escape their doom!", " skill issued!", " had a serious case of skill issue!", " get scared to death!", " overestimated themselves!", " didn't make it!", " got too greedy!", "needs to re-watch Indiana Jones!"};
+    private static final String[] deathMessages = {" fell to the ancient spirit's wrath!"," was unable to outrun the curse!"," was caught by the curse!", " couldn't escape their doom!", " skill issued!", " had a serious case of skill issue!", " got scared to death!", " overestimated themselves!", " didn't make it!", " got too greedy!", " needs to re-watch Indiana Jones!"};
 
     public ExcavationSiteE() {
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
 
         assert Constants.WORLD != null;
-        Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true), 5L);
         Constants.WORLD.setGameRule(GameRule.FIRE_DAMAGE, true);
         Constants.WORLD.setGameRule(GameRule.FREEZE_DAMAGE, true);
         Constants.WORLD.setGameRule(GameRule.DROWNING_DAMAGE, true);

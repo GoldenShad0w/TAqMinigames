@@ -79,6 +79,7 @@ public final class TAqMinigames extends JavaPlugin {
         possibleGames = new ArrayList<>(Arrays.asList(Game.values()));
         ScoreManager.updateLobbyLeaderboard(new ArrayList<>());
         Utilities.fillAreaWithBlock(Constants.LOBBY_PODIUM_LOCATION[0], Constants.LOBBY_PODIUM_LOCATION[1], Material.AIR, null);
+        gameIndex = 0;
 
     }
 
@@ -103,6 +104,7 @@ public final class TAqMinigames extends JavaPlugin {
             for (Player p : ParticipantManager.getAll()) {
                 p.getInventory().clear();
                 ChatMessageFactory.sendInfoMessageBlock(p, " ", ChatColor.YELLOW + "Emerald multiplier increased to " + ScoreManager.getScoreMultiplier() + "x!", " ");
+                p.sendTitle(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + "Game " + (gameIndex + 1), ChatColor.AQUA + String.valueOf(ScoreManager.getScoreMultiplier()) + "x Emerald Multiplier", 10, 60, 10);
             }
         }
         gameSelection = new GameSelection(possibleGames, weighted, favor);
@@ -110,10 +112,6 @@ public final class TAqMinigames extends JavaPlugin {
     }
 
     public static void announceWinner() {
-
-
-
-
         UUID uuid = totalScoreManager.getFirst();
         Player winner = Bukkit.getPlayer(uuid);
         assert winner != null;
