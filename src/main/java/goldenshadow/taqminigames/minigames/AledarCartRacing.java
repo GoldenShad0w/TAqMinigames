@@ -38,6 +38,9 @@ public class AledarCartRacing extends Minigame {
     private final List<UUID> gameObjectUUIDs = new ArrayList<>();
     private final List<Location> crystalLocations = new ArrayList<>();
 
+    /**
+     * Used to initiate the game
+     */
     public AledarCartRacing() {
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
@@ -144,6 +147,10 @@ public class AledarCartRacing extends Minigame {
     public void onDeath(Player player) {
     }
 
+    /**
+     * Used to correctly handle a player reconnecting
+     * @param player The player who reconnected
+     */
     @Override
     public void playerReconnect(Player player) {
         if (gameState != GameState.RUNNING) {
@@ -153,11 +160,16 @@ public class AledarCartRacing extends Minigame {
         if (finishedPlayers.contains(player.getUniqueId())) {
             player.setGameMode(GameMode.SPECTATOR);
         } else {
-            Boat b = buildCart(player.getLocation());
+            //one block above location so that the boat doesn't get stuck in the ice
+            Boat b = buildCart(player.getLocation().add(0, 1,0));
             b.addPassenger(player);
         }
     }
 
+    /**
+     * Used to correctly handle to player disconnecting
+     * @param player The player
+     */
     @Override
     public void playerDisconnect(Player player) {
         Entity vehicle = player.getVehicle();
@@ -172,6 +184,10 @@ public class AledarCartRacing extends Minigame {
         }
     }
 
+    /**
+     * Used for when a player completes a lap
+     * @param player The lap
+     */
     private void lapCompleted(Player player) {
         int lap = currentLap.getOrDefault(player.getUniqueId(), 0);
 
@@ -185,6 +201,10 @@ public class AledarCartRacing extends Minigame {
         }
     }
 
+    /**
+     * Used for when a player finishes the race
+     * @param player The player
+     */
     private void trackCompleted(Player player) {
         Bukkit.broadcastMessage(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + player.getName() + " has successfully escorted Aledar through the Silent Expanse!");
         int reward = Math.max(Constants.CART_RACING_COMPLETE - (Constants.GENERIC_FALLOFF * finishedPlayers.size()), 300);
@@ -205,6 +225,9 @@ public class AledarCartRacing extends Minigame {
 
     }
 
+    /**
+     * Used to spawn new powerups
+     */
     private void spawnPowerups() {
         for (Location location : Constants.CART_RACING_POWERUP_LOCATIONS) {
             assert location.getWorld() != null;
@@ -229,6 +252,10 @@ public class AledarCartRacing extends Minigame {
         return Game.CART_RACING;
     }
 
+    /**
+     * Used for when a player collects a powerup
+     * @param player The player
+     */
     private void powerupCollected(Player player) {
         player.getInventory().clear();
         switch (ThreadLocalRandom.current().nextInt(0,4)) {
@@ -251,7 +278,11 @@ public class AledarCartRacing extends Minigame {
         }
     }
 
-
+    /**
+     * Used for when a player uses an ability
+     * @param player The player
+     * @param material The material of the item that was used
+     */
     public void abilityUsed(Player player, Material material) {
         player.getInventory().clear();
         if (material == Material.SLIME_BALL) {
@@ -290,6 +321,10 @@ public class AledarCartRacing extends Minigame {
         }
     }
 
+    /**
+     * Used for when a boat collides with a slime
+     * @param event The event
+     */
     public void boatCollide(VehicleEntityCollisionEvent event) {
         if (event.getEntity() instanceof Slime s) {
             if (s.getScoreboardTags().contains("m_racing_slime")) {
@@ -301,6 +336,10 @@ public class AledarCartRacing extends Minigame {
         }
     }
 
+    /**
+     * Used to stop players from leaving their boat
+     * @param event The event
+     */
     public void boatExit(VehicleExitEvent event) {
         if (event.getExited() instanceof Player p) {
             if (currentLap.getOrDefault(p.getUniqueId(), 0) < 5) {
@@ -311,8 +350,11 @@ public class AledarCartRacing extends Minigame {
         }
     }
 
-
-
+    /**
+     * Used to spawn in the racing cart
+     * @param location The location of where it should spawn
+     * @return The boat
+     */
     private Boat buildCart(Location location) {
         assert location.getWorld() != null;
         Boat cart = (Boat) location.getWorld().spawnEntity(location, EntityType.BOAT, false);
@@ -347,6 +389,10 @@ public class AledarCartRacing extends Minigame {
         return cart;
     }
 
+    /**
+     * Used to get the player head of Aledar
+     * @return The head
+     */
     @SuppressWarnings("CallToPrintStackTrace")
     private ItemStack getHead() {
         ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
@@ -366,6 +412,11 @@ public class AledarCartRacing extends Minigame {
         return itemStack;
     }
 
+    /**
+     * Used to create the armor for Aledar
+     * @param material The type of armor
+     * @return The armor
+     */
     private ItemStack getArmor(Material material) {
         ItemStack itemStack = new ItemStack(material);
         LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();

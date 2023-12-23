@@ -24,6 +24,9 @@ public class NetherPvP extends Minigame {
     private final HashMap<UUID, Long> lastKillMap = new HashMap<>();
     private final String[] deathMessages = {"%s was murdered by %s!", "%s didn't stand a chance against %s!", "%s was annihilated by %s!", "%s was killed by %s!", "%s lost to %s!", "%s should stay away from %s in the future!"};
 
+    /**
+     * Used to initialise the game
+     */
     public NetherPvP() {
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
@@ -111,6 +114,11 @@ public class NetherPvP extends Minigame {
         player.setBedSpawnLocation(getRandomSpawn(), true);
     }
 
+    /**
+     * Used for when a player kills another player
+     * @param killer The player who achieved the kill
+     * @param victim The player who got killed
+     */
     public void killAchieved(Player killer, Player victim) {
 
         if (lastKillMap.getOrDefault(killer.getUniqueId(), System.currentTimeMillis()) > System.currentTimeMillis()) return;
@@ -142,6 +150,10 @@ public class NetherPvP extends Minigame {
 
     }
 
+    /**
+     * Used for when a player finishes the game
+     * @param player The player
+     */
     private void playerFinish(Player player) {
         scoreManager.increaseScore(player, Constants.NETHER_PVP_STAGE_COMPLETE, "You reached weapon 8 for the first time!", true);
         scoreManager.increaseScore(player, Constants.NETHER_PVP_COMPLETE, "You finished the game!", true);
@@ -165,10 +177,18 @@ public class NetherPvP extends Minigame {
         return Game.NETHER_PVP;
     }
 
+    /**
+     * Used to get a random spawn location
+     * @return The spawn location
+     */
     private Location getRandomSpawn() {
         return Constants.NETHER_PVP_SPAWN_LOCATIONS[ThreadLocalRandom.current().nextInt(0, Constants.NETHER_PVP_SPAWN_LOCATIONS.length)];
     }
 
+    /**
+     * Used to toggle aurum pvp
+     * @param b True if it should be on, false if it should be off
+     */
     private void togglePvP(boolean b) {
         if (b) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "aurum api enable_pvp");

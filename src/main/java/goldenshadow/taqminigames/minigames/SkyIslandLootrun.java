@@ -39,6 +39,9 @@ public class SkyIslandLootrun extends Minigame{
 
     private final Team team;
 
+    /**
+     * Used to initialise the game
+     */
     public SkyIslandLootrun() {
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
@@ -119,6 +122,9 @@ public class SkyIslandLootrun extends Minigame{
         super.tick();
     }
 
+    /**
+     * Used to register all the triggers
+     */
     private void registerTriggers() {
 
         for (CheckpointData checkpointData : Constants.SKY_CHECKPOINTS) {
@@ -156,6 +162,11 @@ public class SkyIslandLootrun extends Minigame{
         }
     }
 
+    /**
+     * Used to handle an item being used
+     * @param player The player
+     * @param material The material of the item used
+     */
     public void itemUsed(Player player, Material material) {
         if (material == Material.PAPER && !player.hasCooldown(Material.PAPER)) {
             player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1,1);
@@ -164,6 +175,10 @@ public class SkyIslandLootrun extends Minigame{
         }
     }
 
+    /**
+     * Used to add all emeralds saved in the "emerald pouch" to the actual scoreboard
+     * @param player The player
+     */
     private void convertQueuedChests(Player player) {
         int i = queuedPoints.getOrDefault(player.getUniqueId(), 0);
         List<UUID> list = queuedOpenedChests.get(player.getUniqueId());
@@ -176,11 +191,22 @@ public class SkyIslandLootrun extends Minigame{
         openedChests.put(player.getUniqueId(), opened);
     }
 
+    /**
+     * Used to check if a player can open a chest
+     * @param player The player
+     * @param interaction The interaction entity
+     * @return True if they can, false otherwise
+     */
     private boolean isOpenable(Player player, Interaction interaction) {
         if (openedChests.getOrDefault(player.getUniqueId(), List.of()).contains(interaction.getUniqueId())) return false;
         return !queuedOpenedChests.getOrDefault(player.getUniqueId(), List.of()).contains(interaction.getUniqueId());
     }
 
+    /**
+     * Used for when a player opens a chest
+     * @param player The player
+     * @param interaction The interaction entity
+     */
     public void chestOpened(Player player, Interaction interaction) {
         if (player.getGameMode() == GameMode.CREATIVE) {
             player.sendMessage(ChatMessageFactory.adminErrorMessage("You can't interact with game objects while in creative mode!"));
@@ -386,7 +412,11 @@ public class SkyIslandLootrun extends Minigame{
         }
     }
 
-
+    /**
+     * Used to give a player a bonus item from a chest
+     * @param player The player
+     * @param bonusItem The bonus item that should be received
+     */
     private void giveBonusItem(Player player, BonusItem bonusItem) {
         switch (bonusItem) {
             case DOUBLE_FABLED -> {
@@ -473,6 +503,9 @@ public class SkyIslandLootrun extends Minigame{
         return Game.SKY_ISLAND_LOOTRUN;
     }
 
+    /**
+     * Bonus item enum
+     */
     private enum BonusItem {
         DOUBLE_FABLED,
         MYTHIC,
@@ -481,6 +514,10 @@ public class SkyIslandLootrun extends Minigame{
         INGREDIENT
     }
 
+    /**
+     * Used to send the animated checkpoint title
+     * @param player The player
+     */
     private void sendCheckpointTitle(Player player) {
         for (int i = 1; i < 20; i++) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.playSound(player, Sound.ITEM_FLINTANDSTEEL_USE, 1,1), i);

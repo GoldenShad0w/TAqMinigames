@@ -46,6 +46,10 @@ public class Volley extends Attack{
         super.tick();
     }
 
+    /**
+     * Used to draw a circle at a location
+     * @param location The location
+     */
     private void drawCircle(Location location) {
         for (double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 36) {
             final double x = Math.cos(angle)*4;
@@ -57,6 +61,10 @@ public class Volley extends Attack{
         }
     }
 
+    /**
+     * Used to kill all nearby players
+     * @param location The location
+     */
     private void killNearby(Location location) {
         if (TAqMinigames.minigame instanceof AuraAndVolley game) {
             List<Player> killed = new ArrayList<>();

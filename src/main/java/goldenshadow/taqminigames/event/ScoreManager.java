@@ -246,6 +246,10 @@ public class ScoreManager {
         }
     }
 
+    /**
+     * Used to update the scoreboard for the lobby
+     * @param sortedList The sorted list
+     */
     public static void updateLobbyLeaderboard(List<String> sortedList) {
         Entity e = Bukkit.getEntity(Constants.LOBBY_LEADERBOARD_UUID);
         if (e != null) {

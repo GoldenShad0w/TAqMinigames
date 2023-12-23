@@ -14,7 +14,9 @@ import org.bukkit.inventory.meta.PotionMeta;
 
 import java.util.List;
 
-
+/**
+ * Utility class to create all shop items
+ */
 public class ShopItems {
 
     public static ItemStack getBoots(int price) {

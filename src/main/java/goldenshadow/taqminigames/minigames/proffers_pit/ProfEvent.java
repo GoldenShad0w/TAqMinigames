@@ -11,6 +11,12 @@ public abstract class ProfEvent {
     protected final EventLocation location;
     protected boolean isDone = false;
 
+    /**
+     * Used to create a new prof event
+     * @param formattedString The string end to all players to announce the event
+     * @param location The location of where it occurs
+     * @param formatted Whether the string is using formatting
+     */
     public ProfEvent(String formattedString, EventLocation location, boolean formatted) {
         this.location = location;
 

@@ -1,6 +1,5 @@
 package goldenshadow.taqminigames.enums;
 
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,11 @@ public enum Game {
     }
 
 
-
+    /**
+     * Convenience method used to check if a string can safely be used on the #valueOf(String) method
+     * @param value The string
+     * @return True if it can, false otherwise
+     */
     public static boolean contains(String value) {
         for (Game g : values()) {
             if (g.toString().equals(value)) return true;
@@ -35,6 +38,13 @@ public enum Game {
         return false;
     }
 
+    /**
+     * Used to get a weighted list of games. Shorter games will be more likely to appear when gameIndex is low and
+     * longer games will be more likely when gameIndex is high
+     * @param gameIndex The amount of games that have already been played
+     * @param possibleGames The remaining possible games
+     * @return The weighted list
+     */
     public static List<Game> getWeightedList(int gameIndex, List<Game> possibleGames) {
         if (possibleGames.isEmpty()) throw new RuntimeException("List received by getWeightedList was empty! This should never happen!");
         List<Game> list = new ArrayList<>();

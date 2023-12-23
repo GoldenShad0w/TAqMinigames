@@ -13,18 +13,38 @@ public class ChatMessageFactory {
 
     private final static int CENTER_PX = 154;
 
+    /**
+     * Used to format a message as an admin error message
+     * @param message The message
+     * @return The formatted message
+     */
     public static String adminErrorMessage(String message) {
         return ChatColor.RED + "[Minigames] Error: " + message;
     }
 
+    /**
+     * Used to format a message as an admin usage message
+     * @param message The message
+     * @return The formatted message
+     */
     public static String adminUsageMessage(String message) {
         return ChatColor.RED + "[Minigames] Usage: " + message;
     }
 
+    /**
+     * Used to format a message as an admin message
+     * @param message The message
+     * @return The formatted message
+     */
     public static String adminInfoMessage(String message) {
         return ChatColor.GOLD + "[Minigames] " + ChatColor.YELLOW + message;
     }
 
+    /**
+     * Used to format a message as a single line info message
+     * @param message The message
+     * @return The formatted message
+     */
     public static String singleLineInfo(String message) {
         return ChatColor.GOLD + "[" + ChatColor.YELLOW + "!" + ChatColor.GOLD + "] " + ChatColor.YELLOW + message;
     }
@@ -40,7 +60,11 @@ public class ChatMessageFactory {
         return ChatColor.GREEN + "[" + (amount < 0 ? "" : "+") + amount + " " + descriptor + "] " + ChatColor.DARK_GREEN + message;
     }
 
-
+    /**
+     * Used to send an info block to a player
+     * @param player The player
+     * @param content The contents of the info block
+     */
     public static void sendInfoMessageBlock(Player player, String... content) {
         sendCenteredMessage(player,ChatColor.DARK_AQUA + String.valueOf(ChatColor.STRIKETHROUGH) + "==================================================");
         player.sendMessage(" ");
@@ -49,6 +73,10 @@ public class ChatMessageFactory {
         sendCenteredMessage(player,ChatColor.DARK_AQUA + String.valueOf(ChatColor.STRIKETHROUGH) + "==================================================");
     }
 
+    /**
+     * Convenience method used to send an info block to all players
+     * @param content The contents of the info block
+     */
     public static void sendInfoBlockToAll(String... content) {
         for (Player p : Bukkit.getOnlinePlayers()) {
             sendInfoMessageBlock(p, content);
@@ -98,6 +126,11 @@ public class ChatMessageFactory {
         player.sendMessage(sb + message);
     }
 
+    /**
+     * Used to send an action bar message to a player
+     * @param player The player
+     * @param message The message
+     */
     public static void sendActionbarMessage(Player player, String message) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
     }

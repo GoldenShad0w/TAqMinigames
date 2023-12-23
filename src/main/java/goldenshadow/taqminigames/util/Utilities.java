@@ -156,6 +156,10 @@ public class Utilities {
         }
     }
 
+    /**
+     * Used to lock an entire armor stand
+     * @param stand The armor stand
+     */
     public static void lockArmorStand(ArmorStand stand) {
         stand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.ADDING_OR_CHANGING);
         stand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
@@ -171,6 +175,10 @@ public class Utilities {
         stand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
     }
 
+    /**
+     * Used to get the victory crown item
+     * @return The ItemStack of the crown
+     */
     public static ItemStack getVictoryCrown() {
         ItemStack itemStack = new ItemStack(Material.CARVED_PUMPKIN);
         ItemMeta meta = itemStack.getItemMeta();

@@ -33,6 +33,9 @@ public class ProffersPit extends Minigame {
     private final List<ProfEvent> currentEvents = new ArrayList<>();
     private final Team huntedColorTeam;
 
+    /**
+     * Used to initialise the game
+     */
     public ProffersPit() {
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Prof XP", false);
@@ -214,6 +217,10 @@ public class ProffersPit extends Minigame {
         Utilities.giveAurumItem(player, "m_prof_t1");
     }
 
+    /**
+     * Used to toggle hunted mode for a player
+     * @param player The player
+     */
     public void huntedToggled(Player player) {
         if (!player.hasCooldown(Material.FIRE_CHARGE)) {
             if (huntedPlayers.contains(player.getUniqueId())) {
@@ -238,6 +245,11 @@ public class ProffersPit extends Minigame {
         }
     }
 
+    /**
+     * Used for when a block gets broken
+     * @param player The player
+     * @param block The block
+     */
     public void blockMined(Player player, Block block) {
         if (player.getGameMode() != GameMode.ADVENTURE) return;
         int amount = 0;
@@ -289,6 +301,10 @@ public class ProffersPit extends Minigame {
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> block.setType(type), 200L);
     }
 
+    /**
+     * Used to handle a player taking damage
+     * @param event The event
+     */
     public void damageTaken(EntityDamageEvent event) {
         if (gameState == GameState.RUNNING) {
             if (event.getEntity() instanceof Player p) {
@@ -317,8 +333,11 @@ public class ProffersPit extends Minigame {
         }
     }
 
-
-
+    /**
+     * Used to check if a player is currently in hunted mode
+     * @param player The player
+     * @return True if they are, false if they aren't
+     */
     public boolean isHunted(Player player) {
         return huntedPlayers.contains(player.getUniqueId());
     }
@@ -357,6 +376,10 @@ public class ProffersPit extends Minigame {
         super.end();
     }
 
+    /**
+     * Used to handle the shop gui
+     * @param event The event
+     */
     public void shopEvent(InventoryClickEvent event) {
         if (event.getWhoClicked().getOpenInventory().getTitle().equals(ChatColor.BOLD + "Mining Supplies")) {
             Player player = (Player) event.getWhoClicked();
@@ -484,6 +507,12 @@ public class ProffersPit extends Minigame {
         }
     }
 
+    /**
+     * Used to check if the player has the correct pickaxe
+     * @param player The player
+     * @param tier The pickaxe tier
+     * @return True if they do, false if they don't
+     */
     private boolean hasPickaxe(Player player, int tier) {
 
         Material mat = tier < 5 ? Material.IRON_PICKAXE : tier < 6 ? Material.DIAMOND_PICKAXE : Material.NETHERITE_PICKAXE;
@@ -504,6 +533,10 @@ public class ProffersPit extends Minigame {
         return false;
     }
 
+    /**
+     * A method that trys to return a relevant event index so that events occur in relevant locations
+     * @return The index
+     */
     private int getRelevantEventLocationIndex() {
         if (timer.getMinutesLeft() > 15) {
             if (ThreadLocalRandom.current().nextInt(0, 3) == 0) {
@@ -528,6 +561,11 @@ public class ProffersPit extends Minigame {
         }
     }
 
+    /**
+     * Used to check if an xp bomb already exits
+     * @param location The event location
+     * @return True if it does, also otherwise
+     */
     private boolean doesXPBombExistAlready(EventLocation location) {
         return switch (location.area()) {
             case COPPER -> xpBombMaterials.contains(Material.RAW_COPPER_BLOCK);

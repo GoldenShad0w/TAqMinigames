@@ -52,6 +52,9 @@ public final class TAqMinigames extends JavaPlugin {
         // Plugin shutdown logic
     }
 
+    /**
+     * Used to start the event
+     */
     public static void start() {
         if (!isRunning) {
             inPreStartPhase = false;
@@ -66,6 +69,9 @@ public final class TAqMinigames extends JavaPlugin {
         }
     }
 
+    /**
+     * Used to stop the event
+     */
     public static void stop() {
         isRunning = false;
         Trigger.unregisterAll();
@@ -83,6 +89,10 @@ public final class TAqMinigames extends JavaPlugin {
 
     }
 
+    /**
+     * Used to start the next minigame
+     * @param weighted Whether the list of possible games should be weighted
+     */
     public static void nextMinigame(boolean weighted) {
 
         if (gameIndex > 0) {
@@ -97,6 +107,11 @@ public final class TAqMinigames extends JavaPlugin {
         gameIndex++;
     }
 
+    /**
+     * Used to start the next minigame and cause a specific game to be more likely to be selected
+     * @param weighted Whether the list of possible games should be weighted
+     * @param favor The game that should be more likely to be picked
+     */
     public static void nextMinigame(boolean weighted, Game favor) {
 
         if (gameIndex > 0) {
@@ -111,6 +126,9 @@ public final class TAqMinigames extends JavaPlugin {
         gameIndex++;
     }
 
+    /**
+     * Used to announce the winner of the event
+     */
     public static void announceWinner() {
         UUID uuid = totalScoreManager.getFirst();
         Player winner = Bukkit.getPlayer(uuid);
@@ -153,7 +171,9 @@ public final class TAqMinigames extends JavaPlugin {
         }
     }
 
-
+    /**
+     * Used to register all listeners
+     */
     private static void registerEvents() {
         Bukkit.getPluginManager().registerEvents(new PlayerDamage(), plugin);
         Bukkit.getPluginManager().registerEvents(new PlayerLeave(), plugin);
@@ -175,10 +195,17 @@ public final class TAqMinigames extends JavaPlugin {
 
     }
 
+    /**
+     * Getter for the plugin instance
+     * @return The plugin
+     */
     public static TAqMinigames getPlugin() {
         return plugin;
     }
 
+    /**
+     * Used to initialise all loops
+     */
     public static void initLoops() {
         new BukkitRunnable() {
             @Override
@@ -211,10 +238,18 @@ public final class TAqMinigames extends JavaPlugin {
         }.runTaskTimer(plugin, 0, 1L);
     }
 
+    /**
+     * Used to see if the game is running
+     * @return True if it is, false if it isn't
+     */
     public static boolean isRunning() {
         return isRunning;
     }
 
+    /**
+     * Utility method used to get the correct game object from the game enum
+     * @param game The game
+     */
     public static void parseMinigame(Game game) {
         switch (game) {
             case AURA_AND_VOLLEY -> TAqMinigames.minigame = new AuraAndVolley();

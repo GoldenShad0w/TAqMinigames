@@ -161,10 +161,12 @@ public class AvosRace extends Minigame {
         }
     }
 
+    /**
+     * Used to correctly handle a player disconnecting. There is no need to do anything for this game
+     * @param player The player
+     */
     @Override
-    public void playerDisconnect(Player player) {
-
-    }
+    public void playerDisconnect(Player player) {}
 
     /**
      * Getter for the current game

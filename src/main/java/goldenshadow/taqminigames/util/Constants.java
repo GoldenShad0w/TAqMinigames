@@ -11,6 +11,9 @@ import org.bukkit.util.Vector;
 
 import java.util.UUID;
 
+/**
+ * Utility class that stores all kinds of data needed to run this event. Yes, I know it's an abomination
+ */
 public class Constants {
 
     public static final String WORLD_NAME = "minigames2";

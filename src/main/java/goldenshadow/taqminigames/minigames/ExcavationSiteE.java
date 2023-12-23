@@ -36,6 +36,9 @@ public class ExcavationSiteE extends Minigame {
     private boolean areFlamethrowersActive = false;
     private static final String[] deathMessages = {" fell to the ancient spirit's wrath!"," was unable to outrun the curse!"," was caught by the curse!", " couldn't escape their doom!", " skill issued!", " had a serious case of skill issue!", " got scared to death!", " overestimated themselves!", " didn't make it!", " got too greedy!", " needs to re-watch Indiana Jones!"};
 
+    /**
+     * Used to initialise the game
+     */
     public ExcavationSiteE() {
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
@@ -253,6 +256,11 @@ public class ExcavationSiteE extends Minigame {
         super.end();
     }
 
+    /**
+     * Used for when a player interacts with an interaction entity
+     * @param player The player
+     * @param interaction The interaction entity
+     */
     public void interact(Player player, Interaction interaction) {
         if (player.getGameMode() == GameMode.CREATIVE) {
             player.sendMessage(ChatMessageFactory.adminErrorMessage("You can't interact with game objects while in creative mode!"));
@@ -675,6 +683,10 @@ public class ExcavationSiteE extends Minigame {
         }
     }
 
+    /**
+     * Used for when a player breaks a gravel block
+     * @param block The block
+     */
     public void blockBroken(Block block) {
         if (block.getType() == Material.GRAVEL) {
             Material type = block.getType();
@@ -682,6 +694,10 @@ public class ExcavationSiteE extends Minigame {
         }
     }
 
+    /**
+     * Used for when a player exits the temple
+     * @param player The player
+     */
     private void playerExit(Player player) {
         player.setGameMode(GameMode.SPECTATOR);
         completedPlayers.add(player.getUniqueId());
@@ -696,10 +712,17 @@ public class ExcavationSiteE extends Minigame {
         scoreManager.increaseScore(player, Constants.EXCAVATION_CRYSTAL * count, "You collected " + count + " crystals!", true);
     }
 
+    /**
+     * Used to remove the empty bottle from a players inventory after a potion has been drunk
+     * @param player The player
+     */
     public void potionUsed(Player player) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.getInventory().remove(Material.GLASS_BOTTLE), 1L);
     }
 
+    /**
+     * Used to register all the spike traps
+     */
     @SuppressWarnings("deprecation")
     private void registerSpikes() {
         for (Location[] l : Constants.EXCAVATION_SPIKE_BOXES) {
@@ -735,9 +758,4 @@ public class ExcavationSiteE extends Minigame {
             }, Utilities.secondsToMillis(1), true, false));
         }
     }
-
-
-
-
-
 }

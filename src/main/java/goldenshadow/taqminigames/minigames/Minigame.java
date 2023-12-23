@@ -169,6 +169,10 @@ public abstract class Minigame {
      */
     public abstract void playerReconnect(Player player);
 
+    /**
+     * Used to handle a player disconnecting correctly
+     * @param player The player
+     */
     public abstract void playerDisconnect(Player player);
 
     /**

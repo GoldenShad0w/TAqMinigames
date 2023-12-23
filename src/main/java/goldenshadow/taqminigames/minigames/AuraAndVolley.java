@@ -41,7 +41,7 @@ public class AuraAndVolley extends Minigame{
     private int round = 0;
 
     /**
-     * Used to start the aura and volley minigame
+     * Used to initialise the game
      */
     public AuraAndVolley() {
         alivePlayers = ParticipantManager.getParticipants();
@@ -54,9 +54,6 @@ public class AuraAndVolley extends Minigame{
         ParticipantManager.teleportAllPlayers(Constants.AURA_TUTORIAL_LOCATION);
     }
 
-    /**
-     * 20hz loop
-     */
     @Override
     public void fastTick() {
         Iterator<Attack> it = activeAttacks.iterator();
@@ -70,9 +67,6 @@ public class AuraAndVolley extends Minigame{
         super.fastTick();
     }
 
-    /**
-     * 1hz loop
-     */
     @Override
     public void tick() {
         ParticipantManager.getAll().forEach(this::updateScoreboard);
@@ -185,7 +179,7 @@ public class AuraAndVolley extends Minigame{
     }
 
     /**
-     * Used to initialize ever new round
+     * Used to initialize every new round
      */
     private void initRound() {
         if (round < 3) {
@@ -323,15 +317,15 @@ public class AuraAndVolley extends Minigame{
         player.setGameMode(GameMode.SPECTATOR);
     }
 
+    /**
+     * Used to correctly handle a player disconnecting
+     * @param player The player
+     */
     @Override
     public void playerDisconnect(Player player) {
         alivePlayers.remove(player);
     }
 
-    /**
-     * Getter for the game enum
-     * @return The game enum
-     */
     @Override
     public Game getGame() {
         return Game.AURA_AND_VOLLEY;

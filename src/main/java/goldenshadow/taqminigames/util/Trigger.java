@@ -57,6 +57,7 @@ public class Trigger {
         while (it.hasNext()) {
             Trigger trigger = it.next();
             if (player.getWorld().equals(trigger.world)) {
+                // debug highlight for triggers
                 /*
                 player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
                 player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);

@@ -15,10 +15,17 @@ public class Shockwave {
     private int tick;
     public boolean isDone = false;
 
+    /**
+     * Used to initialise a shockwave attack
+     * @param location The location of where it should originate from
+     */
     public Shockwave(Location location) {
         center = location.clone().add(0, 0.5, 0);
     }
 
+    /**
+     * 20hz clock
+     */
     public void tick() {
         tick++;
         if (tick == 1) {
@@ -35,7 +42,11 @@ public class Shockwave {
         }
     }
 
-
+    /**
+     * Used to draw the circle of the shockwave
+     * @param location The location
+     * @param size The size of the circle
+     */
     private void drawCircle(Location location, int size) {
         double angle = 0;
         final double maxAngle = 2 * Math.PI;
@@ -56,6 +67,10 @@ public class Shockwave {
         }
     }
 
+    /**
+     * Used to damage all nearby players
+     * @param loc The location
+     */
     private void damageNearby(Location loc) {
         assert loc.getWorld() != null;
         for (Entity e : loc.getWorld().getNearbyEntities(loc,1,0.2,1)) {
@@ -68,6 +83,12 @@ public class Shockwave {
         }
     }
 
+    /**
+     * Used to calculate the knockback vector after a player is hit
+     * @param source The source of the shockwave
+     * @param target The location of the player
+     * @return The knockback vector
+     */
     private static Vector calculateKnockbackVector(Location source, Location target) {
         Vector v = target.toVector().subtract(source.toVector()).normalize();
         v.setX(v.getX()*0.4);
