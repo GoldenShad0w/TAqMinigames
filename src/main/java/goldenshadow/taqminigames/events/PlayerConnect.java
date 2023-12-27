@@ -1,10 +1,7 @@
 package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.TAqMinigames;
-import goldenshadow.taqminigames.event.BossbarWrapper;
-import goldenshadow.taqminigames.event.Participant;
-import goldenshadow.taqminigames.event.ParticipantManager;
-import goldenshadow.taqminigames.event.ScoreboardWrapper;
+import goldenshadow.taqminigames.event.*;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import org.bukkit.Bukkit;
@@ -23,6 +20,7 @@ public class PlayerConnect implements Listener {
             if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
                     BossbarWrapper.addPlayer(event.getPlayer());
+                    SoundtrackManager.play(event.getPlayer());
                     if (ParticipantManager.isRegistered(event.getPlayer())) {
                         Participant p = ParticipantManager.getParticipant(event.getPlayer());
                         assert p != null;
@@ -47,7 +45,7 @@ public class PlayerConnect implements Listener {
                     } else {
                         //not registered
                         event.getPlayer().teleport(Constants.LOBBY);
-                        Bukkit.getOnlinePlayers().stream().filter(ServerOperator::isOp).forEach(x -> x.sendMessage(ChatMessageFactory.adminInfoMessage(event.getPlayer().getName() + " has joined that game and is neither a participant or spectator!")));
+                        Bukkit.getOnlinePlayers().stream().filter(ServerOperator::isOp).forEach(x -> x.sendMessage(ChatMessageFactory.adminWarnMessage(event.getPlayer().getName() + " has joined that game and is neither a participant or spectator!")));
                     }
                 }, 5L);
             }
@@ -59,7 +57,9 @@ public class PlayerConnect implements Listener {
                             " ",
                             ChatColor.AQUA + "Starting soon!");
                     event.getPlayer().teleport(Constants.LOBBY);
+                    event.getPlayer().getInventory().clear();
                     ScoreboardWrapper.updateBoards();
+                    SoundtrackManager.play(event.getPlayer());
                 }, 5L);
             }
         }

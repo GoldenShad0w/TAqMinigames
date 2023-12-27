@@ -3,6 +3,7 @@ package goldenshadow.taqminigames.minigames;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
+import goldenshadow.taqminigames.enums.SoundFile;
 import goldenshadow.taqminigames.event.*;
 import goldenshadow.taqminigames.util.*;
 import org.bukkit.Bukkit;
@@ -30,12 +31,13 @@ public abstract class Minigame {
     public ScoreManager scoreManager;
 
     /**
-     * Main loop of the minigame. This should usually run on a 1hz clock
+     * Main loop of the minigame. This runs on a 1hz clock
      */
     public void tick() {
         if (timer != null) {
             timer.tick();
         }
+        if (tick == 30) SoundtrackManager.setCurrent(getGame().getSoundFile(), true);
         tick++;
     }
 
@@ -54,6 +56,7 @@ public abstract class Minigame {
      */
     public void end() {
         ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Game over!");
+        SoundtrackManager.stopAllForAll();
         BossbarWrapper.destroyAll();
         gameState = GameState.ENDING;
         timer = null;
@@ -95,6 +98,7 @@ public abstract class Minigame {
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
             Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Teleporting..."));
             ParticipantManager.teleportAllPlayers(Constants.LOBBY);
+            SoundtrackManager.setCurrent(new SoundFile("soundtrack.lobby", 1), true);
             for (Player p : ParticipantManager.getParticipants()) {
                 p.getInventory().clear();
                 p.setGameMode(GameMode.ADVENTURE);

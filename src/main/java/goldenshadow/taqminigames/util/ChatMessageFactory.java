@@ -23,6 +23,15 @@ public class ChatMessageFactory {
     }
 
     /**
+     * Used to format a message as an admin warn message
+     * @param message The message
+     * @return The formatted message
+     */
+    public static String adminWarnMessage(String message) {
+        return ChatColor.DARK_PURPLE + "[Minigames] " + ChatColor.LIGHT_PURPLE + message;
+    }
+
+    /**
      * Used to format a message as an admin usage message
      * @param message The message
      * @return The formatted message

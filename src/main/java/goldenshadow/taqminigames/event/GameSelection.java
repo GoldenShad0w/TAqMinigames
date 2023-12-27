@@ -2,6 +2,7 @@ package goldenshadow.taqminigames.event;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
+import goldenshadow.taqminigames.enums.SoundFile;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Utilities;
@@ -65,6 +66,7 @@ public class GameSelection {
     public void tick() {
         switch (tick) {
             case 0 -> {
+                SoundtrackManager.setCurrent(new SoundFile("soundtrack.game_selection", 1), false);
                 for (Player p : participants) {
                     p.teleport(Constants.LOBBY_GAME_SELECTION);
                     String raw = "The next minigame is about to be selected! Three possible options will be chosen randomly and you will be able to vote for the one you want to play. The game with the least amount of votes will be eliminated for this round. One of the two remaining games will be picked randomly!";

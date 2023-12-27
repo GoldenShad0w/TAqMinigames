@@ -61,6 +61,10 @@ public final class TAqMinigames extends JavaPlugin {
             isRunning = true;
             gameSelection = null;
             totalScoreManager = new ScoreManager("Emeralds", true);
+
+            // disabling proffers pit
+            possibleGames.remove(Game.PROFFERS_PIT);
+
             ScoreManager.updateLobbyLeaderboard(totalScoreManager.getSortedDisplayList(ChatColor.AQUA, ChatColor.GREEN));
             for (Player p : Bukkit.getOnlinePlayers()) {
                 ParticipantManager.addParticipant(p, p.getGameMode() == GameMode.ADVENTURE);

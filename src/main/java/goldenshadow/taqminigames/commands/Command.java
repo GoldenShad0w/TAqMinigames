@@ -2,8 +2,10 @@ package goldenshadow.taqminigames.commands;
 
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
+import goldenshadow.taqminigames.enums.SoundFile;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreboardWrapper;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import org.bukkit.Bukkit;
 
@@ -53,6 +55,7 @@ public class Command implements CommandExecutor {
                             TAqMinigames.inPreStartPhase = !TAqMinigames.inPreStartPhase;
                             player.sendMessage(ChatMessageFactory.adminInfoMessage("Toggled pre start phase to " + TAqMinigames.inPreStartPhase + "!"));
                             if (TAqMinigames.inPreStartPhase) {
+                                SoundtrackManager.setCurrent(new SoundFile("soundtrack.lobby", 1), true);
                                 for (Player p : Bukkit.getOnlinePlayers()) {
                                     ScoreboardWrapper.queueData(p,
                                             " ",

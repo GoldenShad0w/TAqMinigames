@@ -6,25 +6,30 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public enum Game {
-    EXCAVATION ("Excavation Site E"),
-    SKY_ISLAND_LOOTRUN ("Sky Island Lootrun"),
-    NETHER_PVP ("Nether PvP"),
-    NESAAK_SNOWBALL_FIGHT ("Nesaak Snowball Fight"),
-    AVOS_RACE ("Avos Race"),
-    PROFFERS_PIT ("Proffer's Pit"),
-    CART_RACING ("Aledar Cart Racing"),
-    AURA_AND_VOLLEY ("Aura & Volley");
+    EXCAVATION ("Excavation Site E", new SoundFile("soundtrack.site_e", 1)),
+    SKY_ISLAND_LOOTRUN ("Sky Island Lootrun", new SoundFile("soundtrack.sky_islands", 1)),
+    NETHER_PVP ("Nether PvP", new SoundFile("soundtrack.nether_pvp", 1)),
+    NESAAK_SNOWBALL_FIGHT ("Nesaak Snowball Fight", new SoundFile("soundtrack.nesaak_snowball_fight", 1)),
+    AVOS_RACE ("Avos Race", new SoundFile("soundtrack.avos_race", 1)),
+    PROFFERS_PIT ("Proffer's Pit", new SoundFile("soundtrack.proffers_pit",1)),
+    CART_RACING ("Aledar Cart Racing", new SoundFile("soundtrack.cart_racing",1)),
+    AURA_AND_VOLLEY ("Aura & Volley", new SoundFile("soundtrack.aura_and_volley", 1));
 
     private final String label;
+    private final SoundFile soundFile;
 
-    Game(String label) {
+    Game(String label, SoundFile soundFile) {
         this.label = label;
+        this.soundFile = soundFile;
     }
 
     public String getLabel() {
         return label;
     }
 
+    public SoundFile getSoundFile() {
+        return soundFile;
+    }
 
     /**
      * Convenience method used to check if a string can safely be used on the #valueOf(String) method
