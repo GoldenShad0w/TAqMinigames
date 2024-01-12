@@ -6,11 +6,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
 public class SoundtrackManager {
 
     private static SoundFile soundFile = null;
     private static boolean loop = false;
 
+    private static final HashMap<UUID, Integer> taskMap = new HashMap<>();
 
     /**
      * Used to change the current soundtrack
@@ -33,6 +39,10 @@ public class SoundtrackManager {
      */
     public static void stopAll(Player p) {
         p.stopSound(SoundCategory.RECORDS);
+        if (taskMap.containsKey(p.getUniqueId())) {
+            Bukkit.getScheduler().cancelTask(taskMap.get(p.getUniqueId()));
+            taskMap.remove(p.getUniqueId());
+        }
     }
 
     /**
@@ -50,17 +60,32 @@ public class SoundtrackManager {
      */
     public static void play(Player p) {
         if (soundFile == null) return;
-
+        stopAll(p);
         p.playSound(p, soundFile.name(), SoundCategory.RECORDS, 1,1);
         if (loop) {
             final String oldName = soundFile.name();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
+            int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
                 if (oldName.equals(SoundtrackManager.soundFile.name())) {
                     play(p);
                 }
             }, soundFile.length() / 50);
+            taskMap.put(p.getUniqueId(), taskId);
         }
     }
 
+    /**
+     * Used to check if the current track loops. If not, it is recommended not to start it again when a player dies or reconnects
+     * @return True if it does, false otherwise
+     */
+    public static boolean isCurrentTackLooped() {
+        return loop;
+    }
 
+    /**
+     * Used to get the current sound file being played
+     * @return The sound file name
+     */
+    public static SoundFile getSoundFile() {
+        return soundFile;
+    }
 }

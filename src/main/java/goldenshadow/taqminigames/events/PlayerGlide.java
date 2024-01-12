@@ -15,12 +15,12 @@ public class PlayerGlide implements Listener {
     @EventHandler
     public void glideEvent(EntityToggleGlideEvent event) {
         if (TAqMinigames.minigame != null) {
-            if (TAqMinigames.minigame instanceof AvosRace) {
+            if (TAqMinigames.minigame instanceof AvosRace a) {
                 if (event.getEntity() instanceof Player player) {
                     if (Bukkit.getOnlinePlayers().contains(player)) {
                         if (!event.isGliding()) {
-                            if (((AvosRace) TAqMinigames.minigame).isHotFloor(player)) {
-                                player.setHealth(0);
+                            if (a.isHotFloor(player)) {
+                                a.onDeath(player);
                             }
                         }
                     }

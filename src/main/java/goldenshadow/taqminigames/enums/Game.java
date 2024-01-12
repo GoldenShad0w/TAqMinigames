@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public enum Game {
-    EXCAVATION ("Excavation Site E", new SoundFile("soundtrack.site_e", 1)),
-    SKY_ISLAND_LOOTRUN ("Sky Island Lootrun", new SoundFile("soundtrack.sky_islands", 1)),
-    NETHER_PVP ("Nether PvP", new SoundFile("soundtrack.nether_pvp", 1)),
-    NESAAK_SNOWBALL_FIGHT ("Nesaak Snowball Fight", new SoundFile("soundtrack.nesaak_snowball_fight", 1)),
-    AVOS_RACE ("Avos Race", new SoundFile("soundtrack.avos_race", 1)),
-    PROFFERS_PIT ("Proffer's Pit", new SoundFile("soundtrack.proffers_pit",1)),
-    CART_RACING ("Aledar Cart Racing", new SoundFile("soundtrack.cart_racing",1)),
-    AURA_AND_VOLLEY ("Aura & Volley", new SoundFile("soundtrack.aura_and_volley", 1));
+    EXCAVATION ("Excavation Site E", new SoundFile("minigames.site_e", 82469)),
+    SKY_ISLAND_LOOTRUN ("Sky Island Lootrun", new SoundFile("minigames.sky_islands", 89469)),
+    NETHER_PVP ("Nether PvP", new SoundFile("minigames.nether_pvp", 198034)),
+    NESAAK_SNOWBALL_FIGHT ("Nesaak Snowball Fight", new SoundFile("minigames.nesaak_snowball_fight", 104046)),
+    AVOS_RACE ("Avos Race", new SoundFile("minigames.avos_race", 169064)),
+    PROFFERS_PIT ("Proffer's Pit", new SoundFile("minigames.proffers_pit",1)),
+    CART_RACING ("Aledar Cart Racing", new SoundFile("minigames.cart_racing",167053)),
+    AURA_AND_VOLLEY ("Aura & Volley", new SoundFile("minigames.aura_and_volley", 72856));
 
     private final String label;
     private final SoundFile soundFile;

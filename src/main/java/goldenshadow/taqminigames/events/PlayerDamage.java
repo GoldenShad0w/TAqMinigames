@@ -31,11 +31,11 @@ public class PlayerDamage implements Listener {
             }
         }
         if (event.getEntity() instanceof Player p) {
-            if (TAqMinigames.minigame instanceof AvosRace) {
+            if (TAqMinigames.minigame instanceof AvosRace a) {
                 if (Bukkit.getOnlinePlayers().contains(p)) {
                     if (!(event instanceof EntityDamageByEntityEvent)) {
-                        if (((AvosRace) TAqMinigames.minigame).isHotFloor(p)) {
-                            p.setHealth(0);
+                        if (a.isHotFloor(p)) {
+                            a.onDeath(p);
                             event.setCancelled(true);
                         }
                     }

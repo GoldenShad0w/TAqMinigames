@@ -151,7 +151,7 @@ public class Utilities {
             Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                 p.setVelocity(p.getLocation().getDirection().multiply(2.2).setY(1.5));
                 assert p.getLocation().getWorld() != null;
-                p.playSound(p.getLocation(), Sound.ITEM_TRIDENT_HIT_GROUND, 1,1);
+                p.playSound(p.getLocation(), Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
             }, Utilities.secondsToMillis(2), false, false));
         }
     }

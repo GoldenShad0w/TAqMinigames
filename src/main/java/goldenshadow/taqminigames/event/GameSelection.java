@@ -39,6 +39,7 @@ public class GameSelection {
      * @param weighted Whether the game selection should suggest more short games at the beginning and longer games at the end
      */
     public GameSelection(List<Game> possibleGames, boolean weighted) {
+        SoundtrackManager.setCurrent(new SoundFile("minigames.game_selection", 34220), false);
         this.possibleGames = new ArrayList<>(possibleGames);
         participants = ParticipantManager.getAll();
         this.weighted = weighted;
@@ -52,6 +53,7 @@ public class GameSelection {
      * @param favor A specific game that should be forced to be suggested and if not voted out, forced to be picked
      */
     public GameSelection(List<Game> possibleGames, boolean weighted, Game favor) {
+        SoundtrackManager.setCurrent(new SoundFile("minigames.game_selection", 34220), false);
         this.possibleGames = new ArrayList<>(possibleGames);
         participants = ParticipantManager.getAll();
         this.weighted = weighted;
@@ -66,7 +68,6 @@ public class GameSelection {
     public void tick() {
         switch (tick) {
             case 0 -> {
-                SoundtrackManager.setCurrent(new SoundFile("soundtrack.game_selection", 1), false);
                 for (Player p : participants) {
                     p.teleport(Constants.LOBBY_GAME_SELECTION);
                     String raw = "The next minigame is about to be selected! Three possible options will be chosen randomly and you will be able to vote for the one you want to play. The game with the least amount of votes will be eliminated for this round. One of the two remaining games will be picked randomly!";
@@ -79,25 +80,22 @@ public class GameSelection {
                     ChatMessageFactory.sendInfoMessageBlock(p, list.toArray(String[]::new));
                 }
             }
-            case 5, 9, 13 -> {
+            case 5, 11, 17 -> {
                 for (Player p : participants) {
                     p.sendTitle(" ", ChatColor.YELLOW + "Choosing possible game.", 5, 25, 0);
-                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
                 }
             }
-            case 6, 10, 14 -> {
+            case 6, 12, 18 -> {
                 for (Player p : participants) {
                     p.sendTitle(" ", ChatColor.YELLOW + "Choosing possible game..", 5, 25, 0);
-                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
                 }
             }
-            case 7, 11, 15 -> {
+            case 7, 13, 19 -> {
                 for (Player p : participants) {
                     p.sendTitle(" ", ChatColor.YELLOW + "Choosing possible game...", 5, 25, 0);
-                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
                 }
             }
-            case 8, 12, 16 -> {
+            case 10, 16, 22 -> {
 
                 switch (selectionState) {
                     case 0 -> {
@@ -126,19 +124,18 @@ public class GameSelection {
                     }
                 }
             }
-            case 17 -> {
+            case 23 -> {
                 for (Player p : participants) {
                     ChatMessageFactory.sendInfoMessageBlock(p, ChatColor.YELLOW + "The possible games are:",  ChatColor.RED + String.valueOf(ChatColor.BOLD) + chosenGames[0].getLabel(), ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + chosenGames[1].getLabel(), ChatColor.BLUE + String.valueOf(ChatColor.BOLD) + chosenGames[2].getLabel(), " ", ChatColor.YELLOW + "Stand on the platform of the game", ChatColor.YELLOW + "you want to play!");
                 }
             }
-            case 27, 28, 29 -> {
+            case 30, 31, 32 -> {
                 for (Player p : participants) {
-                    String s = tick == 27 ? "." : tick == 28 ? ".." : "...";
+                    String s = tick == 30 ? "." : tick == 31 ? ".." : "...";
                     p.sendTitle(" ", ChatColor.YELLOW + "Counting players" + s, 5,25,0);
-                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
                 }
             }
-            case 30 -> {
+            case 33 -> {
                 VoteColor leastVotes = countVotes();
                 Material block = leastVotes == VoteColor.RED ? Material.RED_CONCRETE : leastVotes == VoteColor.LIME ? Material.LIME_CONCRETE : Material.BLUE_CONCRETE;
                 Utilities.fillAreaWithBlock(Constants.LOBBY_SELECTION_AREA[0], Constants.LOBBY_SELECTION_AREA[1], Material.STRUCTURE_VOID, block);
@@ -149,18 +146,18 @@ public class GameSelection {
                 chosenGames[leastVotes.ordinal()] = null;
 
                 for (Player p : participants) {
-                    p.playSound(p, Sound.ENTITY_WITHER_BREAK_BLOCK, 0.5f,1);
+                    p.playSound(p, Sound.ENTITY_WITHER_BREAK_BLOCK, SoundCategory.VOICE, 0.5f,1);
                     ChatMessageFactory.sendInfoMessageBlock(p,  ChatColor.YELLOW + game.getLabel() + " was eliminated!");
                 }
             }
-            case 31, 32, 33 -> {
+            case 34, 35, 36 -> {
                 for (Player p : participants) {
-                    String s = tick == 31 ? "." : tick == 32 ? ".." : "...";
+                    String s = tick == 34 ? "." : tick == 35 ? ".." : "...";
                     p.sendTitle(" ", ChatColor.YELLOW + "Picking next game" + s, 5,20,0);
-                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, 1,1);
+                    p.playSound(p, Sound.BLOCK_DISPENSER_FAIL, SoundCategory.VOICE, 1,1);
                 }
             }
-            case 34 -> {
+            case 37 -> {
                 boolean chosen = false;
                 if (favor != null) {
                     for (Game g : chosenGames) {
@@ -177,19 +174,19 @@ public class GameSelection {
                 }
                 for (Player p : participants) {
                     p.sendTitle(" ", ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + actualNextgame.getLabel(), 5, 40, 5);
-                    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, 1,1);
+                    p.playSound(p, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.VOICE, 1,1);
                     ChatMessageFactory.sendInfoMessageBlock(p,  ChatColor.YELLOW + "The next minigame will be:", ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + actualNextgame.getLabel());
                 }
             }
-            case 35, 37, 38, 39 -> {
+            case 38, 40, 41, 42 -> {
 
-                if (tick == 35) {
+                if (tick == 38) {
                     Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Next minigame will start in 5 seconds!"));
                 }
-                else if (tick == 37) {
+                else if (tick == 40) {
                     Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Next minigame will start in 3 seconds!"));
                 }
-                else if (tick == 38) {
+                else if (tick == 41) {
                     Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Next minigame will start in 2 seconds!"));
                 }
                 else {
@@ -197,7 +194,7 @@ public class GameSelection {
                 }
 
             }
-            case 40 -> {
+            case 43 -> {
                 Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Teleporting..."));
                 TAqMinigames.possibleGames.remove(actualNextgame);
                 TAqMinigames.parseMinigame(actualNextgame);
@@ -307,7 +304,7 @@ public class GameSelection {
      * @return True if it should still be called, false if the game selection is done
      */
     public boolean isInProgress() {
-        return tick < 41;
+        return tick < 44;
     }
 
     public enum VoteColor {

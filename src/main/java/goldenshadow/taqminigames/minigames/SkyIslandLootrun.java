@@ -5,6 +5,7 @@ import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.minigames.sky_island.CheckpointData;
 import goldenshadow.taqminigames.util.*;
 import org.bukkit.*;
@@ -43,6 +44,7 @@ public class SkyIslandLootrun extends Minigame{
      * Used to initialise the game
      */
     public SkyIslandLootrun() {
+        SoundtrackManager.stopAllForAll();
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
 
@@ -78,31 +80,31 @@ public class SkyIslandLootrun extends Minigame{
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 28 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 29 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 30 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
-                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
                     player.setBedSpawnLocation(Constants.SKY_START_LOCATION, true);
                     Utilities.giveAurumItem(player, "m_sky_scroll");
                     team.addEntry(player.getName());
@@ -140,24 +142,23 @@ public class SkyIslandLootrun extends Minigame{
             if (i == 0) {
                 Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.setVelocity(new Vector(30, 1, -1.5));
-                    p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND, 1,1);
+                    p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
                 }, Utilities.secondsToMillis(2), false, false));
             } else if (i == 1) {
                 Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.setVelocity(new Vector(2, 1, -3));
-                    p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND, 1,1);
+                    p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
                 }, Utilities.secondsToMillis(2), false, false));
             } else if (i == 2) {
                 Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.setVelocity(new Vector(-2, 1, -20));
-                    p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND, 1,1);
+                    p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
                 }, Utilities.secondsToMillis(2), false, false));
             } else {
                 Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.setVelocity(new Vector(0, 3, 0));
-                    p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND, 1,1);
+                    p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
                 }, Utilities.secondsToMillis(2), false, false));
-
             }
         }
     }
@@ -169,8 +170,9 @@ public class SkyIslandLootrun extends Minigame{
      */
     public void itemUsed(Player player, Material material) {
         if (material == Material.PAPER && !player.hasCooldown(Material.PAPER)) {
-            player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT, 1,1);
-            player.setHealth(0);
+            player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT,SoundCategory.VOICE, 1,1);
+            onDeath(player);
+            player.teleport(Constants.SKY_START_LOCATION);
             player.setCooldown(Material.PAPER, 20);
         }
     }
@@ -220,7 +222,7 @@ public class SkyIslandLootrun extends Minigame{
 
             if (!isOpenable(player, interaction)) {
                 player.sendMessage(ChatMessageFactory.singleLineInfo("You already opened this chest!"));
-                player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                 return;
             }
 
@@ -238,7 +240,7 @@ public class SkyIslandLootrun extends Minigame{
                 queuedOpenedChests.put(player.getUniqueId(), list);
             }
 
-            player.playSound(player, Sound.BLOCK_CHEST_OPEN, 1,1);
+            player.playSound(player, Sound.BLOCK_CHEST_OPEN,SoundCategory.VOICE, 1,1);
 
             if (interaction.getScoreboardTags().contains("m_sky_chest_t1")) {
 
@@ -421,16 +423,16 @@ public class SkyIslandLootrun extends Minigame{
         switch (bonusItem) {
             case DOUBLE_FABLED -> {
                 scoreManager.increaseScore(player, 1, "You found a double fabled!", false);
-                player.playSound(player, Sound.ENCHANT_THORNS_HIT, 1,1);
+                player.playSound(player, Sound.ENCHANT_THORNS_HIT,SoundCategory.VOICE, 1,1);
             }
             case INGREDIENT -> {
-                player.playSound(player, Sound.ENTITY_VILLAGER_CELEBRATE, 1,1);
+                player.playSound(player, Sound.ENTITY_VILLAGER_CELEBRATE,SoundCategory.VOICE, 1,1);
                 scoreManager.increaseScore(player, Constants.SKY_ING, "You found an expensive ingredient!", true);
             }
             case MYTHIC -> {
                 scoreManager.increaseScore(player, Constants.SKY_MYTHIC, "You found a mythic!", true);
                 Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "[" + ChatColor.LIGHT_PURPLE + "!" + ChatColor.DARK_PURPLE + "] " + ChatColor.LIGHT_PURPLE + player.getName() + " found a " + ChatColor.DARK_PURPLE + "mythic!");
-                player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1,1);
+                player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE,SoundCategory.VOICE, 1,1);
                 player.getWorld().spawnParticle(Particle.SPELL_WITCH, player.getLocation(), 20, 0.3,0.3,0.3,0.1);
                 ItemStack old = player.getInventory().getItemInMainHand();
                 ItemStack totem = new ItemStack(Material.TOTEM_OF_UNDYING);
@@ -452,12 +454,12 @@ public class SkyIslandLootrun extends Minigame{
             case SPEED -> {
                 player.sendMessage(ChatMessageFactory.singleLineInfo("You found a speed potion!"));
                 Utilities.giveAurumItem(player, "m_sky_speed");
-                player.playSound(player, Sound.ENTITY_WITCH_DRINK, 1,1);
+                player.playSound(player, Sound.ENTITY_WITCH_DRINK,SoundCategory.VOICE, 1,1);
             }
             case JUMP -> {
                 player.sendMessage(ChatMessageFactory.singleLineInfo("You found a jump height consumable!"));
                 Utilities.giveAurumItem(player, "m_sky_jump");
-                player.playSound(player, Sound.ENTITY_WITCH_DRINK, 1,1);
+                player.playSound(player, Sound.ENTITY_WITCH_DRINK,SoundCategory.VOICE, 1,1);
             }
         }
     }
@@ -520,7 +522,7 @@ public class SkyIslandLootrun extends Minigame{
      */
     private void sendCheckpointTitle(Player player) {
         for (int i = 1; i < 20; i++) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.playSound(player, Sound.ITEM_FLINTANDSTEEL_USE, 1,1), i);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.playSound(player, Sound.ITEM_FLINTANDSTEEL_USE,SoundCategory.VOICE, 1,1), i);
         }
         player.sendTitle( ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + "KP", "", 0, 20, 0);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> player.sendTitle(ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + "CKPO", "", 0, 20, 0), 3L);

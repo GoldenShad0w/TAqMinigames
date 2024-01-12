@@ -5,6 +5,7 @@ import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.minigames.excavation.DartTrapData;
 import goldenshadow.taqminigames.minigames.excavation.Shockwave;
 import goldenshadow.taqminigames.util.*;
@@ -41,6 +42,7 @@ public class ExcavationSiteE extends Minigame {
      */
     public ExcavationSiteE() {
         gameState = GameState.STARTING;
+        SoundtrackManager.stopAllForAll();
         scoreManager = new ScoreManager("Emeralds", true);
 
         assert Constants.WORLD != null;
@@ -81,7 +83,7 @@ public class ExcavationSiteE extends Minigame {
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                     player.teleport(Constants.EXCAVATION_START_LOC);
                 }
                 Utilities.fillAreaWithBlock(Constants.EXCAVATION_ENTRANCE_AREA[0], Constants.EXCAVATION_ENTRANCE_AREA[1], Material.BARRIER, Material.AIR);
@@ -89,25 +91,25 @@ public class ExcavationSiteE extends Minigame {
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 28 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 29 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 30 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
-                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
                     Utilities.fillAreaWithBlock(Constants.EXCAVATION_ENTRANCE_AREA[0], Constants.EXCAVATION_ENTRANCE_AREA[1], Material.AIR, Material.BARRIER);
                     if (ParticipantManager.getParticipants().contains(player)) {
                         Utilities.giveAurumGroup(player, "m_exca_gear");
@@ -158,17 +160,17 @@ public class ExcavationSiteE extends Minigame {
                 for (Player p : ParticipantManager.getParticipants()) {
                     if (ThreadLocalRandom.current().nextInt(0,3) == 0) {
                         switch (ThreadLocalRandom.current().nextInt(0, 6)) {
-                            case 0,1,2 -> p.playSound(p, Sound.AMBIENT_CAVE, 1,1);
-                            case 3 -> p.playSound(p, Sound.ENTITY_WARDEN_SNIFF, 1,1);
-                            case 4 -> p.playSound(p, Sound.ENTITY_WARDEN_TENDRIL_CLICKS, 1,1);
-                            case 5 -> p.playSound(p, Sound.ENTITY_SPIDER_AMBIENT, 1,1);
+                            case 0,1,2 -> p.playSound(p, Sound.AMBIENT_CAVE,SoundCategory.VOICE, 1,1);
+                            case 3 -> p.playSound(p, Sound.ENTITY_WARDEN_SNIFF,SoundCategory.VOICE, 1,1);
+                            case 4 -> p.playSound(p, Sound.ENTITY_WARDEN_TENDRIL_CLICKS,SoundCategory.VOICE, 1,1);
+                            case 5 -> p.playSound(p, Sound.ENTITY_SPIDER_AMBIENT,SoundCategory.VOICE, 1,1);
                         }
                     }
                 }
             }
         }
         if (tick > 320) {
-            tick = 30;
+            tick = 31;
         }
         super.tick();
     }
@@ -276,14 +278,14 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedCrystalMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected this crystal!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
             list.add(interaction.getUniqueId());
             collectedCrystalMap.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_crystal");
-            player.playSound(player, Sound.BLOCK_AMETHYST_CLUSTER_STEP, 5,1);
+            player.playSound(player, Sound.BLOCK_AMETHYST_CLUSTER_STEP,SoundCategory.VOICE, 5,1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
                 scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find this crystal!", true);
                 foundFeature.add(interaction.getUniqueId());
@@ -296,7 +298,7 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -315,7 +317,7 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -334,7 +336,7 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -353,7 +355,7 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this sword!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -361,7 +363,7 @@ public class ExcavationSiteE extends Minigame {
             collectedMisc.put(player.getUniqueId(), list);
             player.getInventory().remove(Material.IRON_SWORD);
             Utilities.giveAurumItem(player, "m_exca_better_sword");
-            player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE, 1, 1);
+            player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE,SoundCategory.VOICE, 1, 1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
                 scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find this sword!", true);
                 foundFeature.add(interaction.getUniqueId());
@@ -374,14 +376,14 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this chestplate!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
             list.add(interaction.getUniqueId());
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_chestplate");
-            player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE, 1, 1);
+            player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE,SoundCategory.VOICE, 1, 1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
                 scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find this chestplate!", true);
                 foundFeature.add(interaction.getUniqueId());
@@ -394,14 +396,14 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up these boots!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
             list.add(interaction.getUniqueId());
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_boots");
-            player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE, 1, 1);
+            player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE,SoundCategory.VOICE, 1, 1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
                 scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find these boots!", true);
                 foundFeature.add(interaction.getUniqueId());
@@ -412,12 +414,12 @@ public class ExcavationSiteE extends Minigame {
 
             if (player.getInventory().contains(Material.TOTEM_OF_UNDYING)) {
                 ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You can only carry one ancient idol!");
-                player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                 return;
 
             }
             Utilities.giveAurumItem(player, "m_exca_totem");
-            player.playSound(player, Sound.ENTITY_ITEM_PICKUP, 1, 1);
+            player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
                 scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find this item!", true);
                 foundFeature.add(interaction.getUniqueId());
@@ -430,14 +432,14 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
             list.add(interaction.getUniqueId());
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_red_key");
-            player.playSound(player, Sound.ENTITY_ITEM_PICKUP, 1, 1);
+            player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_blue_key")) {
@@ -446,14 +448,14 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
             list.add(interaction.getUniqueId());
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_blue_key");
-            player.playSound(player, Sound.ENTITY_ITEM_PICKUP, 1, 1);
+            player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_green_key")) {
@@ -462,14 +464,14 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
             list.add(interaction.getUniqueId());
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_green_key");
-            player.playSound(player, Sound.ENTITY_ITEM_PICKUP, 1, 1);
+            player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_yellow_key")) {
@@ -478,14 +480,14 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
             list.add(interaction.getUniqueId());
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_yellow_key");
-            player.playSound(player, Sound.ENTITY_ITEM_PICKUP, 1, 1);
+            player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_herb")) {
@@ -494,14 +496,14 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this item!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
             list.add(interaction.getUniqueId());
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_herb");
-            player.playSound(player, Sound.ENTITY_ITEM_PICKUP, 1, 1);
+            player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_cauldron")) {
@@ -515,7 +517,7 @@ public class ExcavationSiteE extends Minigame {
                         assert meta != null;
                         if (meta.getDisplayName().contains("Speed Potion")) {
                             ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You can only carry one speed potion!");
-                            player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                            player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                             return;
                         }
                     }
@@ -530,10 +532,10 @@ public class ExcavationSiteE extends Minigame {
 
                 Utilities.giveAurumItem(player, "m_exca_speed_potion");
                 player.getInventory().remove(Material.LILY_OF_THE_VALLEY);
-                player.playSound(player, Sound.BLOCK_BREWING_STAND_BREW, 1, 1);
+                player.playSound(player, Sound.BLOCK_BREWING_STAND_BREW,SoundCategory.VOICE, 1, 1);
             } else {
                 player.sendMessage(ChatMessageFactory.singleLineInfo("You don't have the ingredient needed to use this..."));
-                player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
             }
             return;
         }
@@ -543,7 +545,7 @@ public class ExcavationSiteE extends Minigame {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
                     ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already received a blessing!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS, 1,1);
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -551,7 +553,7 @@ public class ExcavationSiteE extends Minigame {
             collectedMisc.put(player.getUniqueId(), list);
             player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, PotionEffect.INFINITE_DURATION, 0, true, false, true));
             player.sendMessage(ChatMessageFactory.singleLineInfo("You have received a blessing..."));
-            player.playSound(player, Sound.BLOCK_BEACON_POWER_SELECT, 1, 1);
+            player.playSound(player, Sound.BLOCK_BEACON_POWER_SELECT,SoundCategory.VOICE, 1, 1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_red_in")) {
@@ -567,14 +569,14 @@ public class ExcavationSiteE extends Minigame {
                             collectedMisc.put(player.getUniqueId(), list);
 
                             player.teleport(Constants.EXCAVATION_DOOR_RED[0]);
-                            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN, 1,1);
+                            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
                             return;
                         }
                     }
                 }
             }
-            player.playSound(player, Sound.BLOCK_IRON_DOOR_CLOSE, 1,1);
+            player.playSound(player, Sound.BLOCK_IRON_DOOR_CLOSE,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_blue_in")) {
@@ -590,14 +592,14 @@ public class ExcavationSiteE extends Minigame {
                             collectedMisc.put(player.getUniqueId(), list);
 
                             player.teleport(Constants.EXCAVATION_DOOR_BLUE[0]);
-                            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN, 1,1);
+                            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
                             return;
                         }
                     }
                 }
             }
-            player.playSound(player, Sound.BLOCK_IRON_DOOR_CLOSE, 1,1);
+            player.playSound(player, Sound.BLOCK_IRON_DOOR_CLOSE,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_green_in")) {
@@ -613,14 +615,14 @@ public class ExcavationSiteE extends Minigame {
                             collectedMisc.put(player.getUniqueId(), list);
 
                             player.teleport(Constants.EXCAVATION_DOOR_GREEN[0]);
-                            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN, 1,1);
+                            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
                             return;
                         }
                     }
                 }
             }
-            player.playSound(player, Sound.BLOCK_IRON_DOOR_CLOSE, 1,1);
+            player.playSound(player, Sound.BLOCK_IRON_DOOR_CLOSE,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_yellow_in")) {
@@ -636,34 +638,34 @@ public class ExcavationSiteE extends Minigame {
                             collectedMisc.put(player.getUniqueId(), list);
 
                             player.teleport(Constants.EXCAVATION_DOOR_YELLOW[0]);
-                            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN, 1,1);
+                            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
                             return;
                         }
                     }
                 }
             }
-            player.playSound(player, Sound.BLOCK_IRON_DOOR_CLOSE, 1,1);
+            player.playSound(player, Sound.BLOCK_IRON_DOOR_CLOSE,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_red_out")) {
             player.teleport(Constants.EXCAVATION_DOOR_RED[1]);
-            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN, 1,1);
+            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_blue_out")) {
             player.teleport(Constants.EXCAVATION_DOOR_BLUE[1]);
-            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN, 1,1);
+            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_green_out")) {
             player.teleport(Constants.EXCAVATION_DOOR_GREEN[1]);
-            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN, 1,1);
+            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_yellow_out")) {
             player.teleport(Constants.EXCAVATION_DOOR_YELLOW[1]);
-            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN, 1,1);
+            player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_exit")) {
@@ -734,7 +736,7 @@ public class ExcavationSiteE extends Minigame {
                 for (Entity e : Constants.WORLD.getNearbyEntities(b)) {
                     if (e instanceof ItemDisplay itemDisplay) {
                         if (itemDisplay.getScoreboardTags().contains("m_exca_spike")) {
-                            itemDisplay.getWorld().playSound(itemDisplay.getLocation(), Sound.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 1, 1);
+                            itemDisplay.getWorld().playSound(itemDisplay.getLocation(), Sound.BLOCK_PISTON_EXTEND, SoundCategory.VOICE, 1, 1);
                             ItemStack item = itemDisplay.getItemStack();
                             if (item != null) {
                                 assert item.getItemMeta() != null;
@@ -744,7 +746,7 @@ public class ExcavationSiteE extends Minigame {
                                 itemDisplay.setItemStack(item);
                             }
                             Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
-                                itemDisplay.getWorld().playSound(itemDisplay.getLocation(), Sound.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 1, 1);
+                                itemDisplay.getWorld().playSound(itemDisplay.getLocation(), Sound.BLOCK_PISTON_CONTRACT, SoundCategory.VOICE, 1, 1);
                                     assert item != null;
                                     assert item.getItemMeta() != null;
                                     ItemMeta meta = item.getItemMeta();

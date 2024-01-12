@@ -5,6 +5,7 @@ import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.util.*;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -37,6 +38,7 @@ public class AvosRace extends Minigame {
     public AvosRace() {
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
+        SoundtrackManager.stopAllForAll();
 
         mapIndex = TAqMinigames.getPlugin().getConfig().getInt("avos-race-next-map");
         if (mapIndex + 1 > TAqMinigames.getPlugin().getConfig().getInt("avos-race-maps")) {
@@ -58,7 +60,6 @@ public class AvosRace extends Minigame {
 
         for (Player p : ParticipantManager.getParticipants()) {
             playerStages.put(p.getUniqueId(), 0);
-            p.setBedSpawnLocation(Constants.AVOS_MAP_LOCATIONS[mapIndex-1], true);
         }
 
         timer = new Timer(0, 29, () -> timer = new Timer(9,59, this::end));
@@ -91,7 +92,7 @@ public class AvosRace extends Minigame {
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                     if (ParticipantManager.getParticipants().contains(player)) {
                         assert player.getEquipment() != null;
                         player.getEquipment().setChestplate(getElytraItem());
@@ -101,25 +102,25 @@ public class AvosRace extends Minigame {
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 28 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 29 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 30 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
-                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
                     Utilities.fillAreaWithBlock(Constants.AVOS_START_BARRIERS[0], Constants.AVOS_START_BARRIERS[1], Material.AIR, Material.BARRIER);
 
                 }
@@ -135,11 +136,12 @@ public class AvosRace extends Minigame {
      */
     @Override
     public void onDeath(Player player) {
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1,1);
-        player.spawnParticle(Particle.EXPLOSION_HUGE, player.getLocation(), 1, 0, 0,0,0);
-        player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1,1);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH,SoundCategory.VOICE, 1,1);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, player.getLocation(), 1, 0, 0,0,0);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE,SoundCategory.VOICE, 1,1);
         player.sendMessage(ChatMessageFactory.singleLineInfo("You died..."));
         Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + deathMessages[ThreadLocalRandom.current().nextInt(0, deathMessages.length)]);
+        player.teleport(Constants.AVOS_MAP_LOCATIONS[mapIndex-1]);
     }
 
     /**

@@ -5,6 +5,7 @@ import goldenshadow.taqminigames.util.Constants;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -76,7 +77,7 @@ public class ScoreManager {
         if (withMultiplier) {
             amount = (int) (amount * scoreMultiplier);
         }
-        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1,1);
+        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.VOICE,1,1);
         UUID uuid = player.getUniqueId();
         if (scores.containsKey(uuid)) {
             scores.put(uuid, Math.max(scores.get(uuid) + amount, 0));

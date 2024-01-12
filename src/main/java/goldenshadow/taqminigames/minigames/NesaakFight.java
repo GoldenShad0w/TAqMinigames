@@ -5,6 +5,7 @@ import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.util.*;
 import goldenshadow.taqminigames.util.Timer;
 import org.bukkit.*;
@@ -35,7 +36,7 @@ public class NesaakFight extends Minigame {
      * Used to start a new nesaak snowball fight minigame
      */
     public NesaakFight() {
-
+        SoundtrackManager.stopAllForAll();
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Kills", false);
         timer = new Timer(0, 29, () -> timer = new Timer(9,59, this::end));
@@ -66,7 +67,7 @@ public class NesaakFight extends Minigame {
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                     if (ParticipantManager.getParticipants().contains(player)) {
                         player.getInventory().addItem(getShovel(), new ItemStack(Material.SNOWBALL, 12));
 
@@ -78,25 +79,25 @@ public class NesaakFight extends Minigame {
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 28 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 29 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 30 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
-                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
 
                 }
                 gameState = GameState.RUNNING;
@@ -156,7 +157,7 @@ public class NesaakFight extends Minigame {
     public void killAchieved(Player player, String victimName) {
         scoreManager.increaseScore(player, 1, false);
         player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1,100));
-        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1,1);
+        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,SoundCategory.VOICE, 1,1);
         player.sendMessage(ChatMessageFactory.pointsGainedInfo("You killed " + victimName, 1, "kill"));
         Bukkit.broadcastMessage(ChatColor.GOLD + String.format(deathMessages[ThreadLocalRandom.current().nextInt(0, deathMessages.length)], victimName, player.getName()));
     }
@@ -252,7 +253,7 @@ public class NesaakFight extends Minigame {
                 armorStand.setCustomName(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + ">> " + ChatColor.AQUA + ChatColor.BOLD + "Heal" + ChatColor.DARK_AQUA + ChatColor.BOLD + " <<");
                 armorStand.getEquipment().setHelmet(new ItemStack(Material.RED_GLAZED_TERRACOTTA));
                 Trigger.register(new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
-                    p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
+                    p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS,SoundCategory.VOICE, 1,1);
                     p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1,100));
                     Entity e = Bukkit.getEntity(armorStand.getUniqueId());
                     if (e != null) {
@@ -264,7 +265,7 @@ public class NesaakFight extends Minigame {
                 armorStand.setCustomName(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + ">> " + ChatColor.AQUA + ChatColor.BOLD + "Speed" + ChatColor.DARK_AQUA + ChatColor.BOLD + " <<");
                 armorStand.getEquipment().setHelmet(new ItemStack(Material.ICE));
                 Trigger.register(new Trigger(box, location.getWorld(), p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
-                    p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
+                    p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS,SoundCategory.VOICE, 1,1);
                     p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200,1));
                     Entity e = Bukkit.getEntity(armorStand.getUniqueId());
                     if (e != null) {
@@ -279,7 +280,7 @@ public class NesaakFight extends Minigame {
                     if (multishoters.containsKey(p.getUniqueId())) {
                         Bukkit.getScheduler().cancelTask(multishoters.get(p.getUniqueId()));
                     }
-                    p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
+                    p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS,SoundCategory.VOICE, 1,1);
                     p.sendMessage(ChatMessageFactory.singleLineInfo("Multishot activated!"));
                     int id = Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
                         p.sendMessage(ChatMessageFactory.singleLineInfo("Multishot has run out!"));
@@ -299,7 +300,7 @@ public class NesaakFight extends Minigame {
                     if (betterGatherers.containsKey(p.getUniqueId())) {
                         Bukkit.getScheduler().cancelTask(betterGatherers.get(p.getUniqueId()));
                     }
-                    p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
+                    p.playSound(p, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS,SoundCategory.VOICE, 1,1);
                     p.sendMessage(ChatMessageFactory.singleLineInfo("Gathering boost activated!"));
                     int id = Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
                         p.sendMessage(ChatMessageFactory.singleLineInfo("Gathering boost has run out!"));
@@ -362,14 +363,14 @@ public class NesaakFight extends Minigame {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 100, false, false, false));
         player.setCooldown(Material.NETHERITE_SHOVEL, 100);
         loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10, 0.2,0,0.2, 0.1, it);
-        loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP, 1,1);
+        loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP,SoundCategory.VOICE, 1,1);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
             loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10, 0.2,0,0.2, 0.1 ,it);
-            loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP, 1,1);
+            loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP,SoundCategory.VOICE, 1,1);
         }, 20L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
             loc.getWorld().spawnParticle(Particle.ITEM_CRACK, loc, 10,0.2,0,0.2,0.1, it);
-            loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP, 1,1);
+            loc.getWorld().playSound(loc, Sound.BLOCK_SNOW_STEP,SoundCategory.VOICE, 1,1);
 
             player.getInventory().addItem(new ItemStack(Material.SNOWBALL, betterGatherers.containsKey(player.getUniqueId()) ? 16 : 8));
         }, 40L);

@@ -98,7 +98,7 @@ public abstract class Minigame {
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
             Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Teleporting..."));
             ParticipantManager.teleportAllPlayers(Constants.LOBBY);
-            SoundtrackManager.setCurrent(new SoundFile("soundtrack.lobby", 1), true);
+            SoundtrackManager.setCurrent(new SoundFile("minigames.lobby", 177450), true);
             for (Player p : ParticipantManager.getParticipants()) {
                 p.getInventory().clear();
                 p.setGameMode(GameMode.ADVENTURE);

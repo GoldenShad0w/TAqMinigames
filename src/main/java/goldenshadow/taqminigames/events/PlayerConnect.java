@@ -20,7 +20,6 @@ public class PlayerConnect implements Listener {
             if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
                     BossbarWrapper.addPlayer(event.getPlayer());
-                    SoundtrackManager.play(event.getPlayer());
                     if (ParticipantManager.isRegistered(event.getPlayer())) {
                         Participant p = ParticipantManager.getParticipant(event.getPlayer());
                         assert p != null;
@@ -48,6 +47,7 @@ public class PlayerConnect implements Listener {
                         Bukkit.getOnlinePlayers().stream().filter(ServerOperator::isOp).forEach(x -> x.sendMessage(ChatMessageFactory.adminWarnMessage(event.getPlayer().getName() + " has joined that game and is neither a participant or spectator!")));
                     }
                 }, 5L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> PlayerMoveEvent.registerConnectedAwaitingMovement(event.getPlayer().getUniqueId()), 20L);
             }
         }
         if (TAqMinigames.inPreStartPhase) {
@@ -59,8 +59,8 @@ public class PlayerConnect implements Listener {
                     event.getPlayer().teleport(Constants.LOBBY);
                     event.getPlayer().getInventory().clear();
                     ScoreboardWrapper.updateBoards();
-                    SoundtrackManager.play(event.getPlayer());
                 }, 5L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> PlayerMoveEvent.registerConnectedAwaitingMovement(event.getPlayer().getUniqueId()), 20L);
             }
         }
 

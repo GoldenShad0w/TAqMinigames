@@ -1,9 +1,6 @@
 package goldenshadow.taqminigames.minigames.excavation;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -30,7 +27,7 @@ public class Shockwave {
         tick++;
         if (tick == 1) {
             assert center.getWorld() != null;
-            center.getWorld().playSound(center, Sound.ENTITY_WARDEN_SONIC_BOOM, 1,1);
+            center.getWorld().playSound(center, Sound.ENTITY_WARDEN_SONIC_BOOM, SoundCategory.VOICE, 1,1);
         }
         if (tick > 0 && tick < 30) {
             if (tick % 3 == 0) {

@@ -4,6 +4,7 @@ import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Timer;
@@ -28,6 +29,7 @@ public class NetherPvP extends Minigame {
      * Used to initialise the game
      */
     public NetherPvP() {
+        SoundtrackManager.stopAllForAll();
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
 
@@ -57,31 +59,31 @@ public class NetherPvP extends Minigame {
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 28 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 29 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 30 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
-                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
                     Utilities.giveAurumItem(player, Constants.NETHER_PVP_ITEM_NAMES[0]);
                     player.teleport(getRandomSpawn());
                     player.setBedSpawnLocation(getRandomSpawn(), true);
@@ -135,7 +137,7 @@ public class NetherPvP extends Minigame {
                 highestStageReachedMap.put(killer.getUniqueId(), i);
             }
             killer.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
-            killer.playSound(killer, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+            killer.playSound(killer, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,SoundCategory.VOICE, 1, 1);
             killer.sendMessage(ChatMessageFactory.singleLineInfo("You killed " + victim.getName() + "! You are now at weapon " + (i + 1) + "/8"));
             killer.getInventory().clear();
             Utilities.giveAurumItem(killer, Constants.NETHER_PVP_ITEM_NAMES[i]);

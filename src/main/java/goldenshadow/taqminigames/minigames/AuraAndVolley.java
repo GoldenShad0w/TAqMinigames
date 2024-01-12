@@ -6,6 +6,7 @@ import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.BossbarWrapper;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.minigames.aura_and_volley.Attack;
 import goldenshadow.taqminigames.minigames.aura_and_volley.Aura;
 import goldenshadow.taqminigames.minigames.aura_and_volley.Volley;
@@ -45,6 +46,7 @@ public class AuraAndVolley extends Minigame{
      */
     public AuraAndVolley() {
         alivePlayers = ParticipantManager.getParticipants();
+        SoundtrackManager.stopAllForAll();
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
         timer = new Timer(0, 29, () -> timer = new Timer(2,59, this::endRound));
@@ -78,7 +80,7 @@ public class AuraAndVolley extends Minigame{
             case 13 -> {
                 ParticipantManager.getAll().forEach(p -> {
                     p.sendTitle("", ChatColor.DARK_RED + String.valueOf(ChatColor.UNDERLINE) + "/!\\" + ChatColor.RESET + ChatColor.GRAY + " Tower" + ChatColor.GOLD + " Aura", 20, 20, 20);
-                    p.playSound(p, Sound.ENTITY_ENDER_DRAGON_GROWL, 1,1);
+                    p.playSound(p, Sound.ENTITY_ENDER_DRAGON_GROWL,SoundCategory.VOICE, 1,1);
                 });
                 activeAttacks.add(new Aura(Constants.AURA_TOWER_CENTERS[0]));
 
@@ -87,7 +89,7 @@ public class AuraAndVolley extends Minigame{
             case 17 -> {
                 ParticipantManager.getAll().forEach(p -> {
                     p.sendTitle("", ChatColor.DARK_RED + String.valueOf(ChatColor.UNDERLINE) + "/!\\" + ChatColor.RESET + ChatColor.GRAY + " Tower" + ChatColor.LIGHT_PURPLE + " Volley", 20, 20, 20);
-                    p.playSound(p, Sound.ENTITY_WITHER_SPAWN, 1,1);
+                    p.playSound(p, Sound.ENTITY_WITHER_SPAWN,SoundCategory.VOICE, 1,1);
                 });
                 activeAttacks.add(new Volley(Constants.AURA_MAP_LOCATIONS[0]));
             }
@@ -97,31 +99,31 @@ public class AuraAndVolley extends Minigame{
                 initRound();
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 28 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 29 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 30 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
-                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
                 }
                 gameState = GameState.RUNNING;
             }
@@ -205,7 +207,7 @@ public class AuraAndVolley extends Minigame{
     private void castAura() {
         ParticipantManager.getAll().forEach(p -> {
             p.sendTitle("", ChatColor.DARK_RED + String.valueOf(ChatColor.UNDERLINE) + "/!\\" + ChatColor.RESET + ChatColor.GRAY + " Tower" + ChatColor.GOLD + " Aura", 20, 20, 20);
-            p.playSound(p, Sound.ENTITY_ENDER_DRAGON_GROWL, 1,1);
+            p.playSound(p, Sound.ENTITY_ENDER_DRAGON_GROWL,SoundCategory.VOICE, 1,1);
         });
         activeAttacks.add(new Aura(Constants.AURA_TOWER_CENTERS[round-1]));
     }
@@ -216,7 +218,7 @@ public class AuraAndVolley extends Minigame{
     private void castVolley() {
         ParticipantManager.getAll().forEach(p -> {
             p.sendTitle("", ChatColor.DARK_RED + String.valueOf(ChatColor.UNDERLINE) + "/!\\" + ChatColor.RESET + ChatColor.GRAY + " Tower" + ChatColor.LIGHT_PURPLE + " Volley", 20, 20, 20);
-            p.playSound(p, Sound.ENTITY_WITHER_SPAWN, 1,1);
+            p.playSound(p, Sound.ENTITY_WITHER_SPAWN,SoundCategory.VOICE, 1,1);
         });
         Player[] targets = {alivePlayers.get(ThreadLocalRandom.current().nextInt(0, alivePlayers.size())),alivePlayers.get(ThreadLocalRandom.current().nextInt(0, alivePlayers.size())),alivePlayers.get(ThreadLocalRandom.current().nextInt(0, alivePlayers.size()))};
         for (Player player : targets){
@@ -235,7 +237,7 @@ public class AuraAndVolley extends Minigame{
     @Override
     public void onDeath(Player player) {
         alivePlayers.remove(player);
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1,1);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH,SoundCategory.VOICE, 1,1);
         player.sendMessage(ChatMessageFactory.singleLineInfo("You died..."));
         Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + deathMessages[ThreadLocalRandom.current().nextInt(0, deathMessages.length)]);
         for (Player p : alivePlayers) {

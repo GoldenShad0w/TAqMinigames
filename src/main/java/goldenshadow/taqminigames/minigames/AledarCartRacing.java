@@ -7,6 +7,7 @@ import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.util.*;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -44,7 +45,7 @@ public class AledarCartRacing extends Minigame {
     public AledarCartRacing() {
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Emeralds", true);
-
+        SoundtrackManager.stopAllForAll();
 
         timer = new Timer(0, 29, () -> timer = new Timer(9,59, this::end));
         for (Player player : ParticipantManager.getParticipants()) {
@@ -89,7 +90,7 @@ public class AledarCartRacing extends Minigame {
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                     player.teleport(Constants.CART_RACING_START_LOCATION);
                 }
                 for (Player player : ParticipantManager.getParticipants()) {
@@ -101,25 +102,25 @@ public class AledarCartRacing extends Minigame {
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 28 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 29 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 30 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
-                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
                     Utilities.fillAreaWithBlock(Constants.CART_RACING_START_BARRIERS[0], Constants.CART_RACING_START_BARRIERS[1], Material.AIR, Material.BARRIER);
                 }
                 gameState = GameState.RUNNING;
@@ -136,7 +137,7 @@ public class AledarCartRacing extends Minigame {
             if (gameState == GameState.RUNNING) {
                 spawnPowerups();
             }
-            tick = 30;
+            tick = 31;
         }
         super.tick();
 
@@ -295,13 +296,13 @@ public class AledarCartRacing extends Minigame {
                 slime.setAI(false);
                 slime.setSize(2);
                 gameObjectUUIDs.add(slime.getUniqueId());
-                player.playSound(player, Sound.BLOCK_SLIME_BLOCK_BREAK, 1,1);
+                player.playSound(player, Sound.BLOCK_SLIME_BLOCK_BREAK,SoundCategory.VOICE, 1,1);
             }
 
         } else if (material == Material.BLAZE_POWDER) {
             Entity casterVehicle = player.getVehicle();
             if (casterVehicle != null) {
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE,SoundCategory.VOICE, 1, 1);
                 player.getWorld().spawnParticle(Particle.FLAME, player.getLocation(), 100, 6, 2, 6, 0);
                 for (Entity e : player.getWorld().getNearbyEntities(player.getLocation(), 10, 10, 10)) {
                     if (e instanceof Player p) {
@@ -316,7 +317,7 @@ public class AledarCartRacing extends Minigame {
             Entity e = player.getVehicle();
             if (e != null) {
                 e.setVelocity(e.getLocation().getDirection().multiply(5));
-                player.playSound(player, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, 1,1);
+                player.playSound(player, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS,SoundCategory.VOICE, 1,1);
             }
         }
     }
@@ -329,7 +330,7 @@ public class AledarCartRacing extends Minigame {
         if (event.getEntity() instanceof Slime s) {
             if (s.getScoreboardTags().contains("m_racing_slime")) {
                 event.getVehicle().setVelocity(new Vector(0,0,0));
-                s.getWorld().playSound(s.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK, 1,1);
+                s.getWorld().playSound(s.getLocation(), Sound.BLOCK_SLIME_BLOCK_BREAK,SoundCategory.VOICE, 1,1);
                 gameObjectUUIDs.remove(s.getUniqueId());
                 s.remove();
             }

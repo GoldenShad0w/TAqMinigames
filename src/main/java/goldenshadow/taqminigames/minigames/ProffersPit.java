@@ -5,6 +5,7 @@ import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
+import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.minigames.proffers_pit.*;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
 import goldenshadow.taqminigames.util.Constants;
@@ -37,6 +38,7 @@ public class ProffersPit extends Minigame {
      * Used to initialise the game
      */
     public ProffersPit() {
+        SoundtrackManager.stopAllForAll();
         gameState = GameState.STARTING;
         scoreManager = new ScoreManager("Prof XP", false);
         assert Bukkit.getScoreboardManager() != null;
@@ -79,32 +81,32 @@ public class ProffersPit extends Minigame {
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
 
                 }
             }
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 3 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 28 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 2 seconds!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 29 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 1 second!"));
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
                 }
             }
             case 30 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
-                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
                     if (ParticipantManager.getParticipants().contains(player)) {
                         Utilities.giveAurumItem(player, "m_prof_t1");
                         player.teleport(Constants.PROF_START_LOCATION);
@@ -165,7 +167,7 @@ public class ProffersPit extends Minigame {
             }
         }
         if (tick > 100) {
-            tick = 30;
+            tick = 31;
         }
         if (gameState == GameState.RUNNING) {
             Iterator<ProfEvent> it = currentEvents.iterator();
@@ -225,7 +227,7 @@ public class ProffersPit extends Minigame {
         if (!player.hasCooldown(Material.FIRE_CHARGE)) {
             if (huntedPlayers.contains(player.getUniqueId())) {
                 huntedPlayers.remove(player.getUniqueId());
-                player.playSound(player, Sound.ENTITY_RAVAGER_STUNNED, 1, 1);
+                player.playSound(player, Sound.ENTITY_RAVAGER_STUNNED,SoundCategory.VOICE, 1, 1);
                 player.removePotionEffect(PotionEffectType.GLOWING);
                 huntedColorTeam.removeEntry(player.getName());
                 player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100, false, false, false));
@@ -233,7 +235,7 @@ public class ProffersPit extends Minigame {
                 player.sendMessage(ChatMessageFactory.singleLineInfo("You have exited out of hunted mode!"));
             } else {
                 huntedPlayers.add(player.getUniqueId());
-                player.playSound(player, Sound.ENTITY_RAVAGER_ROAR, 1, 1);
+                player.playSound(player, Sound.ENTITY_RAVAGER_ROAR,SoundCategory.VOICE, 1, 1);
                 huntedColorTeam.addEntry(player.getName());
                 player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 0, false, false, false));
                 player.setWorldBorder(TAqMinigames.getPlugin().getServer().createWorldBorder());
@@ -296,7 +298,7 @@ public class ProffersPit extends Minigame {
         amount = (int) (amount * multiplier);
         ChatMessageFactory.sendActionbarMessage(player, net.md_5.bungee.api.ChatColor.YELLOW + "+" + amount + " Prof XP" + (multiplier > 1 ? net.md_5.bungee.api.ChatColor.LIGHT_PURPLE + " [" + multiplier + "x]" : ""));
         scoreManager.increaseScore(player, amount, false);
-        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1,1);
+        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,SoundCategory.VOICE,1,1);
         Material type = block.getType();
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> block.setType(type), 200L);
     }
@@ -391,9 +393,9 @@ public class ProffersPit extends Minigame {
                         if (score >= Constants.PROF_BOOTS_PRICE) {
                             scoreManager.increaseScore(player, -Constants.PROF_BOOTS_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_boots");
-                            player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
-                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                         }
                         return;
                     }
@@ -401,9 +403,9 @@ public class ProffersPit extends Minigame {
                         if (score >= Constants.PROF_HUNTED_PRICE) {
                             scoreManager.increaseScore(player, -Constants.PROF_HUNTED_PRICE, false);
                             player.getInventory().addItem(ShopItems.getHuntedToken());
-                            player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
-                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                         }
                         return;
                     }
@@ -411,9 +413,9 @@ public class ProffersPit extends Minigame {
                         if (score >= Constants.PROF_SWORD_PRICE) {
                             scoreManager.increaseScore(player, -Constants.PROF_SWORD_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_sword");
-                            player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
-                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                         }
                         return;
                     }
@@ -421,9 +423,9 @@ public class ProffersPit extends Minigame {
                         if (score >= Constants.PROF_SPEED_PRICE) {
                             scoreManager.increaseScore(player, -Constants.PROF_SPEED_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_speed");
-                            player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
-                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                         }
                         return;
                     }
@@ -431,9 +433,9 @@ public class ProffersPit extends Minigame {
                         if (score >= Constants.PROF_HASTE_PRICE) {
                             scoreManager.increaseScore(player, -Constants.PROF_HASTE_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_haste");
-                            player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
-                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                         }
                         return;
                     }
@@ -441,9 +443,9 @@ public class ProffersPit extends Minigame {
                         if (score >= Constants.PROF_HEALTH_PRICE) {
                             scoreManager.increaseScore(player, -Constants.PROF_HEALTH_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_health");
-                            player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
-                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                         }
                         return;
                     }
@@ -454,9 +456,9 @@ public class ProffersPit extends Minigame {
                                 scoreManager.increaseScore(player, -Constants.PROF_T2_PRICE, false);
                                 player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t2");
-                                player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                                player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                             } else {
-                                player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                                player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                             }
                         }
                         else if (Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getCustomModelData() == 3) {
@@ -464,9 +466,9 @@ public class ProffersPit extends Minigame {
                                 scoreManager.increaseScore(player, -Constants.PROF_T3_PRICE, false);
                                 player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t3");
-                                player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                                player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                             } else {
-                                player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                                player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                             }
                         }
                         else if (Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getCustomModelData() == 4) {
@@ -474,9 +476,9 @@ public class ProffersPit extends Minigame {
                                 scoreManager.increaseScore(player, -Constants.PROF_T4_PRICE, false);
                                 player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t4");
-                                player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                                player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                             } else {
-                                player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                                player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                             }
                         }
                     }
@@ -485,9 +487,9 @@ public class ProffersPit extends Minigame {
                             scoreManager.increaseScore(player, -Constants.PROF_T5_PRICE, false);
                             player.getInventory().remove(Material.IRON_PICKAXE);
                             Utilities.giveAurumItem(player, "m_prof_t5");
-                            player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
-                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                         }
                         return;
                     }
@@ -496,9 +498,9 @@ public class ProffersPit extends Minigame {
                             scoreManager.increaseScore(player, -Constants.PROF_T6_PRICE, false);
                             player.getInventory().remove(Material.DIAMOND_PICKAXE);
                             Utilities.giveAurumItem(player, "m_prof_t6");
-                            player.playSound(player, Sound.ENTITY_VILLAGER_YES, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
-                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1,1);
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO,SoundCategory.VOICE, 1,1);
                         }
 
                     }

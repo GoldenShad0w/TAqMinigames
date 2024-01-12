@@ -3,6 +3,7 @@ package goldenshadow.taqminigames;
 import goldenshadow.taqminigames.commands.Command;
 import goldenshadow.taqminigames.commands.TabComplete;
 import goldenshadow.taqminigames.enums.Game;
+import goldenshadow.taqminigames.enums.SoundFile;
 import goldenshadow.taqminigames.event.*;
 import goldenshadow.taqminigames.events.*;
 import goldenshadow.taqminigames.minigames.*;
@@ -43,7 +44,6 @@ public final class TAqMinigames extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("minigames")).setExecutor(new Command());
         Objects.requireNonNull(this.getCommand("minigames")).setTabCompleter(new TabComplete());
 
-        Bukkit.broadcastMessage(Constants.AURA_TOWER_CENTERS[0].clone().toString());
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, Utilities::registerLobbyTrigger, 1L);
     }
 
@@ -61,6 +61,9 @@ public final class TAqMinigames extends JavaPlugin {
             isRunning = true;
             gameSelection = null;
             totalScoreManager = new ScoreManager("Emeralds", true);
+            if (!SoundtrackManager.getSoundFile().name().equals("minigames.lobby")) {
+                SoundtrackManager.setCurrent(new SoundFile("minigames.lobby", 177450), true);
+            }
 
             // disabling proffers pit
             possibleGames.remove(Game.PROFFERS_PIT);
@@ -78,6 +81,7 @@ public final class TAqMinigames extends JavaPlugin {
      */
     public static void stop() {
         isRunning = false;
+        SoundtrackManager.stopAllForAll();
         Trigger.unregisterAll();
         BossbarWrapper.destroyAll();
         Utilities.registerLobbyTrigger();
@@ -101,11 +105,11 @@ public final class TAqMinigames extends JavaPlugin {
 
         if (gameIndex > 0) {
             ScoreManager.increaseMultiplier();
-            for (Player p : ParticipantManager.getAll()) {
-                p.getInventory().clear();
-                ChatMessageFactory.sendInfoMessageBlock(p, " ", ChatColor.YELLOW + "Emerald multiplier increased to " + ScoreManager.getScoreMultiplier() + "x!", " ");
-                p.sendTitle(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + "Game " + (gameIndex + 1), ChatColor.AQUA + String.valueOf(ScoreManager.getScoreMultiplier()) + "x Emerald Multiplier", 10, 60, 10);
-            }
+            ChatMessageFactory.sendInfoBlockToAll(" ", ChatColor.YELLOW + "Emerald multiplier increased to " + ScoreManager.getScoreMultiplier() + "x!", " ");
+        }
+        for (Player p : ParticipantManager.getAll()) {
+            p.getInventory().clear();
+            p.sendTitle(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + "Game " + (gameIndex + 1), ChatColor.AQUA + String.valueOf(ScoreManager.getScoreMultiplier()) + "x Emerald Multiplier", 10, 60, 10);
         }
         gameSelection = new GameSelection(possibleGames, weighted);
         gameIndex++;
@@ -120,11 +124,11 @@ public final class TAqMinigames extends JavaPlugin {
 
         if (gameIndex > 0) {
             ScoreManager.increaseMultiplier();
-            for (Player p : ParticipantManager.getAll()) {
-                p.getInventory().clear();
-                ChatMessageFactory.sendInfoMessageBlock(p, " ", ChatColor.YELLOW + "Emerald multiplier increased to " + ScoreManager.getScoreMultiplier() + "x!", " ");
-                p.sendTitle(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + "Game " + (gameIndex + 1), ChatColor.AQUA + String.valueOf(ScoreManager.getScoreMultiplier()) + "x Emerald Multiplier", 10, 60, 10);
-            }
+            ChatMessageFactory.sendInfoBlockToAll(" ", ChatColor.YELLOW + "Emerald multiplier increased to " + ScoreManager.getScoreMultiplier() + "x!", " ");
+        }
+        for (Player p : ParticipantManager.getAll()) {
+            p.getInventory().clear();
+            p.sendTitle(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + "Game " + (gameIndex + 1), ChatColor.AQUA + String.valueOf(ScoreManager.getScoreMultiplier()) + "x Emerald Multiplier", 10, 60, 10);
         }
         gameSelection = new GameSelection(possibleGames, weighted, favor);
         gameIndex++;

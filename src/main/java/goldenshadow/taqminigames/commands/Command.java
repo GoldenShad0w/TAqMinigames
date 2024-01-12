@@ -55,7 +55,7 @@ public class Command implements CommandExecutor {
                             TAqMinigames.inPreStartPhase = !TAqMinigames.inPreStartPhase;
                             player.sendMessage(ChatMessageFactory.adminInfoMessage("Toggled pre start phase to " + TAqMinigames.inPreStartPhase + "!"));
                             if (TAqMinigames.inPreStartPhase) {
-                                SoundtrackManager.setCurrent(new SoundFile("soundtrack.lobby", 1), true);
+                                SoundtrackManager.setCurrent(new SoundFile("minigames.lobby", 177450), true);
                                 for (Player p : Bukkit.getOnlinePlayers()) {
                                     ScoreboardWrapper.queueData(p,
                                             " ",
@@ -152,6 +152,7 @@ public class Command implements CommandExecutor {
                             if (args.length == 3) {
                                 if (TAqMinigames.isRunning() && TAqMinigames.minigame == null) {
                                     if (Game.contains(args[2])) {
+                                        SoundtrackManager.stopAllForAll();
                                         Game game = Game.valueOf(args[2]);
                                         TAqMinigames.parseMinigame(game);
                                         return true;
