@@ -1,12 +1,12 @@
 package goldenshadow.taqminigames.minigames;
 
+import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
 import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Timer;
 import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.*;
@@ -42,7 +42,7 @@ public class NetherPvP extends Minigame {
             highestStageReachedMap.put(player.getUniqueId(), 0);
         }
 
-        ParticipantManager.teleportAllPlayers(Constants.NETHER_PVP_TUTORIAL_LOCATION);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getNetherPvPData().TUTORIAL_LOCATION);
     }
 
     @Override
@@ -54,8 +54,8 @@ public class NetherPvP extends Minigame {
             case 8 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Every time you kill a player, you get a new weapon with a special ability", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 12 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Dying will downgrade your weapon by one kill", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 16 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The game ends when a player has achieved a kill with every weapon", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 20 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Reaching a new weapon for the first time will give you " + ((int) (Constants.NETHER_PVP_STAGE_COMPLETE * ScoreManager.getScoreMultiplier())) + " emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Being the one who gets a kill with every weapon will earn you " + ((int) (Constants.NETHER_PVP_COMPLETE * ScoreManager.getScoreMultiplier())) + " emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 20 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Reaching a new weapon for the first time will give you " + ((int) (TAqMinigames.getEventConfig().getNetherPvPData().STAGE_COMPLETE_POINTS * ScoreManager.getScoreMultiplier())) + " emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Being the one who gets a kill with every weapon will earn you " + ((int) (TAqMinigames.getEventConfig().getNetherPvPData().FINISH_POINTS * ScoreManager.getScoreMultiplier())) + " emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
@@ -84,7 +84,7 @@ public class NetherPvP extends Minigame {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
                     player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
-                    Utilities.giveAurumItem(player, Constants.NETHER_PVP_ITEM_NAMES[0]);
+                    Utilities.giveAurumItem(player, TAqMinigames.getEventConfig().getNetherPvPData().ITEM_NAMES[0]);
                     player.teleport(getRandomSpawn());
                     player.setBedSpawnLocation(getRandomSpawn(), true);
                     togglePvP(true);
@@ -112,7 +112,7 @@ public class NetherPvP extends Minigame {
         stageMap.put(player.getUniqueId(), i);
         player.sendMessage(ChatMessageFactory.singleLineInfo("You died! You are now at weapon " + (i+1) + "/8"));
         player.getInventory().clear();
-        Utilities.giveAurumItem(player, Constants.NETHER_PVP_ITEM_NAMES[i]);
+        Utilities.giveAurumItem(player, TAqMinigames.getEventConfig().getNetherPvPData().ITEM_NAMES[i]);
         player.setBedSpawnLocation(getRandomSpawn(), true);
     }
 
@@ -133,14 +133,14 @@ public class NetherPvP extends Minigame {
 
         if (i < 8) {
             if (i > highestStageReachedMap.getOrDefault(killer.getUniqueId(), 0)) {
-                scoreManager.increaseScore(killer, Constants.NETHER_PVP_STAGE_COMPLETE, "You reached weapon " + i + " for the first time!", true);
+                scoreManager.increaseScore(killer, TAqMinigames.getEventConfig().getNetherPvPData().STAGE_COMPLETE_POINTS, "You reached weapon " + i + " for the first time!", true);
                 highestStageReachedMap.put(killer.getUniqueId(), i);
             }
             killer.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 100));
             killer.playSound(killer, Sound.ENTITY_EXPERIENCE_ORB_PICKUP,SoundCategory.VOICE, 1, 1);
             killer.sendMessage(ChatMessageFactory.singleLineInfo("You killed " + victim.getName() + "! You are now at weapon " + (i + 1) + "/8"));
             killer.getInventory().clear();
-            Utilities.giveAurumItem(killer, Constants.NETHER_PVP_ITEM_NAMES[i]);
+            Utilities.giveAurumItem(killer, TAqMinigames.getEventConfig().getNetherPvPData().ITEM_NAMES[i]);
             if (i == 7) {
                 ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + killer.getName() + " has received the last weapon!");
                 Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo(killer.getName() + " has received the last weapon!"));
@@ -157,8 +157,8 @@ public class NetherPvP extends Minigame {
      * @param player The player
      */
     private void playerFinish(Player player) {
-        scoreManager.increaseScore(player, Constants.NETHER_PVP_STAGE_COMPLETE, "You reached weapon 8 for the first time!", true);
-        scoreManager.increaseScore(player, Constants.NETHER_PVP_COMPLETE, "You finished the game!", true);
+        scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getNetherPvPData().STAGE_COMPLETE_POINTS, "You reached weapon 8 for the first time!", true);
+        scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getNetherPvPData().FINISH_POINTS, "You finished the game!", true);
         Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo(player.getName() + " achieved a kill with every weapon!"));
         timer.runTaskEarly();
     }
@@ -184,7 +184,7 @@ public class NetherPvP extends Minigame {
      * @return The spawn location
      */
     private Location getRandomSpawn() {
-        return Constants.NETHER_PVP_SPAWN_LOCATIONS[ThreadLocalRandom.current().nextInt(0, Constants.NETHER_PVP_SPAWN_LOCATIONS.length)];
+        return TAqMinigames.getEventConfig().getNetherPvPData().SPAWN_LOCATIONS[ThreadLocalRandom.current().nextInt(0, TAqMinigames.getEventConfig().getNetherPvPData().SPAWN_LOCATIONS.length)];
     }
 
     /**

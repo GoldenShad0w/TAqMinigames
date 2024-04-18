@@ -45,26 +45,27 @@ public class ExcavationSiteE extends Minigame {
         SoundtrackManager.stopAllForAll();
         scoreManager = new ScoreManager("Emeralds", true);
 
-        assert Constants.WORLD != null;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true), 5L);
-        Constants.WORLD.setGameRule(GameRule.FIRE_DAMAGE, true);
-        Constants.WORLD.setGameRule(GameRule.FREEZE_DAMAGE, true);
-        Constants.WORLD.setGameRule(GameRule.DROWNING_DAMAGE, true);
+        assert TAqMinigames.getEventConfig().getGenericData().WORLD != null;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FALL_DAMAGE, true), 5L);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FIRE_DAMAGE, true);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FREEZE_DAMAGE, true);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.DROWNING_DAMAGE, true);
 
 
 
         timer = new Timer(0, 29, () -> timer = new Timer(44,59, this::end));
         for (Player player : ParticipantManager.getParticipants()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 500, 0, true, false, false));
-            player.setBedSpawnLocation(Constants.EXCAVATION_START_LOC, true);
+            player.setBedSpawnLocation(TAqMinigames.getEventConfig().getExcavationData().START_LOCATION, true);
             player.setLevel(105);
             player.setExp(0);
             player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 10, false, false, false));
 
         }
         registerSpikes();
+        registerFallingCeiling();
 
-        ParticipantManager.teleportAllPlayers(Constants.EXCAVATION_TUTORIAL_LOCATION);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getExcavationData().TUTORIAL_LOCATION);
     }
 
 
@@ -79,14 +80,14 @@ public class ExcavationSiteE extends Minigame {
             case 14 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The temple is full of traps and other dangers so be careful! You can get health potions from excavators that roam the corridors.", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 18 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Once you have gathered as many crystals as you think you can, return the the entrance and you will be able to leave the temple", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 22 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("This will end the minigame for you so only do this toward the end! If you don't leave and the timer ends, you won't get any emeralds for the crystals you collected", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Each crystal will reward you with " + ((int) (Constants.EXCAVATION_CRYSTAL * ScoreManager.getScoreMultiplier())) + " emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Each crystal will reward you with " + ((int) (TAqMinigames.getEventConfig().getExcavationData().CRYSTAL_POINTS * ScoreManager.getScoreMultiplier())) + " emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
                     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
-                    player.teleport(Constants.EXCAVATION_START_LOC);
+                    player.teleport(TAqMinigames.getEventConfig().getExcavationData().START_LOCATION);
                 }
-                Utilities.fillAreaWithBlock(Constants.EXCAVATION_ENTRANCE_AREA[0], Constants.EXCAVATION_ENTRANCE_AREA[1], Material.BARRIER, Material.AIR);
+                Utilities.fillAreaWithBlock(TAqMinigames.getEventConfig().getExcavationData().ENTRANCE_WALL[0], TAqMinigames.getEventConfig().getExcavationData().ENTRANCE_WALL[1], Material.BARRIER, Material.AIR);
             }
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
@@ -110,7 +111,7 @@ public class ExcavationSiteE extends Minigame {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
                     player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
-                    Utilities.fillAreaWithBlock(Constants.EXCAVATION_ENTRANCE_AREA[0], Constants.EXCAVATION_ENTRANCE_AREA[1], Material.AIR, Material.BARRIER);
+                    Utilities.fillAreaWithBlock(TAqMinigames.getEventConfig().getExcavationData().ENTRANCE_WALL[0], TAqMinigames.getEventConfig().getExcavationData().ENTRANCE_WALL[1], Material.AIR, Material.BARRIER);
                     if (ParticipantManager.getParticipants().contains(player)) {
                         Utilities.giveAurumGroup(player, "m_exca_gear");
                     }
@@ -122,27 +123,27 @@ public class ExcavationSiteE extends Minigame {
 
             if (tick % 3 == 0) {
                 //Dart trap
-                for (DartTrapData d : Constants.EXCAVATION_DART_TRAPS) {
+                for (DartTrapData d : TAqMinigames.getEventConfig().getExcavationData().DART_TRAPS) {
                     assert d.location().getWorld() != null;
                     Arrow arrow = d.location().getWorld().spawnArrow(d.location(), d.vector(), 2f, 8);
                     arrow.setPickupStatus(AbstractArrow.PickupStatus.CREATIVE_ONLY);
                     arrow.setCritical(true);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), arrow::remove, 100L);
                 }
-                for (Location loc : Constants.EXCAVATION_GLITTER_LOCATIONS) {
+                for (Location loc : TAqMinigames.getEventConfig().getExcavationData().GLITTER_LOCATIONS) {
                     assert loc.getWorld() != null;
                     loc.getWorld().spawnParticle(Particle.WAX_OFF, loc, 10, 0.3,0.3,0.3,0);
                 }
             }
             if ((tick % 6 == 0)) {
                 //Flamethrower loop
-                for (Location[] l : Constants.EXCAVATION_FLAMETHROWER_BOXES) {
+                for (Location[] l : TAqMinigames.getEventConfig().getExcavationData().FLAMETHROWER_BOXES) {
                     BoundingBox b = new BoundingBox(l[0].getX(), l[0].getY(), l[0].getZ(), l[1].getX(), l[1].getY(), l[1].getZ());
-                    assert Constants.WORLD != null;
+                    assert TAqMinigames.getEventConfig().getGenericData().WORLD != null;
 
-                    Constants.WORLD.spawnParticle(Particle.FLAME, b.getCenter().toLocation(Constants.WORLD), (int) (10* b.getVolume()), b.getWidthX()/4 , b.getHeight()/4, b.getWidthZ()/4, 0);
+                    TAqMinigames.getEventConfig().getGenericData().WORLD.spawnParticle(Particle.FLAME, b.getCenter().toLocation(TAqMinigames.getEventConfig().getGenericData().WORLD), (int) (10* b.getVolume()), b.getWidthX()/4 , b.getHeight()/4, b.getWidthZ()/4, 0);
 
-                    Trigger trigger = new Trigger(b, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.setFireTicks(120), Utilities.secondsToMillis(0.5), false, false);
+                    Trigger trigger = new Trigger(b, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.setFireTicks(120), Utilities.secondsToMillis(0.5), false, false);
                     Trigger.register(trigger);
 
                     areFlamethrowersActive = true;
@@ -153,8 +154,11 @@ public class ExcavationSiteE extends Minigame {
                 }
             }
             if (tick % 6 == 0) {
-                //Shockwave trap
-                if (currentShockwave == null) currentShockwave = new Shockwave(Constants.EXCAVATION_SHOCKWAVE_LOCATION);
+                if (TAqMinigames.getEventConfig().getExcavationData().SHOCKWAVE_LOCATION != null) {
+                    //Shockwave trap
+                    if (currentShockwave == null)
+                        currentShockwave = new Shockwave(TAqMinigames.getEventConfig().getExcavationData().SHOCKWAVE_LOCATION);
+                }
             }
             if (tick % 30 == 0) {
                 for (Player p : ParticipantManager.getParticipants()) {
@@ -185,11 +189,11 @@ public class ExcavationSiteE extends Minigame {
             }
             if (fastTick % 4 == 0) {
                 if (areFlamethrowersActive) {
-                    for (Location[] l : Constants.EXCAVATION_FLAMETHROWER_BOXES) {
+                    for (Location[] l : TAqMinigames.getEventConfig().getExcavationData().FLAMETHROWER_BOXES) {
                         BoundingBox b = new BoundingBox(l[0].getX(), l[0].getY(), l[0].getZ(), l[1].getX(), l[1].getY(), l[1].getZ());
-                        assert Constants.WORLD != null;
+                        assert TAqMinigames.getEventConfig().getGenericData().WORLD != null;
 
-                        Constants.WORLD.spawnParticle(Particle.FLAME, b.getCenter().toLocation(Constants.WORLD), (int) (10 * b.getVolume()), b.getWidthX() / 4, b.getHeight() / 4, b.getWidthZ() / 4, 0);
+                        TAqMinigames.getEventConfig().getGenericData().WORLD.spawnParticle(Particle.FLAME, b.getCenter().toLocation(TAqMinigames.getEventConfig().getGenericData().WORLD), (int) (10 * b.getVolume()), b.getWidthX() / 4, b.getHeight() / 4, b.getWidthZ() / 4, 0);
                     }
                 }
             }
@@ -211,7 +215,7 @@ public class ExcavationSiteE extends Minigame {
         if (gameState != GameState.RUNNING) {
             player.setGameMode(GameMode.SPECTATOR);
         }
-        player.setBedSpawnLocation(Constants.EXCAVATION_START_LOC, true);
+        player.setBedSpawnLocation(TAqMinigames.getEventConfig().getExcavationData().START_LOCATION, true);
         if (completedPlayers.contains(player.getUniqueId())) {
             player.setGameMode(GameMode.SPECTATOR);
         }
@@ -228,26 +232,18 @@ public class ExcavationSiteE extends Minigame {
     }
 
     @Override
-    protected void insertPlayer(Player player) {
-        player.teleport(Constants.EXCAVATION_START_LOC);
-        Utilities.giveAurumGroup(player, "m_exca_gear");
-        player.setBedSpawnLocation(Constants.EXCAVATION_START_LOC, true);
-        super.insertPlayer(player);
-    }
-
-    @Override
     public void end() {
-        assert Constants.WORLD != null;
-        Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, false);
-        Constants.WORLD.setGameRule(GameRule.FIRE_DAMAGE, false);
-        Constants.WORLD.setGameRule(GameRule.FREEZE_DAMAGE, false);
-        Constants.WORLD.setGameRule(GameRule.DROWNING_DAMAGE, false);
+        assert TAqMinigames.getEventConfig().getGenericData().WORLD != null;
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FALL_DAMAGE, false);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FIRE_DAMAGE, false);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FREEZE_DAMAGE, false);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.DROWNING_DAMAGE, false);
 
         Trigger.unregisterAll();
         Utilities.registerLobbyTrigger();
 
 
-        ParticipantManager.teleportAllPlayers(Constants.EXCAVATION_END_LOCATION);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getExcavationData().END_LOCATION);
         ParticipantManager.getParticipants().forEach(x -> {
             x.setGameMode(GameMode.ADVENTURE);
             x.getInventory().clear();
@@ -287,7 +283,7 @@ public class ExcavationSiteE extends Minigame {
             Utilities.giveAurumItem(player, "m_exca_crystal");
             player.playSound(player, Sound.BLOCK_AMETHYST_CLUSTER_STEP,SoundCategory.VOICE, 5,1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
-                scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find this crystal!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this crystal!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
             return;
@@ -304,9 +300,9 @@ public class ExcavationSiteE extends Minigame {
             }
             list.add(interaction.getUniqueId());
             collectedEmeraldMap.put(player.getUniqueId(), list);
-            scoreManager.increaseScore(player, Constants.EXCAVATION_EMERALDS_SMALL, "You found a small amount of emeralds!", true);
+            scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().EMERALDS_SMALL_POINTS, "You found a small amount of emeralds!", true);
             if (!foundFeature.contains(interaction.getUniqueId())) {
-                scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find these emeralds!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find these emeralds!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
             return;
@@ -323,9 +319,9 @@ public class ExcavationSiteE extends Minigame {
             }
             list.add(interaction.getUniqueId());
             collectedEmeraldMap.put(player.getUniqueId(), list);
-            scoreManager.increaseScore(player, Constants.EXCAVATION_EMERALDS_MEDIUM, "You found a sizable amount of emeralds!", true);
+            scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().EMERALDS_MEDIUM_POINTS, "You found a sizable amount of emeralds!", true);
             if (!foundFeature.contains(interaction.getUniqueId())) {
-                scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find these emeralds!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find these emeralds!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
             return;
@@ -342,9 +338,9 @@ public class ExcavationSiteE extends Minigame {
             }
             list.add(interaction.getUniqueId());
             collectedEmeraldMap.put(player.getUniqueId(), list);
-            scoreManager.increaseScore(player, Constants.EXCAVATION_EMERALDS_LARGE, "You found a large amount of emeralds!", true);
+            scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().EMERALDS_LARGE_POINTS, "You found a large amount of emeralds!", true);
             if (!foundFeature.contains(interaction.getUniqueId())) {
-                scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find these emeralds!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find these emeralds!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
             return;
@@ -362,10 +358,10 @@ public class ExcavationSiteE extends Minigame {
             list.add(interaction.getUniqueId());
             collectedMisc.put(player.getUniqueId(), list);
             player.getInventory().remove(Material.IRON_SWORD);
-            Utilities.giveAurumItem(player, "m_exca_better_sword");
+            Utilities.giveAurumItem(player, TAqMinigames.getEventConfig().getExcavationData().BETTER_SWORD_NAME);
             player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE,SoundCategory.VOICE, 1, 1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
-                scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find this sword!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this sword!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
             return;
@@ -385,7 +381,7 @@ public class ExcavationSiteE extends Minigame {
             Utilities.giveAurumItem(player, "m_exca_chestplate");
             player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE,SoundCategory.VOICE, 1, 1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
-                scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find this chestplate!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this chestplate!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
             return;
@@ -405,7 +401,27 @@ public class ExcavationSiteE extends Minigame {
             Utilities.giveAurumItem(player, "m_exca_boots");
             player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE,SoundCategory.VOICE, 1, 1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
-                scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find these boots!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find these boots!", true);
+                foundFeature.add(interaction.getUniqueId());
+            }
+            return;
+        }
+        if (interaction.getScoreboardTags().contains("m_exca_helmet")) {
+            List<UUID> list = new ArrayList<>();
+            if (collectedMisc.containsKey(player.getUniqueId())) {
+                list = collectedMisc.get(player.getUniqueId());
+                if (list.contains(interaction.getUniqueId())) {
+                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this helmet!");
+                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
+                    return;
+                }
+            }
+            list.add(interaction.getUniqueId());
+            collectedMisc.put(player.getUniqueId(), list);
+            Utilities.giveAurumItem(player, "m_exca_helmet");
+            player.playSound(player, Sound.ITEM_ARMOR_EQUIP_NETHERITE,SoundCategory.VOICE, 1, 1);
+            if (!foundFeature.contains(interaction.getUniqueId())) {
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this helmet!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
             return;
@@ -421,7 +437,7 @@ public class ExcavationSiteE extends Minigame {
             Utilities.giveAurumItem(player, "m_exca_totem");
             player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
             if (!foundFeature.contains(interaction.getUniqueId())) {
-                scoreManager.increaseScore(player, Constants.EXCAVATION_FIRST_FOUND, "You were first to find this item!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this item!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
             return;
@@ -508,7 +524,6 @@ public class ExcavationSiteE extends Minigame {
         }
         if (interaction.getScoreboardTags().contains("m_exca_cauldron")) {
 
-
             for (ItemStack i : player.getInventory().getContents()) {
                 if (i != null) {
                     if (i.getType() == Material.POTION) {
@@ -527,7 +542,7 @@ public class ExcavationSiteE extends Minigame {
             if (player.getInventory().contains(Material.LILY_OF_THE_VALLEY)) {
 
                 List<UUID> list = collectedMisc.get(player.getUniqueId());
-                list.remove(Constants.EXCAVATION_HERB_UUID);
+                list.remove(TAqMinigames.getEventConfig().getExcavationData().HERB_UUID);
                 collectedMisc.put(player.getUniqueId(), list);
 
                 Utilities.giveAurumItem(player, "m_exca_speed_potion");
@@ -556,6 +571,30 @@ public class ExcavationSiteE extends Minigame {
             player.playSound(player, Sound.BLOCK_BEACON_POWER_SELECT,SoundCategory.VOICE, 1, 1);
             return;
         }
+        if (interaction.getScoreboardTags().contains("m_exca_desert_speed_potion")) {
+
+            for (ItemStack i : player.getInventory().getContents()) {
+                if (i != null) {
+                    if (i.getType() == Material.POTION) {
+
+                        ItemMeta meta = i.getItemMeta();
+                        assert meta != null;
+                        if (meta.getDisplayName().contains("Potion of Leaping")) {
+                            player.sendMessage(" ");
+                            player.sendMessage(ChatColor.YELLOW + "I already gave you a potion! Go use it first before I give you another...");
+                            player.sendMessage(" ");
+                            return;
+                        }
+                    }
+                }
+            }
+
+            Utilities.giveAurumItem(player, "m_exca_jump_potion");
+            player.sendMessage(" ");
+            player.sendMessage(ChatColor.YELLOW + "I found this " + ChatColor.AQUA + ChatColor.BOLD + "jump boost potion " + ChatColor.RESET + ChatColor.YELLOW + "in one of the crates behind me. Maybe you can find a use for it!");
+            player.sendMessage(" ");
+            return;
+        }
         if (interaction.getScoreboardTags().contains("m_exca_door_red_in")) {
             for (ItemStack i : player.getInventory().getContents()) {
                 if (i != null) {
@@ -565,10 +604,10 @@ public class ExcavationSiteE extends Minigame {
                         if (meta.getCustomModelData() == 100014) {
 
                             List<UUID> list = collectedMisc.get(player.getUniqueId());
-                            list.remove(Constants.EXCAVATION_KEY_RED_UUID);
+                            list.remove(TAqMinigames.getEventConfig().getExcavationData().KEY_RED_UUID);
                             collectedMisc.put(player.getUniqueId(), list);
 
-                            player.teleport(Constants.EXCAVATION_DOOR_RED[0]);
+                            player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_RED[0]);
                             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
                             return;
@@ -588,10 +627,10 @@ public class ExcavationSiteE extends Minigame {
                         if (meta.getCustomModelData() == 100011) {
 
                             List<UUID> list = collectedMisc.get(player.getUniqueId());
-                            list.remove(Constants.EXCAVATION_KEY_BLUE_UUID);
+                            list.remove(TAqMinigames.getEventConfig().getExcavationData().KEY_BLUE_UUID);
                             collectedMisc.put(player.getUniqueId(), list);
 
-                            player.teleport(Constants.EXCAVATION_DOOR_BLUE[0]);
+                            player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_BLUE[0]);
                             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
                             return;
@@ -611,10 +650,10 @@ public class ExcavationSiteE extends Minigame {
                         if (meta.getCustomModelData() == 100012) {
 
                             List<UUID> list = collectedMisc.get(player.getUniqueId());
-                            list.remove(Constants.EXCAVATION_KEY_GREEN_UUID);
+                            list.remove(TAqMinigames.getEventConfig().getExcavationData().KEY_GREEN_UUID);
                             collectedMisc.put(player.getUniqueId(), list);
 
-                            player.teleport(Constants.EXCAVATION_DOOR_GREEN[0]);
+                            player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_GREEN[0]);
                             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
                             return;
@@ -634,10 +673,10 @@ public class ExcavationSiteE extends Minigame {
                         if (meta.getCustomModelData() == 100013) {
 
                             List<UUID> list = collectedMisc.get(player.getUniqueId());
-                            list.remove(Constants.EXCAVATION_KEY_YELLOW_UUID);
+                            list.remove(TAqMinigames.getEventConfig().getExcavationData().KEY_YELLOW_UUID);
                             collectedMisc.put(player.getUniqueId(), list);
 
-                            player.teleport(Constants.EXCAVATION_DOOR_YELLOW[0]);
+                            player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_YELLOW[0]);
                             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
                             return;
@@ -649,22 +688,22 @@ public class ExcavationSiteE extends Minigame {
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_red_out")) {
-            player.teleport(Constants.EXCAVATION_DOOR_RED[1]);
+            player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_RED[1]);
             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_blue_out")) {
-            player.teleport(Constants.EXCAVATION_DOOR_BLUE[1]);
+            player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_BLUE[1]);
             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_green_out")) {
-            player.teleport(Constants.EXCAVATION_DOOR_GREEN[1]);
+            player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_GREEN[1]);
             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_yellow_out")) {
-            player.teleport(Constants.EXCAVATION_DOOR_YELLOW[1]);
+            player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_YELLOW[1]);
             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
             return;
         }
@@ -686,11 +725,11 @@ public class ExcavationSiteE extends Minigame {
     }
 
     /**
-     * Used for when a player breaks a gravel block
+     * Used for when a player breaks a breakable block
      * @param block The block
      */
     public void blockBroken(Block block) {
-        if (block.getType() == Material.GRAVEL) {
+        if (block.getType() == Material.GRAVEL || block.getType() == Material.SUSPICIOUS_SAND) {
             Material type = block.getType();
             Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> block.setType(type), 300L);
         }
@@ -711,7 +750,7 @@ public class ExcavationSiteE extends Minigame {
         }
         player.getInventory().clear();
         Bukkit.broadcastMessage(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + player.getName() + " has exited the temple with " + count + " crystals!");
-        scoreManager.increaseScore(player, Constants.EXCAVATION_CRYSTAL * count, "You collected " + count + " crystals!", true);
+        scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().CRYSTAL_POINTS * count, "You collected " + count + " crystals!", true);
     }
 
     /**
@@ -725,15 +764,14 @@ public class ExcavationSiteE extends Minigame {
     /**
      * Used to register all the spike traps
      */
-    @SuppressWarnings("deprecation")
     private void registerSpikes() {
-        for (Location[] l : Constants.EXCAVATION_SPIKE_BOXES) {
+        for (Location[] l : TAqMinigames.getEventConfig().getExcavationData().SPIKE_BOXES) {
 
             BoundingBox b = new BoundingBox(l[0].getX(), l[0].getY(), l[0].getZ(), l[1].getX(), l[1].getY(), l[1].getZ());
-            Trigger.register(new Trigger(b, Constants.WORLD, p -> p.getLocation().getBlock().getType() == Material.TRIPWIRE && p.isOnGround() && p.getGameMode() == GameMode.ADVENTURE, p -> {
+            Trigger.register(new Trigger(b, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getLocation().getBlock().getType() == Material.TRIPWIRE && p.isOnGround() && p.getGameMode() == GameMode.ADVENTURE, p -> {
                 p.damage(4);
-                assert Constants.WORLD != null;
-                for (Entity e : Constants.WORLD.getNearbyEntities(b)) {
+                assert TAqMinigames.getEventConfig().getGenericData().WORLD != null;
+                for (Entity e : TAqMinigames.getEventConfig().getGenericData().WORLD.getNearbyEntities(b)) {
                     if (e instanceof ItemDisplay itemDisplay) {
                         if (itemDisplay.getScoreboardTags().contains("m_exca_spike")) {
                             itemDisplay.getWorld().playSound(itemDisplay.getLocation(), Sound.BLOCK_PISTON_EXTEND, SoundCategory.VOICE, 1, 1);
@@ -758,6 +796,27 @@ public class ExcavationSiteE extends Minigame {
                     }
                 }
             }, Utilities.secondsToMillis(1), true, false));
+        }
+    }
+
+    private void registerFallingCeiling() {
+        if (TAqMinigames.getEventConfig().getExcavationData().FALLING_CEILING_BOX != null) {
+            Location[] l = TAqMinigames.getEventConfig().getExcavationData().FALLING_CEILING_BOX;
+            BoundingBox b = new BoundingBox(l[0].getX(), l[0].getY(), l[0].getZ(), l[1].getX(), l[1].getY(), l[1].getZ());
+            Trigger.register(new Trigger(b, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> {
+                if (p.getGameMode() == GameMode.ADVENTURE) {
+                    if (p.getEquipment() != null && p.getEquipment().getHelmet() != null) {
+                        return p.getEquipment().getHelmet().getType() != Material.LEATHER_HELMET;
+                    }
+                }
+                return false;
+            }, p -> {
+                p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10, false, false, false));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
+                    p.damage(40);
+                    p.playSound(p, Sound.BLOCK_ANVIL_PLACE, SoundCategory.VOICE, 1,1);
+                }, 20L);
+            }, Utilities.secondsToMillis(5), false, false));
         }
     }
 }

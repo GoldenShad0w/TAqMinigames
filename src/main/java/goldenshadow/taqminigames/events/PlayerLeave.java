@@ -1,6 +1,5 @@
 package goldenshadow.taqminigames.events;
 
-import goldenshadow.taqminigames.event.ScoreManager;
 import goldenshadow.taqminigames.event.ScoreboardWrapper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

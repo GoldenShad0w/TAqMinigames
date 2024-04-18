@@ -8,7 +8,6 @@ import goldenshadow.taqminigames.event.ScoreManager;
 import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.minigames.proffers_pit.*;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Timer;
 import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.*;
@@ -49,20 +48,20 @@ public class ProffersPit extends Minigame {
         huntedColorTeam.setColor(ChatColor.RED);
         huntedColorTeam.setAllowFriendlyFire(true);
 
-        assert Constants.WORLD != null;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, true), 5L);
-        Constants.WORLD.setGameRule(GameRule.FIRE_DAMAGE, true);
-        Constants.WORLD.setGameRule(GameRule.FREEZE_DAMAGE, true);
-        Constants.WORLD.setGameRule(GameRule.DROWNING_DAMAGE, true);
+        assert TAqMinigames.getEventConfig().getGenericData().WORLD != null;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FALL_DAMAGE, true), 5L);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FIRE_DAMAGE, true);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FREEZE_DAMAGE, true);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.DROWNING_DAMAGE, true);
 
         timer = new Timer(0, 29, () -> timer = new Timer(19,59, this::end));
         for (Player player : ParticipantManager.getParticipants()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));
-            player.setBedSpawnLocation(Constants.PROF_START_LOCATION, true);
+            player.setBedSpawnLocation(TAqMinigames.getEventConfig().getProffersPitData().START_LOCATION, true);
             player.setLevel(105);
             highestMined.put(player.getUniqueId(), 0);
         }
-        ParticipantManager.teleportAllPlayers(Constants.PROF_TUTORIAL_LOCATION);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getProffersPitData().TUTORIAL_LOCATION);
     }
 
 
@@ -109,7 +108,7 @@ public class ProffersPit extends Minigame {
                     player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
                     if (ParticipantManager.getParticipants().contains(player)) {
                         Utilities.giveAurumItem(player, "m_prof_t1");
-                        player.teleport(Constants.PROF_START_LOCATION);
+                        player.teleport(TAqMinigames.getEventConfig().getProffersPitData().START_LOCATION);
                     }
                 }
                 gameState = GameState.RUNNING;
@@ -118,10 +117,10 @@ public class ProffersPit extends Minigame {
                 if (gameState == GameState.RUNNING) {
 
                     int i = getRelevantEventLocationIndex();
-                    EventLocation eventLocation = Constants.PROF_EVENT_LOCATIONS[i];
+                    EventLocation eventLocation = TAqMinigames.getEventConfig().getProffersPitData().EVENT_LOCATIONS[i];
                     if (eventLocation.eventType() == EventLocation.EventType.XP) {
                         if (doesXPBombExistAlready(eventLocation)) {
-                            eventLocation = Constants.PROF_EVENT_LOCATIONS[i-1];
+                            eventLocation = TAqMinigames.getEventConfig().getProffersPitData().EVENT_LOCATIONS[i-1];
                         }
                     }
                     switch (eventLocation.eventType()) {
@@ -211,13 +210,6 @@ public class ProffersPit extends Minigame {
         huntedColorTeam.removeEntry(player.getName());
     }
 
-    @Override
-    protected void insertPlayer(Player player) {
-        super.insertPlayer(player);
-        player.teleport(Constants.PROF_START_LOCATION);
-        player.setBedSpawnLocation(Constants.PROF_START_LOCATION, true);
-        Utilities.giveAurumItem(player, "m_prof_t1");
-    }
 
     /**
      * Used to toggle hunted mode for a player
@@ -351,7 +343,7 @@ public class ProffersPit extends Minigame {
 
     @Override
     public void end() {
-        assert Constants.WORLD != null;
+        assert TAqMinigames.getEventConfig().getGenericData().WORLD != null;
         for (Player p : ParticipantManager.getParticipants()) {
             p.setLevel(0);
             p.getInventory().clear();
@@ -361,10 +353,10 @@ public class ProffersPit extends Minigame {
             huntedColorTeam.removeEntry(p.getName());
 
         }
-        Constants.WORLD.setGameRule(GameRule.FALL_DAMAGE, false);
-        Constants.WORLD.setGameRule(GameRule.FIRE_DAMAGE, false);
-        Constants.WORLD.setGameRule(GameRule.FREEZE_DAMAGE, false);
-        Constants.WORLD.setGameRule(GameRule.DROWNING_DAMAGE, false);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FALL_DAMAGE, false);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FIRE_DAMAGE, false);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.FREEZE_DAMAGE, false);
+        TAqMinigames.getEventConfig().getGenericData().WORLD.setGameRule(GameRule.DROWNING_DAMAGE, false);
 
         Iterator<ProfEvent> it = currentEvents.iterator();
         while (it.hasNext()) {
@@ -390,8 +382,8 @@ public class ProffersPit extends Minigame {
                     event.setCancelled(true);
                     int score = scoreManager.getScore(player.getUniqueId());
                     if (event.getCurrentItem().getType() == Material.LEATHER_BOOTS) {
-                        if (score >= Constants.PROF_BOOTS_PRICE) {
-                            scoreManager.increaseScore(player, -Constants.PROF_BOOTS_PRICE, false);
+                        if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_BOOTS_PRICE) {
+                            scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_BOOTS_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_boots");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
@@ -400,8 +392,8 @@ public class ProffersPit extends Minigame {
                         return;
                     }
                     if (event.getCurrentItem().getType() == Material.FIRE_CHARGE) {
-                        if (score >= Constants.PROF_HUNTED_PRICE) {
-                            scoreManager.increaseScore(player, -Constants.PROF_HUNTED_PRICE, false);
+                        if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_HUNTED_PRICE) {
+                            scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_HUNTED_PRICE, false);
                             player.getInventory().addItem(ShopItems.getHuntedToken());
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
@@ -410,8 +402,8 @@ public class ProffersPit extends Minigame {
                         return;
                     }
                     if (event.getCurrentItem().getType() == Material.IRON_SWORD) {
-                        if (score >= Constants.PROF_SWORD_PRICE) {
-                            scoreManager.increaseScore(player, -Constants.PROF_SWORD_PRICE, false);
+                        if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_SWORD_PRICE) {
+                            scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_SWORD_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_sword");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
@@ -420,8 +412,8 @@ public class ProffersPit extends Minigame {
                         return;
                     }
                     if (event.getCurrentItem().getType() == Material.POTION) {
-                        if (score >= Constants.PROF_SPEED_PRICE) {
-                            scoreManager.increaseScore(player, -Constants.PROF_SPEED_PRICE, false);
+                        if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_SPEED_PRICE) {
+                            scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_SPEED_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_speed");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
@@ -430,8 +422,8 @@ public class ProffersPit extends Minigame {
                         return;
                     }
                     if (event.getCurrentItem().getType() == Material.GLISTERING_MELON_SLICE) {
-                        if (score >= Constants.PROF_HASTE_PRICE) {
-                            scoreManager.increaseScore(player, -Constants.PROF_HASTE_PRICE, false);
+                        if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_HASTE_PRICE) {
+                            scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_HASTE_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_haste");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
@@ -440,8 +432,8 @@ public class ProffersPit extends Minigame {
                         return;
                     }
                     if (event.getCurrentItem().getType() == Material.BEETROOT_SOUP) {
-                        if (score >= Constants.PROF_HEALTH_PRICE) {
-                            scoreManager.increaseScore(player, -Constants.PROF_HEALTH_PRICE, false);
+                        if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_HEALTH_PRICE) {
+                            scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_HEALTH_PRICE, false);
                             Utilities.giveAurumItem(player, "m_prof_health");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
                         } else {
@@ -452,8 +444,8 @@ public class ProffersPit extends Minigame {
                     if (event.getCurrentItem().getType() == Material.IRON_PICKAXE) {
 
                         if (Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getCustomModelData() == 2) {
-                            if (score >= Constants.PROF_T2_PRICE && hasPickaxe(player, 1)) {
-                                scoreManager.increaseScore(player, -Constants.PROF_T2_PRICE, false);
+                            if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_T2_PRICE && hasPickaxe(player, 1)) {
+                                scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_T2_PRICE, false);
                                 player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t2");
                                 player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
@@ -462,8 +454,8 @@ public class ProffersPit extends Minigame {
                             }
                         }
                         else if (Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getCustomModelData() == 3) {
-                            if (score >= Constants.PROF_T3_PRICE && hasPickaxe(player, 2)) {
-                                scoreManager.increaseScore(player, -Constants.PROF_T3_PRICE, false);
+                            if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_T3_PRICE && hasPickaxe(player, 2)) {
+                                scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_T3_PRICE, false);
                                 player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t3");
                                 player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
@@ -472,8 +464,8 @@ public class ProffersPit extends Minigame {
                             }
                         }
                         else if (Objects.requireNonNull(event.getCurrentItem().getItemMeta()).getCustomModelData() == 4) {
-                            if (score >= Constants.PROF_T4_PRICE && hasPickaxe(player, 3)) {
-                                scoreManager.increaseScore(player, -Constants.PROF_T4_PRICE, false);
+                            if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_T4_PRICE && hasPickaxe(player, 3)) {
+                                scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_T4_PRICE, false);
                                 player.getInventory().remove(Material.IRON_PICKAXE);
                                 Utilities.giveAurumItem(player, "m_prof_t4");
                                 player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
@@ -483,8 +475,8 @@ public class ProffersPit extends Minigame {
                         }
                     }
                     if (event.getCurrentItem().getType() == Material.DIAMOND_PICKAXE) {
-                        if (score >= Constants.PROF_T5_PRICE && hasPickaxe(player, 4)) {
-                            scoreManager.increaseScore(player, -Constants.PROF_T5_PRICE, false);
+                        if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_T5_PRICE && hasPickaxe(player, 4)) {
+                            scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_T5_PRICE, false);
                             player.getInventory().remove(Material.IRON_PICKAXE);
                             Utilities.giveAurumItem(player, "m_prof_t5");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);
@@ -494,8 +486,8 @@ public class ProffersPit extends Minigame {
                         return;
                     }
                     if (event.getCurrentItem().getType() == Material.NETHERITE_PICKAXE) {
-                        if (score >= Constants.PROF_T6_PRICE && hasPickaxe(player, 5)) {
-                            scoreManager.increaseScore(player, -Constants.PROF_T6_PRICE, false);
+                        if (score >= TAqMinigames.getEventConfig().getProffersPitData().PROF_T6_PRICE && hasPickaxe(player, 5)) {
+                            scoreManager.increaseScore(player, -TAqMinigames.getEventConfig().getProffersPitData().PROF_T6_PRICE, false);
                             player.getInventory().remove(Material.DIAMOND_PICKAXE);
                             Utilities.giveAurumItem(player, "m_prof_t6");
                             player.playSound(player, Sound.ENTITY_VILLAGER_YES,SoundCategory.VOICE, 1,1);

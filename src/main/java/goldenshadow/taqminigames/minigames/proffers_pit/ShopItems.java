@@ -1,6 +1,6 @@
 package goldenshadow.taqminigames.minigames.proffers_pit;
 
-import goldenshadow.taqminigames.util.Constants;
+import goldenshadow.taqminigames.TAqMinigames;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -302,17 +302,17 @@ public class ShopItems {
         Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.BOLD + "Mining Supplies");
         for (int i = 0; i < 27; i++) {
             switch (i) {
-                case 3 -> inventory.setItem(i, getBoots(Constants.PROF_BOOTS_PRICE));
-                case 4 -> inventory.setItem(i, getHuntedTokenWithPrice(Constants.PROF_HUNTED_PRICE));
-                case 5 -> inventory.setItem(i, getSword(Constants.PROF_SWORD_PRICE));
-                case 11 -> inventory.setItem(i, getPickT2(Constants.PROF_T2_PRICE));
-                case 12 -> inventory.setItem(i, getPickT3(Constants.PROF_T3_PRICE));
-                case 13 -> inventory.setItem(i, getPickT4(Constants.PROF_T4_PRICE));
-                case 14 -> inventory.setItem(i, getPickT5(Constants.PROF_T5_PRICE));
-                case 15 -> inventory.setItem(i, getPickT6(Constants.PROF_T6_PRICE));
-                case 21 -> inventory.setItem(i, getPotion(Constants.PROF_SPEED_PRICE));
-                case 22 -> inventory.setItem(i, getMelon(Constants.PROF_HASTE_PRICE));
-                case 23 -> inventory.setItem(i, getSoup(Constants.PROF_HEALTH_PRICE));
+                case 3 -> inventory.setItem(i, getBoots(TAqMinigames.getEventConfig().getProffersPitData().PROF_BOOTS_PRICE));
+                case 4 -> inventory.setItem(i, getHuntedTokenWithPrice(TAqMinigames.getEventConfig().getProffersPitData().PROF_HUNTED_PRICE));
+                case 5 -> inventory.setItem(i, getSword(TAqMinigames.getEventConfig().getProffersPitData().PROF_SWORD_PRICE));
+                case 11 -> inventory.setItem(i, getPickT2(TAqMinigames.getEventConfig().getProffersPitData().PROF_T2_PRICE));
+                case 12 -> inventory.setItem(i, getPickT3(TAqMinigames.getEventConfig().getProffersPitData().PROF_T3_PRICE));
+                case 13 -> inventory.setItem(i, getPickT4(TAqMinigames.getEventConfig().getProffersPitData().PROF_T4_PRICE));
+                case 14 -> inventory.setItem(i, getPickT5(TAqMinigames.getEventConfig().getProffersPitData().PROF_T5_PRICE));
+                case 15 -> inventory.setItem(i, getPickT6(TAqMinigames.getEventConfig().getProffersPitData().PROF_T6_PRICE));
+                case 21 -> inventory.setItem(i, getPotion(TAqMinigames.getEventConfig().getProffersPitData().PROF_SPEED_PRICE));
+                case 22 -> inventory.setItem(i, getMelon(TAqMinigames.getEventConfig().getProffersPitData().PROF_HASTE_PRICE));
+                case 23 -> inventory.setItem(i, getSoup(TAqMinigames.getEventConfig().getProffersPitData().PROF_HEALTH_PRICE));
                 default -> inventory.setItem(i, getFiller());
             }
         }

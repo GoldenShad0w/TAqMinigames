@@ -4,7 +4,6 @@ import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.SoundFile;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -69,7 +68,7 @@ public class GameSelection {
         switch (tick) {
             case 0 -> {
                 for (Player p : participants) {
-                    p.teleport(Constants.LOBBY_GAME_SELECTION);
+                    p.teleport(TAqMinigames.getEventConfig().getGenericData().LOBBY_GAME_SELECTION);
                     String raw = "The next minigame is about to be selected! Three possible options will be chosen randomly and you will be able to vote for the one you want to play. The game with the least amount of votes will be eliminated for this round. One of the two remaining games will be picked randomly!";
 
                     List<String> list = new ArrayList<>(Arrays.asList(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Game Selection", " "));
@@ -102,24 +101,24 @@ public class GameSelection {
                         Game game = getPossibleGame();
                         participants.forEach(p -> p.sendTitle(" ", ChatColor.RED + game.getLabel(), 5, 10, 5));
                         chosenGames[0] = game;
-                        spawnFireWork(Constants.LOBBY_POSSIBLE_GAME_RED, Color.RED);
-                        spawnTextDisplay(Constants.LOBBY_POSSIBLE_GAME_RED, ChatColor.AQUA + "Possible Game:\n" + ChatColor.RED + ChatColor.BOLD + game.getLabel());
+                        spawnFireWork(TAqMinigames.getEventConfig().getGenericData().LOBBY_POSSIBLE_GAME_RED, Color.RED);
+                        spawnTextDisplay(TAqMinigames.getEventConfig().getGenericData().LOBBY_POSSIBLE_GAME_RED, ChatColor.AQUA + "Possible Game:\n" + ChatColor.RED + ChatColor.BOLD + game.getLabel());
                         selectionState++;
                     }
                     case 1 -> {
                         Game game = getPossibleGame();
                         participants.forEach(p -> p.sendTitle(" ", ChatColor.GREEN + game.getLabel(), 5, 10, 5));
                         chosenGames[1] = game;
-                        spawnFireWork(Constants.LOBBY_POSSIBLE_GAME_LIME, Color.LIME);
-                        spawnTextDisplay(Constants.LOBBY_POSSIBLE_GAME_LIME, ChatColor.AQUA + "Possible Game:\n" + ChatColor.GREEN + ChatColor.BOLD + game.getLabel());
+                        spawnFireWork(TAqMinigames.getEventConfig().getGenericData().LOBBY_POSSIBLE_GAME_LIME, Color.LIME);
+                        spawnTextDisplay(TAqMinigames.getEventConfig().getGenericData().LOBBY_POSSIBLE_GAME_LIME, ChatColor.AQUA + "Possible Game:\n" + ChatColor.GREEN + ChatColor.BOLD + game.getLabel());
                         selectionState++;
                     }
                     case 2 -> {
                         Game game = getPossibleGame();
                         participants.forEach(p -> p.sendTitle(" ", ChatColor.BLUE + game.getLabel(), 5, 10, 5));
                         chosenGames[2] = game;
-                        spawnFireWork(Constants.LOBBY_POSSIBLE_GAME_BLUE, Color.BLUE);
-                        spawnTextDisplay(Constants.LOBBY_POSSIBLE_GAME_BLUE, ChatColor.AQUA + "Possible Game:\n" + ChatColor.BLUE + ChatColor.BOLD + game.getLabel());
+                        spawnFireWork(TAqMinigames.getEventConfig().getGenericData().LOBBY_POSSIBLE_GAME_BLUE, Color.BLUE);
+                        spawnTextDisplay(TAqMinigames.getEventConfig().getGenericData().LOBBY_POSSIBLE_GAME_BLUE, ChatColor.AQUA + "Possible Game:\n" + ChatColor.BLUE + ChatColor.BOLD + game.getLabel());
                         selectionState++;
                     }
                 }
@@ -138,8 +137,8 @@ public class GameSelection {
             case 33 -> {
                 VoteColor leastVotes = countVotes();
                 Material block = leastVotes == VoteColor.RED ? Material.RED_CONCRETE : leastVotes == VoteColor.LIME ? Material.LIME_CONCRETE : Material.BLUE_CONCRETE;
-                Utilities.fillAreaWithBlock(Constants.LOBBY_SELECTION_AREA[0], Constants.LOBBY_SELECTION_AREA[1], Material.STRUCTURE_VOID, block);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Utilities.fillAreaWithBlock(Constants.LOBBY_SELECTION_AREA[0], Constants.LOBBY_SELECTION_AREA[1], block, Material.STRUCTURE_VOID), 200L);
+                Utilities.fillAreaWithBlock(TAqMinigames.getEventConfig().getGenericData().LOBBY_SELECTION_AREA[0], TAqMinigames.getEventConfig().getGenericData().LOBBY_SELECTION_AREA[1], Material.STRUCTURE_VOID, block);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Utilities.fillAreaWithBlock(TAqMinigames.getEventConfig().getGenericData().LOBBY_SELECTION_AREA[0], TAqMinigames.getEventConfig().getGenericData().LOBBY_SELECTION_AREA[1], block, Material.STRUCTURE_VOID), 200L);
 
 
                 Game game = chosenGames[leastVotes.ordinal()];

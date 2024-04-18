@@ -1,6 +1,7 @@
 package goldenshadow.taqminigames.commands;
 
 import goldenshadow.taqminigames.TAqMinigames;
+import goldenshadow.taqminigames.data.dataconfig.ConfigManager;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.SoundFile;
 import goldenshadow.taqminigames.event.ParticipantManager;
@@ -40,6 +41,14 @@ public class Command implements CommandExecutor {
                                 return true;
                             }
                             player.sendMessage(ChatMessageFactory.adminErrorMessage("The event is currently not running!"));
+                            return true;
+                        }
+                        if (args[1].equalsIgnoreCase("game_config")) {
+                            if (!TAqMinigames.isRunning()) {
+                                player.openInventory(ConfigManager.getGUI());
+                                return true;
+                            }
+                            player.sendMessage(ChatMessageFactory.adminErrorMessage("You cannot change the game config while a game is running!"));
                             return true;
                         }
                         if (args[1].equalsIgnoreCase("announce_winner")) {
@@ -270,6 +279,11 @@ public class Command implements CommandExecutor {
                                 return true;
                             }
                             player.sendMessage(ChatMessageFactory.adminErrorMessage("The event must be running to run this command!"));
+                            return true;
+                        }
+                        if (args[1].equalsIgnoreCase("toggle_trigger_highlight")) {
+                            TAqMinigames.debugTriggers = !TAqMinigames.debugTriggers;
+                            player.sendMessage(ChatMessageFactory.adminInfoMessage("Set trigger highlight to " + TAqMinigames.debugTriggers + "!"));
                             return true;
                         }
                     }

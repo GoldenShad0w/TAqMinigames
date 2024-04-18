@@ -1,6 +1,7 @@
 package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.TAqMinigames;
+import goldenshadow.taqminigames.data.dataconfig.ConfigManager;
 import goldenshadow.taqminigames.minigames.ProffersPit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +15,8 @@ public class InventoryClick implements Listener {
             if (TAqMinigames.minigame instanceof ProffersPit game) {
                 game.shopEvent(event);
             }
+        } else {
+            ConfigManager.guiClick(event);
         }
     }
 }

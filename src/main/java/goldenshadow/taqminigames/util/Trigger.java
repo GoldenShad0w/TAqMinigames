@@ -1,5 +1,8 @@
 package goldenshadow.taqminigames.util;
 
+import goldenshadow.taqminigames.TAqMinigames;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
@@ -57,19 +60,9 @@ public class Trigger {
         while (it.hasNext()) {
             Trigger trigger = it.next();
             if (player.getWorld().equals(trigger.world)) {
-                // debug highlight for triggers
-                /*
-                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
-                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
-                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
-                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMinY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
-
-                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
-                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMinZ()), 10, 0, 0, 0, 0);
-                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMinX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
-                player.getWorld().spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), trigger.boundingBox.getMaxX(), trigger.boundingBox.getMaxY(), trigger.boundingBox.getMaxZ()), 10, 0, 0, 0, 0);
-
-                 */
+                if (TAqMinigames.debugTriggers) {
+                    debugHighlightBoxes(player, trigger.boundingBox);
+                }
                 if (trigger.boundingBox.overlaps(player.getBoundingBox())) {
                     if (trigger.predicate.test(player)) {
                         if (trigger.globalCooldown <= System.currentTimeMillis()) {
@@ -129,5 +122,43 @@ public class Trigger {
      */
     public static void unregister(Trigger trigger) {
         registeredTriggers.remove(trigger);
+    }
+
+    /**
+     * Used to highlight trigger boxes for debug purposes
+     * @param player The player who will see the particles
+     * @param box The bounding box of the trigger
+     */
+    private static void debugHighlightBoxes(Player player, BoundingBox box) {
+        // edges
+        for (int i = 0; i < box.getWidthX(); i++) {
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMinX() + i, box.getMinY(), box.getMinZ()), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMinX() + i, box.getMinY(), box.getMaxZ()), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMinX() + i, box.getMaxY(), box.getMinZ()), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMinX() + i, box.getMaxY(), box.getMaxZ()), 5, 0,0,0,0);
+        }
+        for (int i = 0; i < box.getWidthZ(); i++) {
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMinX(), box.getMinY(), box.getMinZ() + i), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMaxX(), box.getMinY(), box.getMinZ() + i), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMinX(), box.getMaxY(), box.getMinZ() + i), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMaxX(), box.getMaxY(), box.getMinZ() + i), 5, 0,0,0,0);
+        }
+        for (int i = 0; i < box.getHeight(); i++) {
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMinX(), box.getMinY() + i, box.getMinZ()), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMaxX(), box.getMinY() + i, box.getMinZ()), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMinX(), box.getMinY() + i, box.getMaxZ()), 5, 0,0,0,0);
+            player.spawnParticle(Particle.DRAGON_BREATH, new Location(player.getWorld(), box.getMaxX(), box.getMinY() + i, box.getMaxZ()), 5, 0,0,0,0);
+        }
+        //corners
+        player.getWorld().spawnParticle(Particle.END_ROD, new Location(player.getWorld(), box.getMinX(), box.getMinY(), box.getMinZ()), 10, 0, 0, 0, 0);
+        player.getWorld().spawnParticle(Particle.END_ROD, new Location(player.getWorld(), box.getMaxX(), box.getMinY(), box.getMinZ()), 10, 0, 0, 0, 0);
+        player.getWorld().spawnParticle(Particle.END_ROD, new Location(player.getWorld(), box.getMinX(), box.getMinY(), box.getMaxZ()), 10, 0, 0, 0, 0);
+        player.getWorld().spawnParticle(Particle.END_ROD, new Location(player.getWorld(), box.getMaxX(), box.getMinY(), box.getMaxZ()), 10, 0, 0, 0, 0);
+
+        player.getWorld().spawnParticle(Particle.END_ROD, new Location(player.getWorld(), box.getMinX(), box.getMaxY(), box.getMinZ()), 10, 0, 0, 0, 0);
+        player.getWorld().spawnParticle(Particle.END_ROD, new Location(player.getWorld(), box.getMaxX(), box.getMaxY(), box.getMinZ()), 10, 0, 0, 0, 0);
+        player.getWorld().spawnParticle(Particle.END_ROD, new Location(player.getWorld(), box.getMinX(), box.getMaxY(), box.getMaxZ()), 10, 0, 0, 0, 0);
+        player.getWorld().spawnParticle(Particle.END_ROD, new Location(player.getWorld(), box.getMaxX(), box.getMaxY(), box.getMaxZ()), 10, 0, 0, 0, 0);
+
     }
 }

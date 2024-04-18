@@ -2,7 +2,6 @@ package goldenshadow.taqminigames.minigames.proffers_pit;
 
 import goldenshadow.taqminigames.event.BossbarWrapper;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;

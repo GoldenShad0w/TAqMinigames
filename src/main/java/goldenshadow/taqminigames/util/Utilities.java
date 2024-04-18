@@ -1,5 +1,6 @@
 package goldenshadow.taqminigames.util;
 
+import goldenshadow.taqminigames.TAqMinigames;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -145,10 +146,10 @@ public class Utilities {
      * Used to register that trigger in the lobby which teleports falling players back onto the island
      */
     public static void registerLobbyTrigger() {
-        Trigger.register(new Trigger(new BoundingBox(10, 33, 281, 193, 18, -8), Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.teleport(Constants.LOBBY), 0, false, false));
-        for (Location loc : Constants.LOBBY_JUMP_PADS) {
+        Trigger.register(new Trigger(new BoundingBox(10, 33, 281, 193, 18, -8), TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.teleport(TAqMinigames.getEventConfig().getGenericData().LOBBY), 0, false, false));
+        for (Location loc : TAqMinigames.getEventConfig().getGenericData().LOBBY_JUMP_PADS) {
             BoundingBox box = new BoundingBox(loc.getX()+1.5, loc.getY()+1, loc.getZ()+1.5, loc.getX()-1.5, loc.getY(), loc.getZ()-1.5);
-            Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+            Trigger.register(new Trigger(box, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                 p.setVelocity(p.getLocation().getDirection().multiply(2.2).setY(1.5));
                 assert p.getLocation().getWorld() != null;
                 p.playSound(p.getLocation(), Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);

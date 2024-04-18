@@ -45,7 +45,7 @@ public class NesaakFight extends Minigame {
             assert player.getEquipment() != null;
             player.getEquipment().setChestplate(getHealthLimiter());
         }
-        ParticipantManager.teleportAllPlayers(Constants.NESAAK_TUTORIAL_LOCATION);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getNesaakData().TUTORIAL_LOCATION);
 
     }
 
@@ -106,7 +106,7 @@ public class NesaakFight extends Minigame {
                 if (gameState == GameState.RUNNING) {
                     Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Powerups have spawned!"));
                     for (int i = 0; i < 5; i++) {
-                        spawnPowerup(Constants.NESAAK_POWERUP_NODES[ThreadLocalRandom.current().nextInt(0, Constants.NESAAK_POWERUP_NODES.length)]);
+                        spawnPowerup(TAqMinigames.getEventConfig().getNesaakData().POWERUP_NODES[ThreadLocalRandom.current().nextInt(0, TAqMinigames.getEventConfig().getNesaakData().POWERUP_NODES.length)]);
                     }
                 }
             }
@@ -177,14 +177,6 @@ public class NesaakFight extends Minigame {
     public void playerDisconnect(Player player) {
     }
 
-    @Override
-    public void insertPlayer(Player player) {
-        super.insertPlayer(player);
-        player.teleport(Constants.NESAAK_SPAWN_POINTS[0]);
-        player.getInventory().addItem(getShovel(), new ItemStack(Material.SNOWBALL, 12));
-        assert player.getEquipment() != null;
-        player.getEquipment().setChestplate(getHealthLimiter());
-    }
 
     /**
      * Getter for the game
@@ -322,7 +314,7 @@ public class NesaakFight extends Minigame {
      * @return The random respawn point
      */
     private Location getRandomSpawn() {
-        return Constants.NESAAK_SPAWN_POINTS[ThreadLocalRandom.current().nextInt(0, Constants.NESAAK_SPAWN_POINTS.length)];
+        return TAqMinigames.getEventConfig().getNesaakData().SPAWN_LOCATIONS[ThreadLocalRandom.current().nextInt(0, TAqMinigames.getEventConfig().getNesaakData().SPAWN_LOCATIONS.length)];
     }
 
     /**

@@ -62,7 +62,7 @@ public class SkyIslandLootrun extends Minigame{
             player.setLevel(105);
         }
 
-        ParticipantManager.teleportAllPlayers(Constants.SKY_TUTORIAL_LOCATION);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getSkyIslandData().TUTORIAL_LOCATION);
     }
 
     @Override
@@ -75,8 +75,8 @@ public class SkyIslandLootrun extends Minigame{
             case 12 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("If you fall, you can use your teleport scroll to return to a checkpoint. All large islands have checkpoints on them", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 14 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("When opening a chest, there is also a chance you will find a bonus item in it", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 18 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("These bonus items can be anything from a speed potion to a mythic", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 22 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Completing a the entire lootrun will give you " + ((int) (Constants.SKY_COMPLETE * ScoreManager.getScoreMultiplier())) + " emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Opening a chest will give you " + ((int) (Constants.SKY_T1 * ScoreManager.getScoreMultiplier())) + ", " + ((int) (Constants.SKY_T2 * ScoreManager.getScoreMultiplier())) + ", " + ((int) (Constants.SKY_T3 * ScoreManager.getScoreMultiplier())) + " or " + ((int) (Constants.SKY_T4 * ScoreManager.getScoreMultiplier())) + " emeralds depending on the tier of the chest", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 22 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Completing a the entire lootrun will give you " + ((int) (TAqMinigames.getEventConfig().getSkyIslandData().COMPLETE_POINTS * ScoreManager.getScoreMultiplier())) + " emeralds", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Opening a chest will give you " + ((int) (TAqMinigames.getEventConfig().getSkyIslandData().T1_POINTS * ScoreManager.getScoreMultiplier())) + ", " + ((int) (TAqMinigames.getEventConfig().getSkyIslandData().T2_POINTS * ScoreManager.getScoreMultiplier())) + ", " + ((int) (TAqMinigames.getEventConfig().getSkyIslandData().T3_POINTS * ScoreManager.getScoreMultiplier())) + " or " + ((int) (TAqMinigames.getEventConfig().getSkyIslandData().T4_POINTS * ScoreManager.getScoreMultiplier())) + " emeralds depending on the tier of the chest", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
@@ -105,11 +105,11 @@ public class SkyIslandLootrun extends Minigame{
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
                     player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
-                    player.setBedSpawnLocation(Constants.SKY_START_LOCATION, true);
+                    player.setBedSpawnLocation(TAqMinigames.getEventConfig().getSkyIslandData().START_LOCATION, true);
                     Utilities.giveAurumItem(player, "m_sky_scroll");
                     team.addEntry(player.getName());
                 }
-                ParticipantManager.teleportAllPlayers(Constants.SKY_START_LOCATION);
+                ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getSkyIslandData().START_LOCATION);
                 registerTriggers();
                 gameState = GameState.RUNNING;
             }
@@ -129,33 +129,33 @@ public class SkyIslandLootrun extends Minigame{
      */
     private void registerTriggers() {
 
-        for (CheckpointData checkpointData : Constants.SKY_CHECKPOINTS) {
-            Trigger.register(new Trigger(checkpointData.getBoundingBox(), Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+        for (CheckpointData checkpointData : TAqMinigames.getEventConfig().getSkyIslandData().CHECKPOINTS) {
+            Trigger.register(new Trigger(checkpointData.getBoundingBox(), TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                 p.setBedSpawnLocation(checkpointData.respawnPoint(), true);
                 sendCheckpointTitle(p);
                 convertQueuedChests(p);
             }, Utilities.secondsToMillis(10000), false, false));
         }
-        for (int i = 0; i < Constants.SKY_BOOST_PADS.length; i++) {
-            Location loc = Constants.SKY_BOOST_PADS[i];
+        for (int i = 0; i < TAqMinigames.getEventConfig().getSkyIslandData().BOOST_PADS.length; i++) {
+            Location loc = TAqMinigames.getEventConfig().getSkyIslandData().BOOST_PADS[i];
             BoundingBox box = new BoundingBox(loc.getX()+1, loc.getY()+1, loc.getZ()+1, loc.getX()-1, loc.getY(), loc.getZ()-1);
             if (i == 0) {
-                Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                Trigger.register(new Trigger(box, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.setVelocity(new Vector(30, 1, -1.5));
                     p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
                 }, Utilities.secondsToMillis(2), false, false));
             } else if (i == 1) {
-                Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                Trigger.register(new Trigger(box, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.setVelocity(new Vector(2, 1, -3));
                     p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
                 }, Utilities.secondsToMillis(2), false, false));
             } else if (i == 2) {
-                Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                Trigger.register(new Trigger(box, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.setVelocity(new Vector(-2, 1, -20));
                     p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
                 }, Utilities.secondsToMillis(2), false, false));
             } else {
-                Trigger.register(new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
+                Trigger.register(new Trigger(box, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> {
                     p.setVelocity(new Vector(0, 3, 0));
                     p.playSound(p, Sound.ITEM_TRIDENT_HIT_GROUND,SoundCategory.VOICE, 1,1);
                 }, Utilities.secondsToMillis(2), false, false));
@@ -172,7 +172,8 @@ public class SkyIslandLootrun extends Minigame{
         if (material == Material.PAPER && !player.hasCooldown(Material.PAPER)) {
             player.playSound(player, Sound.ENTITY_ENDERMAN_TELEPORT,SoundCategory.VOICE, 1,1);
             onDeath(player);
-            player.teleport(Constants.SKY_START_LOCATION);
+            Location location = player.getBedSpawnLocation() != null ? player.getBedSpawnLocation() : TAqMinigames.getEventConfig().getSkyIslandData().START_LOCATION;
+            player.teleport(location);
             player.setCooldown(Material.PAPER, 20);
         }
     }
@@ -246,46 +247,46 @@ public class SkyIslandLootrun extends Minigame{
 
                 rollBonusItem(player, 1, interaction.getUniqueId());
                 if (interaction.getScoreboardTags().contains("m_sky_instant")) {
-                    scoreManager.increaseScore(player, Constants.SKY_T1, "You opened a tier 1 chest!", true);
+                    scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getSkyIslandData().T1_POINTS, "You opened a tier 1 chest!", true);
                 } else {
-                    player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "+" + (int) (Constants.SKY_T1 * ScoreManager.getScoreMultiplier()) + ChatColor.DARK_AQUA + " Emeralds to pouch] " + ChatColor.AQUA + "You opened a tier 1 chest!");
-                    queuedPoints.put(player.getUniqueId(), queuedPoints.getOrDefault(player.getUniqueId(), 0) + (int) (Constants.SKY_T1 * ScoreManager.getScoreMultiplier()));
+                    player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "+" + (int) (TAqMinigames.getEventConfig().getSkyIslandData().T1_POINTS * ScoreManager.getScoreMultiplier()) + ChatColor.DARK_AQUA + " Emeralds to pouch] " + ChatColor.AQUA + "You opened a tier 1 chest!");
+                    queuedPoints.put(player.getUniqueId(), queuedPoints.getOrDefault(player.getUniqueId(), 0) + (int) (TAqMinigames.getEventConfig().getSkyIslandData().T1_POINTS * ScoreManager.getScoreMultiplier()));
                 }
 
             } else if (interaction.getScoreboardTags().contains("m_sky_chest_t2")) {
 
                 rollBonusItem(player, 2, interaction.getUniqueId());
                 if (interaction.getScoreboardTags().contains("m_sky_instant")) {
-                    scoreManager.increaseScore(player, Constants.SKY_T2, "You opened a tier 2 chest!", true);
+                    scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getSkyIslandData().T2_POINTS, "You opened a tier 2 chest!", true);
                 } else {
-                    player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "+" + (int) (Constants.SKY_T2 * ScoreManager.getScoreMultiplier()) + ChatColor.DARK_AQUA + " Emeralds to pouch] " + ChatColor.AQUA + "You opened a tier 2 chest!");
-                    queuedPoints.put(player.getUniqueId(), queuedPoints.getOrDefault(player.getUniqueId(), 0) + (int) (Constants.SKY_T2 * ScoreManager.getScoreMultiplier()));
+                    player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "+" + (int) (TAqMinigames.getEventConfig().getSkyIslandData().T2_POINTS * ScoreManager.getScoreMultiplier()) + ChatColor.DARK_AQUA + " Emeralds to pouch] " + ChatColor.AQUA + "You opened a tier 2 chest!");
+                    queuedPoints.put(player.getUniqueId(), queuedPoints.getOrDefault(player.getUniqueId(), 0) + (int) (TAqMinigames.getEventConfig().getSkyIslandData().T2_POINTS * ScoreManager.getScoreMultiplier()));
                 }
 
             } else if (interaction.getScoreboardTags().contains("m_sky_chest_t3")) {
 
                 rollBonusItem(player, 3, interaction.getUniqueId());
                 if (interaction.getScoreboardTags().contains("m_sky_instant")) {
-                    scoreManager.increaseScore(player, Constants.SKY_T3, "You opened a tier 3 chest!", true);
+                    scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getSkyIslandData().T3_POINTS, "You opened a tier 3 chest!", true);
                 } else {
-                    player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "+" + (int) (Constants.SKY_T3 * ScoreManager.getScoreMultiplier()) + ChatColor.DARK_AQUA + " Emeralds to pouch] " + ChatColor.AQUA + "You opened a tier 3 chest!");
-                    queuedPoints.put(player.getUniqueId(), queuedPoints.getOrDefault(player.getUniqueId(), 0) + (int) (Constants.SKY_T3 * ScoreManager.getScoreMultiplier()));
+                    player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "+" + (int) (TAqMinigames.getEventConfig().getSkyIslandData().T3_POINTS * ScoreManager.getScoreMultiplier()) + ChatColor.DARK_AQUA + " Emeralds to pouch] " + ChatColor.AQUA + "You opened a tier 3 chest!");
+                    queuedPoints.put(player.getUniqueId(), queuedPoints.getOrDefault(player.getUniqueId(), 0) + (int) (TAqMinigames.getEventConfig().getSkyIslandData().T3_POINTS * ScoreManager.getScoreMultiplier()));
                 }
 
             } else if (interaction.getScoreboardTags().contains("m_sky_chest_t4")) {
 
                 rollBonusItem(player, 4, interaction.getUniqueId());
                 if (interaction.getScoreboardTags().contains("m_sky_instant")) {
-                    scoreManager.increaseScore(player, Constants.SKY_T4, "You opened a tier 4 chest!", true);
+                    scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getSkyIslandData().T4_POINTS, "You opened a tier 4 chest!", true);
                 } else {
-                    player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "+" + (int) (Constants.SKY_T4 * ScoreManager.getScoreMultiplier()) + ChatColor.DARK_AQUA + " Emeralds to pouch] " + ChatColor.AQUA + "You opened a tier 4 chest!");
-                    queuedPoints.put(player.getUniqueId(), queuedPoints.getOrDefault(player.getUniqueId(), 0) + (int) (Constants.SKY_T4 * ScoreManager.getScoreMultiplier()));
+                    player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "+" + (int) (TAqMinigames.getEventConfig().getSkyIslandData().T4_POINTS * ScoreManager.getScoreMultiplier()) + ChatColor.DARK_AQUA + " Emeralds to pouch] " + ChatColor.AQUA + "You opened a tier 4 chest!");
+                    queuedPoints.put(player.getUniqueId(), queuedPoints.getOrDefault(player.getUniqueId(), 0) + (int) (TAqMinigames.getEventConfig().getSkyIslandData().T4_POINTS * ScoreManager.getScoreMultiplier()));
                 }
 
             }
         }
         if (interaction.getScoreboardTags().contains("m_sky_end")) {
-            scoreManager.increaseScore(player, Constants.SKY_COMPLETE, "You finished the lootrun!", true);
+            scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getSkyIslandData().COMPLETE_POINTS, "You finished the lootrun!", true);
             Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo(player.getName() + " has completed the lootrun!"));
             player.getActivePotionEffects().clear();
             player.getInventory().clear();
@@ -427,10 +428,10 @@ public class SkyIslandLootrun extends Minigame{
             }
             case INGREDIENT -> {
                 player.playSound(player, Sound.ENTITY_VILLAGER_CELEBRATE,SoundCategory.VOICE, 1,1);
-                scoreManager.increaseScore(player, Constants.SKY_ING, "You found an expensive ingredient!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getSkyIslandData().INGREDIENTS_POINTS, "You found an expensive ingredient!", true);
             }
             case MYTHIC -> {
-                scoreManager.increaseScore(player, Constants.SKY_MYTHIC, "You found a mythic!", true);
+                scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getSkyIslandData().MYTHIC_POINTS, "You found a mythic!", true);
                 Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "[" + ChatColor.LIGHT_PURPLE + "!" + ChatColor.DARK_PURPLE + "] " + ChatColor.LIGHT_PURPLE + player.getName() + " found a " + ChatColor.DARK_PURPLE + "mythic!");
                 player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE,SoundCategory.VOICE, 1,1);
                 player.getWorld().spawnParticle(Particle.SPELL_WITCH, player.getLocation(), 20, 0.3,0.3,0.3,0.1);

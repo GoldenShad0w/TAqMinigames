@@ -11,7 +11,6 @@ import goldenshadow.taqminigames.minigames.aura_and_volley.Attack;
 import goldenshadow.taqminigames.minigames.aura_and_volley.Aura;
 import goldenshadow.taqminigames.minigames.aura_and_volley.Volley;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Timer;
 import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.*;
@@ -53,7 +52,7 @@ public class AuraAndVolley extends Minigame{
         for (Player player : alivePlayers) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 600, 0, true, false, false));
         }
-        ParticipantManager.teleportAllPlayers(Constants.AURA_TUTORIAL_LOCATION);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getAuraAndVolleyData().getTutorialLocation());
     }
 
     @Override
@@ -82,7 +81,7 @@ public class AuraAndVolley extends Minigame{
                     p.sendTitle("", ChatColor.DARK_RED + String.valueOf(ChatColor.UNDERLINE) + "/!\\" + ChatColor.RESET + ChatColor.GRAY + " Tower" + ChatColor.GOLD + " Aura", 20, 20, 20);
                     p.playSound(p, Sound.ENTITY_ENDER_DRAGON_GROWL,SoundCategory.VOICE, 1,1);
                 });
-                activeAttacks.add(new Aura(Constants.AURA_TOWER_CENTERS[0]));
+                activeAttacks.add(new Aura(TAqMinigames.getEventConfig().getAuraAndVolleyData().getTowerCenter(0)));
 
             }
             case 16 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("And volley is an attack from the sky that needs to be avoided by leaving the area it is targeting. It looks like this...", 50), ChatColor.YELLOW).toArray(String[]::new));
@@ -91,10 +90,10 @@ public class AuraAndVolley extends Minigame{
                     p.sendTitle("", ChatColor.DARK_RED + String.valueOf(ChatColor.UNDERLINE) + "/!\\" + ChatColor.RESET + ChatColor.GRAY + " Tower" + ChatColor.LIGHT_PURPLE + " Volley", 20, 20, 20);
                     p.playSound(p, Sound.ENTITY_WITHER_SPAWN,SoundCategory.VOICE, 1,1);
                 });
-                activeAttacks.add(new Volley(Constants.AURA_MAP_LOCATIONS[0]));
+                activeAttacks.add(new Volley(TAqMinigames.getEventConfig().getAuraAndVolleyData().getStartLocation(0)));
             }
             case 20 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("There are three rounds. During each round, the attacks will slowly get faster and your jump height will decrease", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You gain " + ((int) (Constants.AURA_SURVIVE * ScoreManager.getScoreMultiplier())) + " Emeralds every time someone dies", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You gain " + ((int) (TAqMinigames.getEventConfig().getAuraAndVolleyData().SURVIVE_POINTS * ScoreManager.getScoreMultiplier())) + " Emeralds every time someone dies", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
                 initRound();
                 for (Player player : ParticipantManager.getAll()) {
@@ -187,7 +186,7 @@ public class AuraAndVolley extends Minigame{
         if (round < 3) {
 
             alivePlayers = ParticipantManager.getParticipants();
-            ParticipantManager.teleportAllPlayers(Constants.AURA_MAP_LOCATIONS[round]);
+            ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getAuraAndVolleyData().getStartLocation(round));
 
             BossbarWrapper.destroyAll();
             barUUID = BossbarWrapper.createBossbar(ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + "Jump Height decrease in 30 seconds " + ChatColor.AQUA + ChatColor.BOLD + "[VI -> III]", BarColor.GREEN, BarStyle.SOLID, 1);
@@ -209,7 +208,7 @@ public class AuraAndVolley extends Minigame{
             p.sendTitle("", ChatColor.DARK_RED + String.valueOf(ChatColor.UNDERLINE) + "/!\\" + ChatColor.RESET + ChatColor.GRAY + " Tower" + ChatColor.GOLD + " Aura", 20, 20, 20);
             p.playSound(p, Sound.ENTITY_ENDER_DRAGON_GROWL,SoundCategory.VOICE, 1,1);
         });
-        activeAttacks.add(new Aura(Constants.AURA_TOWER_CENTERS[round-1]));
+        activeAttacks.add(new Aura(TAqMinigames.getEventConfig().getAuraAndVolleyData().getTowerCenter(round-1)));
     }
 
     /**
@@ -241,12 +240,12 @@ public class AuraAndVolley extends Minigame{
         player.sendMessage(ChatMessageFactory.singleLineInfo("You died..."));
         Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + deathMessages[ThreadLocalRandom.current().nextInt(0, deathMessages.length)]);
         for (Player p : alivePlayers) {
-            scoreManager.increaseScore(p, Constants.AURA_SURVIVE / Math.max(ParticipantManager.getParticipants().size()-1, 1), "A player has died!" ,true);
+            scoreManager.increaseScore(p, TAqMinigames.getEventConfig().getAuraAndVolleyData().SURVIVE_POINTS / Math.max(ParticipantManager.getParticipants().size()-1, 1), "A player has died!" ,true);
         }
         player.setGameMode(GameMode.SPECTATOR);
         if (alivePlayers.size() <= 1) {
             if (alivePlayers.size() == 1) {
-                scoreManager.increaseScore(alivePlayers.get(0), Constants.AURA_WIN, "You are the last person alive!", true);
+                scoreManager.increaseScore(alivePlayers.get(0), TAqMinigames.getEventConfig().getAuraAndVolleyData().WIN_POINTS, "You are the last person alive!", true);
                 ChatMessageFactory.sendInfoBlockToAll(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "Winner of this round:", ChatColor.YELLOW + alivePlayers.get(0).getName());
 
             }
@@ -263,17 +262,6 @@ public class AuraAndVolley extends Minigame{
         int r = ThreadLocalRandom.current().nextInt(0, 3);
         if (r == 0) castVolley();
         else castAura();
-    }
-
-    /**
-     * Used to insert a player into the game
-     * @param player The player who should be inserted
-     */
-    @Override
-    public void insertPlayer(Player player) {
-        player.setGameMode(GameMode.SPECTATOR);
-        player.teleport(Constants.AURA_MAP_LOCATIONS[round-1]);
-        player.sendMessage(ChatMessageFactory.singleLineInfo("You will be able to join after this round has ended!"));
     }
 
     /**

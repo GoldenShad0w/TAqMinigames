@@ -3,6 +3,7 @@ package goldenshadow.taqminigames.minigames;
 import com.google.errorprone.annotations.DoNotCall;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
 import goldenshadow.taqminigames.event.ParticipantManager;
@@ -53,17 +54,17 @@ public class AledarCartRacing extends Minigame {
             player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 10, false, false, false));
         }
 
-        Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[0].getZ(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_1[1].getZ()), Constants.WORLD, p -> {
+        Trigger.register(new Trigger(new BoundingBox(TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_1[0].getX(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_1[0].getY(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_1[0].getZ(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_1[1].getX(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_1[1].getY(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_1[1].getZ()), TAqMinigames.getEventConfig().getGenericData().WORLD, p -> {
             if (p.getGameMode() != GameMode.ADVENTURE) return false;
             return antiCheatState.getOrDefault(p.getUniqueId(), 0) == 0;
         }, p -> antiCheatState.put(p.getUniqueId(), 1), 0, false, false));
 
-        Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[0].getZ(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getX(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getY(), Constants.CART_RACING_ANTI_CHEAT_LINE_2[1].getZ()), Constants.WORLD, p -> {
+        Trigger.register(new Trigger(new BoundingBox(TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_2[0].getX(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_2[0].getY(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_2[0].getZ(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_2[1].getX(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_2[1].getY(), TAqMinigames.getEventConfig().getAledarCartData().ANTI_CHEAT_LINE_2[1].getZ()), TAqMinigames.getEventConfig().getGenericData().WORLD, p -> {
             if (p.getGameMode() != GameMode.ADVENTURE) return false;
             return antiCheatState.getOrDefault(p.getUniqueId(), 0) == 1;
         }, p -> antiCheatState.put(p.getUniqueId(), 2), 0, false, false));
 
-        Trigger.register(new Trigger(new BoundingBox(Constants.CART_RACING_LAP_LINE[0].getX(), Constants.CART_RACING_LAP_LINE[0].getY(), Constants.CART_RACING_LAP_LINE[0].getZ(), Constants.CART_RACING_LAP_LINE[1].getX(), Constants.CART_RACING_LAP_LINE[1].getY(), Constants.CART_RACING_LAP_LINE[1].getZ()), Constants.WORLD, p -> {
+        Trigger.register(new Trigger(new BoundingBox(TAqMinigames.getEventConfig().getAledarCartData().LAP_LINE[0].getX(), TAqMinigames.getEventConfig().getAledarCartData().LAP_LINE[0].getY(), TAqMinigames.getEventConfig().getAledarCartData().LAP_LINE[0].getZ(), TAqMinigames.getEventConfig().getAledarCartData().LAP_LINE[1].getX(), TAqMinigames.getEventConfig().getAledarCartData().LAP_LINE[1].getY(), TAqMinigames.getEventConfig().getAledarCartData().LAP_LINE[1].getZ()), TAqMinigames.getEventConfig().getGenericData().WORLD, p -> {
             if (p.getGameMode() != GameMode.ADVENTURE) return false;
             return antiCheatState.getOrDefault(p.getUniqueId(), 0) == 2;
         }, p -> {
@@ -71,7 +72,7 @@ public class AledarCartRacing extends Minigame {
             lapCompleted(p);
         }, 0, false, false));
 
-        ParticipantManager.teleportAllPlayers(Constants.CART_RACING_TUTORIAL_LOCATION);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getAledarCartData().TUTORIAL_LOCATION);
     }
 
     @Override
@@ -82,22 +83,22 @@ public class AledarCartRacing extends Minigame {
             case 4 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("The goal of this minigame is to escort Aledar through the silent expanse", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 8 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("You must complete 5 laps to finish the track", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 12 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Along the way, you can collect powerups. These are the powerups that exist:", 50), ChatColor.YELLOW).toArray(String[]::new));
-            case 14 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Emerald Crate", " ", ChatColor.YELLOW + "Gain " + ((int) (Constants.CART_RACING_CRATE * ScoreManager.getScoreMultiplier())) + " emeralds!");
+            case 14 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Emerald Crate", " ", ChatColor.YELLOW + "Gain " + ((int) (TAqMinigames.getEventConfig().getAledarCartData().CRATE_POINTS * ScoreManager.getScoreMultiplier())) + " emeralds!");
             case 16 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Toxic Slime", " ", ChatColor.YELLOW + "Place a slime behind you that slows down", ChatColor.YELLOW + "players who hit it!");
             case 18 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Dernic Dash", " ", ChatColor.YELLOW + "50% chance to boosts the speed of your cart for", ChatColor.YELLOW + "a short while!");
             case 20 -> ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Eldritch Blast", " ", ChatColor.YELLOW + "Slow down all players near you in a single", ChatColor.YELLOW + "large explosion!");
-            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Each lap will reward you with " + ((int) (Constants.CART_RACING_LAP * ScoreManager.getScoreMultiplier())) + " emeralds, and you also get emeralds for completing the entire track!", 50), ChatColor.YELLOW).toArray(String[]::new));
+            case 24 -> ChatMessageFactory.sendInfoBlockToAll(Utilities.colorList(Utilities.splitString("Each lap will reward you with " + ((int) (TAqMinigames.getEventConfig().getAledarCartData().LAP_POINTS * ScoreManager.getScoreMultiplier())) + " emeralds, and you also get emeralds for completing the entire track!", 50), ChatColor.YELLOW).toArray(String[]::new));
             case 25 -> {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Starting in 5 seconds!"));
                     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING,SoundCategory.VOICE, 1, 1);
-                    player.teleport(Constants.CART_RACING_START_LOCATION);
+                    player.teleport(TAqMinigames.getEventConfig().getAledarCartData().START_LOCATION);
                 }
                 for (Player player : ParticipantManager.getParticipants()) {
-                    Boat b = buildCart(Constants.CART_RACING_START_LOCATION);
+                    Boat b = buildCart(TAqMinigames.getEventConfig().getAledarCartData().START_LOCATION);
                     b.addPassenger(player);
                 }
-                Utilities.fillAreaWithBlock(Constants.CART_RACING_START_BARRIERS[0], Constants.CART_RACING_START_BARRIERS[1], Material.BARRIER, Material.AIR);
+                Utilities.fillAreaWithBlock(TAqMinigames.getEventConfig().getAledarCartData().START_BARRIERS[0], TAqMinigames.getEventConfig().getAledarCartData().START_BARRIERS[1], Material.BARRIER, Material.AIR);
             }
             case 27 -> {
                 for (Player player : ParticipantManager.getAll()) {
@@ -121,7 +122,7 @@ public class AledarCartRacing extends Minigame {
                 for (Player player : ParticipantManager.getAll()) {
                     player.sendMessage(ChatMessageFactory.singleLineInfo("Good Luck!"));
                     player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP,SoundCategory.VOICE, 1, 1);
-                    Utilities.fillAreaWithBlock(Constants.CART_RACING_START_BARRIERS[0], Constants.CART_RACING_START_BARRIERS[1], Material.AIR, Material.BARRIER);
+                    Utilities.fillAreaWithBlock(TAqMinigames.getEventConfig().getAledarCartData().START_BARRIERS[0], TAqMinigames.getEventConfig().getAledarCartData().START_BARRIERS[1], Material.AIR, Material.BARRIER);
                 }
                 gameState = GameState.RUNNING;
                 spawnPowerups();
@@ -194,7 +195,7 @@ public class AledarCartRacing extends Minigame {
 
         player.sendTitle("", ChatColor.YELLOW + "[" + (lap+1) + "/5] Laps Completed", 5,40,5);
         Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo(player.getName() + " has completed lap " + (lap + 1) + "!"));
-        scoreManager.increaseScore(player, Constants.CART_RACING_LAP, "You completed a lap!", true);
+        scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getAledarCartData().LAP_POINTS, "You completed a lap!", true);
         if (lap == 4) {
             trackCompleted(player);
         } else {
@@ -208,7 +209,7 @@ public class AledarCartRacing extends Minigame {
      */
     private void trackCompleted(Player player) {
         Bukkit.broadcastMessage(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + player.getName() + " has successfully escorted Aledar through the Silent Expanse!");
-        int reward = Math.max(Constants.CART_RACING_COMPLETE - (Constants.GENERIC_FALLOFF * finishedPlayers.size()), 300);
+        int reward = Math.max(TAqMinigames.getEventConfig().getAledarCartData().FINISH_POINTS - (TAqMinigames.getEventConfig().getGenericData().GENERIC_FALLOFF * finishedPlayers.size()), 300);
         scoreManager.increaseScore(player, reward, "You finished " + Utilities.getNumberSuffix(finishedPlayers.size()+1)+ "!", true);
         currentLap.put(player.getUniqueId(), 5);
         Entity vehicle = player.getVehicle();
@@ -230,7 +231,7 @@ public class AledarCartRacing extends Minigame {
      * Used to spawn new powerups
      */
     private void spawnPowerups() {
-        for (Location location : Constants.CART_RACING_POWERUP_LOCATIONS) {
+        for (Location location : TAqMinigames.getEventConfig().getAledarCartData().POWERUP_LOCATIONS) {
             assert location.getWorld() != null;
             if (!crystalLocations.contains(location)) {
                 crystalLocations.add(location);
@@ -260,7 +261,7 @@ public class AledarCartRacing extends Minigame {
     private void powerupCollected(Player player) {
         player.getInventory().clear();
         switch (ThreadLocalRandom.current().nextInt(0,4)) {
-            case 0 -> scoreManager.increaseScore(player, Constants.CART_RACING_CRATE, "You found an emerald crate!", true);
+            case 0 -> scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getAledarCartData().CRATE_POINTS, "You found an emerald crate!", true);
             case 1 -> {
                 ChatMessageFactory.sendInfoMessageBlock(player, ChatColor.GOLD + "Toxic Slime", "", ChatColor.YELLOW + "Offhand to place a slime behind you", ChatColor.YELLOW + "that slows down players who hit it!");
                 player.sendTitle(" ", ChatColor.GREEN + "Toxic Slime " + ChatColor.GRAY + "[Press Offhand Key to use]", 5,40,5);

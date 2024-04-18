@@ -2,7 +2,6 @@ package goldenshadow.taqminigames.events;
 
 
 import goldenshadow.taqminigames.TAqMinigames;
-import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.minigames.AvosRace;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

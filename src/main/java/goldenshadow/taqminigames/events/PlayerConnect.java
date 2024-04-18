@@ -3,7 +3,6 @@ package goldenshadow.taqminigames.events;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.event.*;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -36,14 +35,14 @@ public class PlayerConnect implements Listener {
                             } else {
                                 event.getPlayer().getInventory().clear();
                                 event.getPlayer().getActivePotionEffects().clear();
-                                event.getPlayer().teleport(Constants.LOBBY);
+                                event.getPlayer().teleport(TAqMinigames.getEventConfig().getGenericData().LOBBY);
                             }
                         } else {
                             event.getPlayer().setGameMode(GameMode.SPECTATOR);
                         }
                     } else {
                         //not registered
-                        event.getPlayer().teleport(Constants.LOBBY);
+                        event.getPlayer().teleport(TAqMinigames.getEventConfig().getGenericData().LOBBY);
                         Bukkit.getOnlinePlayers().stream().filter(ServerOperator::isOp).forEach(x -> x.sendMessage(ChatMessageFactory.adminWarnMessage(event.getPlayer().getName() + " has joined that game and is neither a participant or spectator!")));
                     }
                 }, 5L);
@@ -56,7 +55,7 @@ public class PlayerConnect implements Listener {
                     ScoreboardWrapper.queueData(event.getPlayer(),
                             " ",
                             ChatColor.AQUA + "Starting soon!");
-                    event.getPlayer().teleport(Constants.LOBBY);
+                    event.getPlayer().teleport(TAqMinigames.getEventConfig().getGenericData().LOBBY);
                     event.getPlayer().getInventory().clear();
                     ScoreboardWrapper.updateBoards();
                 }, 5L);

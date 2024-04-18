@@ -2,12 +2,10 @@ package goldenshadow.taqminigames.events;
 
 import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.util.Trigger;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 

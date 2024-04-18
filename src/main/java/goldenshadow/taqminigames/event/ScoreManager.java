@@ -1,7 +1,7 @@
 package goldenshadow.taqminigames.event;
 
+import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -252,7 +252,7 @@ public class ScoreManager {
      * @param sortedList The sorted list
      */
     public static void updateLobbyLeaderboard(List<String> sortedList) {
-        Entity e = Bukkit.getEntity(Constants.LOBBY_LEADERBOARD_UUID);
+        Entity e = Bukkit.getEntity(TAqMinigames.getEventConfig().getGenericData().LOBBY_LEADERBOARD_UUID);
         if (e != null) {
             TextDisplay t = (TextDisplay) e;
             StringBuilder text = new StringBuilder(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "LEADERBOARD\n" + ChatColor.RESET);

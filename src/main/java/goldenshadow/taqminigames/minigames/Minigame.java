@@ -97,7 +97,7 @@ public abstract class Minigame {
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Teleporting back to lobby in 1 second!")), 280L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
             Bukkit.broadcastMessage(ChatMessageFactory.singleLineInfo("Teleporting..."));
-            ParticipantManager.teleportAllPlayers(Constants.LOBBY);
+            ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getGenericData().LOBBY);
             SoundtrackManager.setCurrent(new SoundFile("minigames.lobby", 177450), true);
             for (Player p : ParticipantManager.getParticipants()) {
                 p.getInventory().clear();
@@ -116,14 +116,6 @@ public abstract class Minigame {
         ScoreManager.updateLobbyLeaderboard(TAqMinigames.totalScoreManager.getSortedDisplayList(ChatColor.AQUA, ChatColor.GREEN));
     }
 
-    /**
-     * Used to insert a player into a running game
-     * @param player The player who should be inserted
-     */
-    protected void insertPlayer(Player player) {
-        ParticipantManager.addParticipant(player, true);
-        scoreManager.increaseScore(player, 0, false);
-    }
 
     /**
      * Method that should be called when a player dies or an equal event occurs
@@ -209,7 +201,7 @@ public abstract class Minigame {
         List<UUID> list = new ArrayList<>(scoreManager.getScores().keySet());
         list.sort(((x,y) -> scoreManager.getScore(y).compareTo(scoreManager.getScore(x))));
         for (int i = 0; i < list.size(); i++) {
-            TAqMinigames.totalScoreManager.increaseScore(list.get(i), Math.max(Constants.GENERIC_MAX_POINTS - (Constants.GENERIC_FALLOFF * i), (int) (100*ScoreManager.getScoreMultiplier())), true);
+            TAqMinigames.totalScoreManager.increaseScore(list.get(i), Math.max(TAqMinigames.getEventConfig().getGenericData().GENERIC_MAX_POINTS - (TAqMinigames.getEventConfig().getGenericData().GENERIC_FALLOFF * i), (int) (100*ScoreManager.getScoreMultiplier())), true);
         }
     }
 }

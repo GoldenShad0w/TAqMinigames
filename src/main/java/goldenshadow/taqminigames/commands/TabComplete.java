@@ -34,9 +34,9 @@ public class TabComplete implements TabCompleter {
             if (args.length == 2) {
 
                 if (args[0].equalsIgnoreCase("hosting")) {
-                    arguments = new ArrayList<>(Arrays.asList("start", "stop", "next_minigame", "insert_player", "next_minigame_favor", "toggle_prestart", "announce_winner"));
+                    arguments = new ArrayList<>(Arrays.asList("start", "stop", "next_minigame", "insert_player", "next_minigame_favor", "toggle_prestart", "announce_winner", "game_config"));
                 } else if (args[0].equalsIgnoreCase("debug")) {
-                    arguments = new ArrayList<>(Arrays.asList("add_points", "set_points", "start_game", "end_game", "add_time"));
+                    arguments = new ArrayList<>(Arrays.asList("add_points", "set_points", "start_game", "end_game", "add_time", "toggle_trigger_highlight"));
                 }
                 else arguments.clear();
                 for (String a : arguments) {

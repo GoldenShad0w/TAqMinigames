@@ -1,8 +1,8 @@
 package goldenshadow.taqminigames.minigames.proffers_pit;
 
+import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.event.BossbarWrapper;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Trigger;
 import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.Bukkit;
@@ -27,7 +27,7 @@ public class GasLeak extends ProfEvent {
     public GasLeak(EventLocation location) {
         super ("A gas leak has occurred somewhere in the %s!", location, true);
         BoundingBox box = new BoundingBox(location.location().getX()+1,location.location().getY()+1,location.location().getZ()+1,location.location().getX()-1,location.location().getY()-1,location.location().getZ()-1);
-        trigger = new Trigger(box, Constants.WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 60, 1, false, true,true)), Utilities.secondsToMillis(2), false, false);
+        trigger = new Trigger(box, TAqMinigames.getEventConfig().getGenericData().WORLD, p -> p.getGameMode() == GameMode.ADVENTURE, p -> p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 60, 1, false, true,true)), Utilities.secondsToMillis(2), false, false);
         Trigger.register(trigger);
         formatted = ChatColor.GREEN + String.valueOf(ChatColor.BOLD) + "Gas leak in the " + location.area().getName() + " " +  ChatColor.RESET + ChatColor.GRAY + "[%ds]";
         barUUID = BossbarWrapper.createBossbar(String.format(formatted, 60) , BarColor.GREEN, BarStyle.SOLID, 1);
@@ -35,8 +35,8 @@ public class GasLeak extends ProfEvent {
 
     @Override
     public void tick() {
-        assert Constants.WORLD != null;
-        Constants.WORLD.spawnParticle(Particle.SNEEZE, trigger.boundingBox.getCenter().toLocation(Constants.WORLD), 100*offset, offset, offset, offset, 0);
+        assert TAqMinigames.getEventConfig().getGenericData().WORLD != null;
+        TAqMinigames.getEventConfig().getGenericData().WORLD.spawnParticle(Particle.SNEEZE, trigger.boundingBox.getCenter().toLocation(TAqMinigames.getEventConfig().getGenericData().WORLD), 100*offset, offset, offset, offset, 0);
         if (tick % 10 == 0) {
             trigger.boundingBox = trigger.boundingBox.expand(1.6,1.6,1.6);
             offset++;

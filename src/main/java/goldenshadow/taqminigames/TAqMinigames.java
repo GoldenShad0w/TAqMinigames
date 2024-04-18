@@ -2,13 +2,13 @@ package goldenshadow.taqminigames;
 
 import goldenshadow.taqminigames.commands.Command;
 import goldenshadow.taqminigames.commands.TabComplete;
+import goldenshadow.taqminigames.event.EventConfig;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.SoundFile;
 import goldenshadow.taqminigames.event.*;
 import goldenshadow.taqminigames.events.*;
 import goldenshadow.taqminigames.minigames.*;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import goldenshadow.taqminigames.util.Trigger;
 import goldenshadow.taqminigames.util.Utilities;
 import org.bukkit.*;
@@ -32,6 +32,8 @@ public final class TAqMinigames extends JavaPlugin {
     public static ScoreManager totalScoreManager;
     public static Minigame minigame = null;
     public static boolean inPreStartPhase = false;
+    public static boolean debugTriggers = false;
+    private static EventConfig eventConfig;
 
     @Override
     public void onEnable() {
@@ -43,6 +45,7 @@ public final class TAqMinigames extends JavaPlugin {
         initLoops();
         Objects.requireNonNull(this.getCommand("minigames")).setExecutor(new Command());
         Objects.requireNonNull(this.getCommand("minigames")).setTabCompleter(new TabComplete());
+        eventConfig = new EventConfig();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, Utilities::registerLobbyTrigger, 1L);
     }
@@ -85,14 +88,14 @@ public final class TAqMinigames extends JavaPlugin {
         Trigger.unregisterAll();
         BossbarWrapper.destroyAll();
         Utilities.registerLobbyTrigger();
-        ParticipantManager.teleportAllPlayers(Constants.LOBBY);
+        ParticipantManager.teleportAllPlayers(TAqMinigames.getEventConfig().getGenericData().LOBBY);
         gameIndex = 0;
         gameSelection = null;
         Bukkit.getOnlinePlayers().forEach(ScoreboardWrapper::removeScoreboard);
         ParticipantManager.resetAll();
         possibleGames = new ArrayList<>(Arrays.asList(Game.values()));
         ScoreManager.updateLobbyLeaderboard(new ArrayList<>());
-        Utilities.fillAreaWithBlock(Constants.LOBBY_PODIUM_LOCATION[0], Constants.LOBBY_PODIUM_LOCATION[1], Material.AIR, null);
+        Utilities.fillAreaWithBlock(TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_LOCATION[0], TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_LOCATION[1], Material.AIR, null);
         gameIndex = 0;
 
     }
@@ -142,7 +145,7 @@ public final class TAqMinigames extends JavaPlugin {
         Player winner = Bukkit.getPlayer(uuid);
         assert winner != null;
         for (Player p : ParticipantManager.getAll()) {
-            p.teleport(Constants.LOBBY_WINNER_REST_LOCATION);
+            p.teleport(TAqMinigames.getEventConfig().getGenericData().LOBBY_WINNER_REST_LOCATION);
             p.sendTitle(ChatColor.AQUA + String.valueOf(ChatColor.BOLD) + winner.getName(), ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "has won TAq Minigames", 20, 60, 20);
 
             String[] data = TAqMinigames.totalScoreManager.getScoreboardLines(p, ChatColor.AQUA, ChatColor.GREEN);
@@ -160,13 +163,13 @@ public final class TAqMinigames extends JavaPlugin {
             );
             ScoreboardWrapper.updateBoards();
         }
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "execute in minecraft:minigames2 run clone " + Constants.LOBBY_PODIUM_TEMPLATE[0].getBlockX() + " " + Constants.LOBBY_PODIUM_TEMPLATE[0].getBlockY() + " " + Constants.LOBBY_PODIUM_TEMPLATE[0].getBlockZ() + " " + Constants.LOBBY_PODIUM_TEMPLATE[1].getBlockX() + " " + Constants.LOBBY_PODIUM_TEMPLATE[1].getBlockY() + " " + Constants.LOBBY_PODIUM_TEMPLATE[1].getBlockZ() + " " + Constants.LOBBY_PODIUM_LOCATION[0].getBlockX() + " " + Constants.LOBBY_PODIUM_LOCATION[0].getBlockY() + " " + Constants.LOBBY_PODIUM_LOCATION[0].getBlockZ());
-        winner.teleport(Constants.LOBBY_WINNER_LOCATION);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "execute in minecraft:minigames2 run clone " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_TEMPLATE[0].getBlockX() + " " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_TEMPLATE[0].getBlockY() + " " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_TEMPLATE[0].getBlockZ() + " " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_TEMPLATE[1].getBlockX() + " " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_TEMPLATE[1].getBlockY() + " " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_TEMPLATE[1].getBlockZ() + " " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_LOCATION[0].getBlockX() + " " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_LOCATION[0].getBlockY() + " " + TAqMinigames.getEventConfig().getGenericData().LOBBY_PODIUM_LOCATION[0].getBlockZ());
+        winner.teleport(TAqMinigames.getEventConfig().getGenericData().LOBBY_WINNER_LOCATION);
         winner.getInventory().setHelmet(Utilities.getVictoryCrown());
         for (int i = 0; i < 3; i++) {
             Color color = i == 0 ? Color.BLUE : i == 1 ? Color.TEAL : Color.AQUA;
             Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
-                for (Location loc : Constants.LOBBY_WINNER_FIREWORK_LOCATIONS) {
+                for (Location loc : TAqMinigames.getEventConfig().getGenericData().LOBBY_WINNER_FIREWORK_LOCATIONS) {
                     Firework firework = (Firework) Objects.requireNonNull(loc.getWorld()).spawnEntity(loc, EntityType.FIREWORK, false);
                     FireworkMeta fwm = firework.getFireworkMeta();
                     fwm.setPower(1);
@@ -209,6 +212,14 @@ public final class TAqMinigames extends JavaPlugin {
      */
     public static TAqMinigames getPlugin() {
         return plugin;
+    }
+
+    /**
+     * Used to get the event config
+     * @return The config
+     */
+    public static EventConfig getEventConfig() {
+        return eventConfig;
     }
 
     /**

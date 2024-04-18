@@ -3,7 +3,6 @@ package goldenshadow.taqminigames.minigames.proffers_pit;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.event.BossbarWrapper;
 import goldenshadow.taqminigames.util.ChatMessageFactory;
-import goldenshadow.taqminigames.util.Constants;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -70,7 +69,7 @@ public class MobTotem extends ProfEvent {
         assert location.location().getWorld() != null;
         ZombieVillager mob = (ZombieVillager) location.location().getWorld().spawnEntity(location.location(), EntityType.ZOMBIE_VILLAGER, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(TAqMinigames.getPlugin(), () -> {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "aurum api spawn_mob " + location.location().getWorld().getName() + " " + location.location().getX() + " " + location.location().getY() + " " + location.location().getZ() + " " + Constants.PROF_MOB_NAME + " " + mob.getUniqueId());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "aurum api spawn_mob " + location.location().getWorld().getName() + " " + location.location().getX() + " " + location.location().getY() + " " + location.location().getZ() + " " + TAqMinigames.getEventConfig().getProffersPitData().PROF_MOB_NAME + " " + mob.getUniqueId());
             mob.setVelocity(getRandomVelocityVector());
         }, 1L);
 
