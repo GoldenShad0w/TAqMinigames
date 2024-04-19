@@ -32,14 +32,14 @@ public class EventConfig {
         disabledGames = new ArrayList<>();
 
         //disabled games
-        if (config.getBoolean("aledar_enabled")) disabledGames.add(Game.CART_RACING);
-        if (config.getBoolean("aura_enabled")) disabledGames.add(Game.AURA_AND_VOLLEY);
-        if (config.getBoolean("avos_enabled")) disabledGames.add(Game.AVOS_RACE);
-        if (config.getBoolean("excavation_enabled")) disabledGames.add(Game.EXCAVATION);
-        if (config.getBoolean("nesaak_enabled")) disabledGames.add(Game.NESAAK_SNOWBALL_FIGHT);
-        if (config.getBoolean("nether_enabled")) disabledGames.add(Game.NETHER_PVP);
-        if (config.getBoolean("prof_enabled")) disabledGames.add(Game.PROFFERS_PIT);
-        if (config.getBoolean("sky_enabled")) disabledGames.add(Game.SKY_ISLAND_LOOTRUN);
+        if (!config.getBoolean("aledar_enabled")) disabledGames.add(Game.CART_RACING);
+        if (!config.getBoolean("aura_enabled")) disabledGames.add(Game.AURA_AND_VOLLEY);
+        if (!config.getBoolean("avos_enabled")) disabledGames.add(Game.AVOS_RACE);
+        if (!config.getBoolean("excavation_enabled")) disabledGames.add(Game.EXCAVATION);
+        if (!config.getBoolean("nesaak_enabled")) disabledGames.add(Game.NESAAK_SNOWBALL_FIGHT);
+        if (!config.getBoolean("nether_enabled")) disabledGames.add(Game.NETHER_PVP);
+        if (!config.getBoolean("prof_enabled")) disabledGames.add(Game.PROFFERS_PIT);
+        if (!config.getBoolean("sky_enabled")) disabledGames.add(Game.SKY_ISLAND_LOOTRUN);
 
         //maps
         aledarCartData = new AledarCartData(AledarCartData.Map.valueOf(config.getString("aledar_map")));

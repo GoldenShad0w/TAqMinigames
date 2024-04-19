@@ -84,6 +84,6 @@ public class SoundtrackManager {
      * @return The sound file name
      */
     public static SoundFile getSoundFile() {
-        return soundFile;
+        return soundFile != null ? soundFile : new SoundFile("", 0);
     }
 }

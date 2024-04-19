@@ -7,6 +7,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,9 +22,8 @@ public class ConfigItems {
     public ItemStack aledarCartItem() {
         boolean disabled = TAqMinigames.getEventConfig().getDisabledGames().contains(Game.CART_RACING);
         ItemStack itemStack = new ItemStack(disabled ? Material.BARRIER : Material.FILLED_MAP);
-        MapMeta meta = (MapMeta) itemStack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
-        meta.setColor(Color.fromRGB(135, 109, 156));
         meta.addItemFlags(ItemFlag.values());
 
         meta.setDisplayName(ChatColor.YELLOW + "Aledar Cart Racing");
@@ -35,9 +35,8 @@ public class ConfigItems {
     public ItemStack auraItem() {
         boolean disabled = TAqMinigames.getEventConfig().getDisabledGames().contains(Game.AURA_AND_VOLLEY);
         ItemStack itemStack = new ItemStack(disabled ? Material.BARRIER : Material.FILLED_MAP);
-        MapMeta meta = (MapMeta) itemStack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
-        meta.setColor(Color.fromRGB(230, 149, 57));
         meta.addItemFlags(ItemFlag.values());
 
         meta.setDisplayName(ChatColor.YELLOW + "Aura & Volley");
@@ -59,9 +58,8 @@ public class ConfigItems {
     public ItemStack avosItem() {
         boolean disabled = TAqMinigames.getEventConfig().getDisabledGames().contains(Game.AVOS_RACE);
         ItemStack itemStack = new ItemStack(disabled ? Material.BARRIER : Material.FILLED_MAP);
-        MapMeta meta = (MapMeta) itemStack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
-        meta.setColor(Color.fromRGB(211, 232, 230));
         meta.addItemFlags(ItemFlag.values());
 
         meta.setDisplayName(ChatColor.YELLOW + "Avos Race");
@@ -73,9 +71,8 @@ public class ConfigItems {
     public ItemStack excavationItem() {
         boolean disabled = TAqMinigames.getEventConfig().getDisabledGames().contains(Game.EXCAVATION);
         ItemStack itemStack = new ItemStack(disabled ? Material.BARRIER : Material.FILLED_MAP);
-        MapMeta meta = (MapMeta) itemStack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
-        meta.setColor(Color.fromRGB(36, 92, 38));
         meta.addItemFlags(ItemFlag.values());
 
         meta.setDisplayName(ChatColor.YELLOW + "Excavation Site E");
@@ -87,9 +84,8 @@ public class ConfigItems {
     public ItemStack nesaakItem() {
         boolean disabled = TAqMinigames.getEventConfig().getDisabledGames().contains(Game.NESAAK_SNOWBALL_FIGHT);
         ItemStack itemStack = new ItemStack(disabled ? Material.BARRIER : Material.FILLED_MAP);
-        MapMeta meta = (MapMeta) itemStack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
-        meta.setColor(Color.fromRGB(33, 164, 194));
         meta.addItemFlags(ItemFlag.values());
 
         meta.setDisplayName(ChatColor.YELLOW + "Nesaak Snowball Fight");
@@ -101,9 +97,8 @@ public class ConfigItems {
     public ItemStack netherItem() {
         boolean disabled = TAqMinigames.getEventConfig().getDisabledGames().contains(Game.NETHER_PVP);
         ItemStack itemStack = new ItemStack(disabled ? Material.BARRIER : Material.FILLED_MAP);
-        MapMeta meta = (MapMeta) itemStack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
-        meta.setColor(Color.fromRGB(255, 42, 31));
         meta.addItemFlags(ItemFlag.values());
 
         meta.setDisplayName(ChatColor.YELLOW + "Nether PvP");
@@ -115,9 +110,8 @@ public class ConfigItems {
     public ItemStack profItem() {
         boolean disabled = TAqMinigames.getEventConfig().getDisabledGames().contains(Game.PROFFERS_PIT);
         ItemStack itemStack = new ItemStack(disabled ? Material.BARRIER : Material.FILLED_MAP);
-        MapMeta meta = (MapMeta) itemStack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
-        meta.setColor(Color.fromRGB(112, 112, 111));
         meta.addItemFlags(ItemFlag.values());
 
         meta.setDisplayName(ChatColor.YELLOW + "Proffer's Pit");
@@ -129,9 +123,8 @@ public class ConfigItems {
     public ItemStack skyItem() {
         boolean disabled = TAqMinigames.getEventConfig().getDisabledGames().contains(Game.SKY_ISLAND_LOOTRUN);
         ItemStack itemStack = new ItemStack(disabled ? Material.BARRIER : Material.FILLED_MAP);
-        MapMeta meta = (MapMeta) itemStack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
-        meta.setColor(Color.fromRGB(69, 97, 209));
         meta.addItemFlags(ItemFlag.values());
 
         meta.setDisplayName(ChatColor.YELLOW + "Sky Island Lootrun");
@@ -141,7 +134,7 @@ public class ConfigItems {
     }
 
     @NotNull
-    private ItemStack common(boolean disabled, ItemStack itemStack, MapMeta meta, List<String> lore) {
+    private ItemStack common(boolean disabled, ItemStack itemStack, ItemMeta meta, List<String> lore) {
         lore.add(ChatColor.GRAY + "Status: " + ChatColor.AQUA + ChatColor.BOLD + (disabled ? "DISABLED" : "ENABLED"));
         lore.add("");
         lore.add(ChatColor.YELLOW + String.valueOf(ChatColor.BOLD) + "LEFT-CLICK " + ChatColor.RESET + ChatColor.YELLOW + "to change map");
