@@ -72,7 +72,7 @@ public class ConfigManager {
                                 TAqMinigames.getPlugin().getConfig().set("aura_map2", map.toString());
                                 TAqMinigames.getPlugin().saveConfig();
                             } else if (event.isRightClick() && event.isShiftClick()) {
-                                int i = TAqMinigames.getEventConfig().getAuraAndVolleyData().MAP.getB().ordinal() + 1;
+                                int i = TAqMinigames.getEventConfig().getAuraAndVolleyData().MAP.getC().ordinal() + 1;
                                 AuraAndVolleyData.Map map = AuraAndVolleyData.Map.values()[(i < AuraAndVolleyData.Map.values().length ? i : 0)];
                                 TAqMinigames.getPlugin().getConfig().set("aura_map3", map.toString());
                                 TAqMinigames.getPlugin().saveConfig();

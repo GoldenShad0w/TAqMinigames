@@ -1,5 +1,6 @@
 package goldenshadow.taqminigames.data;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.util.BoundingBox;
@@ -7,7 +8,8 @@ import org.bukkit.util.BoundingBox;
 public class AvosRaceData {
 
     public enum Map {
-        CORKUS;
+        CORKUS,
+        MINE;
     }
 
     public final Map MAP;
@@ -31,6 +33,14 @@ public class AvosRaceData {
                 FINISH_BOX = new BoundingBox(-915, -48, 899, -905, -43, 909);
                 START_BARRIERS = new Location[]{new Location(Bukkit.getWorld("minigames2"), -911.5, 288.0, 895.5, 2306, 13), new Location(Bukkit.getWorld("minigames2"), -915.5, 293.0, 889.5, 2414, 72)};
                 START_AIR = new Location[]{new Location(Bukkit.getWorld("minigames2"), -912.5, 288.0, 894.5, 2317, 36), new Location(Bukkit.getWorld("minigames2"), -914.5, 292.0, 890.5, 2392, 86)};
+            }
+            case MINE -> {
+                START_LOCATION = new Location(Bukkit.getWorld("minigames2"), 106.5, 256.0, 853.5, -185, 3);
+                STAGES = new BoundingBox[]{new BoundingBox(119, 223, 660, 157, 189, 675), new BoundingBox(201, 210, 732, 243, 163, 751), new BoundingBox(299, 159, 804, 332, 114, 818), new BoundingBox(222, 138, 726, 189, 99, 714), new BoundingBox(91, 69, 707, 54, 17, 692)};
+                COLD_FLOORS = new BoundingBox[]{new BoundingBox(173, -28, 630, 194, -20, 640), new BoundingBox(112, 260, 849, 98, 250, 860)};
+                FINISH_BOX = new BoundingBox(176.5, -25.5, 632.5, 190.5, -28.5, 636.5);
+                START_BARRIERS = new Location[]{new Location(Bukkit.getWorld("minigames2"), 102, 255, 850), new Location(Bukkit.getWorld("minigames2"), 109, 259, 850)};
+                START_AIR = new Location[]{new Location(Bukkit.getWorld("minigames2"), 105.5, 256.0, 852.5, 97, 90),new Location(Bukkit.getWorld("minigames2"), 105.5, 256.0, 852.5, 97, 90)};
             }
             default -> throw new IllegalArgumentException("The selected map was null or doesn't exist!");
         }

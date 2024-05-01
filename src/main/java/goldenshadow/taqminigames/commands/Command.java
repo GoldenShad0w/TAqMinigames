@@ -27,8 +27,12 @@ public class Command implements CommandExecutor {
                     if (args.length >= 2) {
                         if (args[1].equalsIgnoreCase("start")) {
                             if (!TAqMinigames.isRunning()) {
-                                TAqMinigames.start();
-                                player.sendMessage(ChatMessageFactory.adminInfoMessage("Starting the event!"));
+                                if (Game.values().length - TAqMinigames.getEventConfig().getDisabledGames().size() >= 7) {
+                                    TAqMinigames.start();
+                                    player.sendMessage(ChatMessageFactory.adminInfoMessage("Starting the event!"));
+                                    return true;
+                                }
+                                player.sendMessage(ChatMessageFactory.adminErrorMessage("You need to have at least 7 games enabled to run the event!"));
                                 return true;
                             }
                             player.sendMessage(ChatMessageFactory.adminErrorMessage("You cannot start the event while it is already running!"));

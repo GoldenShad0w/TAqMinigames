@@ -68,14 +68,15 @@ public final class TAqMinigames extends JavaPlugin {
                 SoundtrackManager.setCurrent(new SoundFile("minigames.lobby", 177450), true);
             }
 
-            // disabling proffers pit
-            possibleGames.remove(Game.PROFFERS_PIT);
+            possibleGames = new ArrayList<>(Arrays.asList(Game.values()));
+            possibleGames.removeAll(eventConfig.getDisabledGames());
 
             ScoreManager.updateLobbyLeaderboard(totalScoreManager.getSortedDisplayList(ChatColor.AQUA, ChatColor.GREEN));
             for (Player p : Bukkit.getOnlinePlayers()) {
                 ParticipantManager.addParticipant(p, p.getGameMode() == GameMode.ADVENTURE);
                 p.sendTitle(ChatColor.DARK_AQUA + String.valueOf(ChatColor.BOLD) + "Welcome", ChatColor.AQUA + String.valueOf(ChatColor.BOLD) + "To TAq Minigames", 20, 100,20);
             }
+            ParticipantManager.getParticipants().forEach(p -> p.getInventory().clear());
         }
     }
 

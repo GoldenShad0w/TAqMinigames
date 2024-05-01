@@ -29,7 +29,7 @@ public class AvosRace extends Minigame {
     private int finishedPlayers = 0;
     private final int[] stageCompletions = {0,0,0,0,0};
     private final HashMap<UUID, Integer> playerStages = new HashMap<>(); // value >= 5 means finished
-    private static final String[] deathMessages = {" flew into a wall!", " needs their flying licence revoked!", " thought they could fly though walls!", " has their eyes closed!", " learned that the wall was stronger than them!", " skill issued!", " has a serious case of skill issue!", " crash landed!", " overestimated themselves", " didn't make it!", " needs some flying lessons!"};
+    private static final String[] deathMessages = {" flew into a wall!", " needs their flying licence revoked!", " thought they could fly though walls!", " had their eyes closed!", " learned that the wall was stronger than them!", " skill issued!", " has a serious case of skill issue!", " crash landed!", " overestimated themselves", " didn't make it!", " needs some flying lessons!"};
     //private final int mapIndex;
 
     /**

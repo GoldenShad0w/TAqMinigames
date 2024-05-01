@@ -58,6 +58,7 @@ public abstract class Minigame {
         ChatMessageFactory.sendInfoBlockToAll(ChatColor.YELLOW + "Game over!");
         SoundtrackManager.stopAllForAll();
         BossbarWrapper.destroyAll();
+        EntityHider.resetAll();
         gameState = GameState.ENDING;
         timer = null;
         Trigger.unregisterAll();

@@ -2,6 +2,7 @@ package goldenshadow.taqminigames.events;
 
 
 import goldenshadow.taqminigames.TAqMinigames;
+import goldenshadow.taqminigames.event.EntityHider;
 import goldenshadow.taqminigames.event.SoundtrackManager;
 import goldenshadow.taqminigames.minigames.*;
 import org.bukkit.Bukkit;
@@ -34,6 +35,8 @@ public class PlayerDeath implements Listener {
             if (TAqMinigames.minigame instanceof SkyIslandLootrun lr) {
                 lr.onDeath(event.getEntity());
             }
+
+            EntityHider.onPlayerDeath(event);
         }
     }
 

@@ -3,6 +3,7 @@ package goldenshadow.taqminigames.minigames;
 import goldenshadow.taqminigames.TAqMinigames;
 import goldenshadow.taqminigames.enums.Game;
 import goldenshadow.taqminigames.enums.GameState;
+import goldenshadow.taqminigames.event.EntityHider;
 import goldenshadow.taqminigames.event.ParticipantManager;
 import goldenshadow.taqminigames.event.ScoreManager;
 import goldenshadow.taqminigames.event.SoundtrackManager;
@@ -273,8 +274,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedCrystalMap.containsKey(player.getUniqueId())) {
                 list = collectedCrystalMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected this crystal!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -286,6 +285,7 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this crystal!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_emeralds_small")) {
@@ -293,8 +293,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedEmeraldMap.containsKey(player.getUniqueId())) {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -305,6 +303,7 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find these emeralds!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_CHANGED, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_emeralds_medium")) {
@@ -312,8 +311,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedEmeraldMap.containsKey(player.getUniqueId())) {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -324,6 +321,7 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find these emeralds!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_CHANGED, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_emeralds_large")) {
@@ -331,8 +329,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedEmeraldMap.containsKey(player.getUniqueId())) {
                 list = collectedEmeraldMap.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already collected these emeralds!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -343,6 +339,7 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find these emeralds!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_CHANGED, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_sword")) {
@@ -350,8 +347,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this sword!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -364,6 +359,7 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this sword!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_chestplate")) {
@@ -371,8 +367,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this chestplate!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -384,6 +378,7 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this chestplate!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_boots")) {
@@ -391,8 +386,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up these boots!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -404,6 +397,7 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find these boots!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_helmet")) {
@@ -411,8 +405,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this helmet!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -424,13 +416,12 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this helmet!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_totem")) {
 
             if (player.getInventory().contains(Material.TOTEM_OF_UNDYING)) {
-                ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You can only carry one ancient idol!");
-                player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                 return;
 
             }
@@ -440,6 +431,7 @@ public class ExcavationSiteE extends Minigame {
                 scoreManager.increaseScore(player, TAqMinigames.getEventConfig().getExcavationData().FIRST_FOUND_POINTS, "You were first to find this item!", true);
                 foundFeature.add(interaction.getUniqueId());
             }
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_red_key")) {
@@ -447,8 +439,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -456,6 +446,7 @@ public class ExcavationSiteE extends Minigame {
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_red_key");
             player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_blue_key")) {
@@ -463,8 +454,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -472,6 +461,7 @@ public class ExcavationSiteE extends Minigame {
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_blue_key");
             player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_green_key")) {
@@ -479,8 +469,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -488,6 +476,7 @@ public class ExcavationSiteE extends Minigame {
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_green_key");
             player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_yellow_key")) {
@@ -495,8 +484,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this key!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -504,6 +491,7 @@ public class ExcavationSiteE extends Minigame {
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_yellow_key");
             player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_herb")) {
@@ -511,8 +499,6 @@ public class ExcavationSiteE extends Minigame {
             if (collectedMisc.containsKey(player.getUniqueId())) {
                 list = collectedMisc.get(player.getUniqueId());
                 if (list.contains(interaction.getUniqueId())) {
-                    ChatMessageFactory.sendActionbarMessage(player, ChatColor.YELLOW + "You already picked up this item!");
-                    player.playSound(player, Sound.ENTITY_CAT_HISS,SoundCategory.VOICE, 1,1);
                     return;
                 }
             }
@@ -520,6 +506,7 @@ public class ExcavationSiteE extends Minigame {
             collectedMisc.put(player.getUniqueId(), list);
             Utilities.giveAurumItem(player, "m_exca_herb");
             player.playSound(player, Sound.ENTITY_ITEM_PICKUP,SoundCategory.VOICE, 1, 1);
+            hideEntitiesInBox(interaction.getBoundingBox(), EntityHider.HideType.UNTIL_DEATH, player);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_cauldron")) {
@@ -544,6 +531,16 @@ public class ExcavationSiteE extends Minigame {
                 List<UUID> list = collectedMisc.get(player.getUniqueId());
                 list.remove(TAqMinigames.getEventConfig().getExcavationData().HERB_UUID);
                 collectedMisc.put(player.getUniqueId(), list);
+
+                assert TAqMinigames.getEventConfig().getExcavationData().HERB_UUID != null;
+                Entity entity = Bukkit.getEntity(TAqMinigames.getEventConfig().getExcavationData().HERB_UUID);
+                if (entity != null) {
+                    for (Entity inBox : entity.getWorld().getNearbyEntities(entity.getBoundingBox())) {
+                        if (inBox instanceof Display) {
+                            EntityHider.revealEntity(player, inBox.getUniqueId());
+                        }
+                    }
+                }
 
                 Utilities.giveAurumItem(player, "m_exca_speed_potion");
                 player.getInventory().remove(Material.LILY_OF_THE_VALLEY);
@@ -571,7 +568,7 @@ public class ExcavationSiteE extends Minigame {
             player.playSound(player, Sound.BLOCK_BEACON_POWER_SELECT,SoundCategory.VOICE, 1, 1);
             return;
         }
-        if (interaction.getScoreboardTags().contains("m_exca_desert_speed_potion")) {
+        if (interaction.getScoreboardTags().contains("m_exca_desert_jump_potion")) {
 
             for (ItemStack i : player.getInventory().getContents()) {
                 if (i != null) {
@@ -582,6 +579,7 @@ public class ExcavationSiteE extends Minigame {
                         if (meta.getDisplayName().contains("Potion of Leaping")) {
                             player.sendMessage(" ");
                             player.sendMessage(ChatColor.YELLOW + "I already gave you a potion! Go use it first before I give you another...");
+                            player.playSound(player, Sound.ENTITY_VILLAGER_NO, SoundCategory.VOICE, 1,1);
                             player.sendMessage(" ");
                             return;
                         }
@@ -593,6 +591,7 @@ public class ExcavationSiteE extends Minigame {
             player.sendMessage(" ");
             player.sendMessage(ChatColor.YELLOW + "I found this " + ChatColor.AQUA + ChatColor.BOLD + "jump boost potion " + ChatColor.RESET + ChatColor.YELLOW + "in one of the crates behind me. Maybe you can find a use for it!");
             player.sendMessage(" ");
+            player.playSound(player, Sound.ENTITY_ITEM_PICKUP, SoundCategory.VOICE, 1,1);
             return;
         }
         if (interaction.getScoreboardTags().contains("m_exca_door_red_in")) {
@@ -606,6 +605,20 @@ public class ExcavationSiteE extends Minigame {
                             List<UUID> list = collectedMisc.get(player.getUniqueId());
                             list.remove(TAqMinigames.getEventConfig().getExcavationData().KEY_RED_UUID);
                             collectedMisc.put(player.getUniqueId(), list);
+
+                            Entity entity = Bukkit.getEntity(TAqMinigames.getEventConfig().getExcavationData().KEY_RED_UUID);
+                            if (entity != null) {
+                                for (Entity inBox : entity.getWorld().getNearbyEntities(entity.getBoundingBox())) {
+                                    if (inBox instanceof Display) {
+                                        EntityHider.revealEntity(player, inBox.getUniqueId());
+                                    }
+                                    if (inBox instanceof ArmorStand a) {
+                                        if (a.getScoreboardTags().contains("m_exca_item")) {
+                                            EntityHider.revealEntity(player, a.getUniqueId());
+                                        }
+                                    }
+                                }
+                            }
 
                             player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_RED[0]);
                             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
@@ -630,6 +643,20 @@ public class ExcavationSiteE extends Minigame {
                             list.remove(TAqMinigames.getEventConfig().getExcavationData().KEY_BLUE_UUID);
                             collectedMisc.put(player.getUniqueId(), list);
 
+                            Entity entity = Bukkit.getEntity(TAqMinigames.getEventConfig().getExcavationData().KEY_BLUE_UUID);
+                            if (entity != null) {
+                                for (Entity inBox : entity.getWorld().getNearbyEntities(entity.getBoundingBox())) {
+                                    if (inBox instanceof Display) {
+                                        EntityHider.revealEntity(player, inBox.getUniqueId());
+                                    }
+                                    if (inBox instanceof ArmorStand a) {
+                                        if (a.getScoreboardTags().contains("m_exca_item")) {
+                                            EntityHider.revealEntity(player, a.getUniqueId());
+                                        }
+                                    }
+                                }
+                            }
+
                             player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_BLUE[0]);
                             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
@@ -653,6 +680,20 @@ public class ExcavationSiteE extends Minigame {
                             list.remove(TAqMinigames.getEventConfig().getExcavationData().KEY_GREEN_UUID);
                             collectedMisc.put(player.getUniqueId(), list);
 
+                            Entity entity = Bukkit.getEntity(TAqMinigames.getEventConfig().getExcavationData().KEY_GREEN_UUID);
+                            if (entity != null) {
+                                for (Entity inBox : entity.getWorld().getNearbyEntities(entity.getBoundingBox())) {
+                                    if (inBox instanceof Display) {
+                                        EntityHider.revealEntity(player, inBox.getUniqueId());
+                                    }
+                                    if (inBox instanceof ArmorStand a) {
+                                        if (a.getScoreboardTags().contains("m_exca_item")) {
+                                            EntityHider.revealEntity(player, a.getUniqueId());
+                                        }
+                                    }
+                                }
+                            }
+
                             player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_GREEN[0]);
                             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
                             player.getInventory().remove(i);
@@ -675,6 +716,20 @@ public class ExcavationSiteE extends Minigame {
                             List<UUID> list = collectedMisc.get(player.getUniqueId());
                             list.remove(TAqMinigames.getEventConfig().getExcavationData().KEY_YELLOW_UUID);
                             collectedMisc.put(player.getUniqueId(), list);
+
+                            Entity entity = Bukkit.getEntity(TAqMinigames.getEventConfig().getExcavationData().KEY_YELLOW_UUID);
+                            if (entity != null) {
+                                for (Entity inBox : entity.getWorld().getNearbyEntities(entity.getBoundingBox())) {
+                                    if (inBox instanceof Display) {
+                                        EntityHider.revealEntity(player, inBox.getUniqueId());
+                                    }
+                                    if (inBox instanceof ArmorStand a) {
+                                        if (a.getScoreboardTags().contains("m_exca_item")) {
+                                            EntityHider.revealEntity(player, a.getUniqueId());
+                                        }
+                                    }
+                                }
+                            }
 
                             player.teleport(TAqMinigames.getEventConfig().getExcavationData().DOOR_YELLOW[0]);
                             player.playSound(player, Sound.BLOCK_IRON_DOOR_OPEN,SoundCategory.VOICE, 1,1);
@@ -808,6 +863,7 @@ public class ExcavationSiteE extends Minigame {
                     if (p.getEquipment() != null && p.getEquipment().getHelmet() != null) {
                         return p.getEquipment().getHelmet().getType() != Material.LEATHER_HELMET;
                     }
+                    return true;
                 }
                 return false;
             }, p -> {
@@ -817,6 +873,29 @@ public class ExcavationSiteE extends Minigame {
                     p.playSound(p, Sound.BLOCK_ANVIL_PLACE, SoundCategory.VOICE, 1,1);
                 }, 20L);
             }, Utilities.secondsToMillis(5), false, false));
+        }
+    }
+
+    /**
+     * Used to hide display entities once the thing they are representing has been collected
+     * @param box The interactions bounding box
+     * @param hideType The hide type
+     * @param player The player
+     */
+    private void hideEntitiesInBox(BoundingBox box, EntityHider.HideType hideType, Player player) {
+        World world = TAqMinigames.getEventConfig().getGenericData().WORLD;
+        assert world != null;
+        for (Entity entity : world.getNearbyEntities(box)) {
+            if (entity instanceof Display) {
+                EntityHider.hideEntity(player, entity, hideType);
+            }
+            if (entity instanceof ArmorStand armorStand) {
+                if (armorStand.getEquipment() != null) {
+                    if (armorStand.getScoreboardTags().contains("m_exca_item")) {
+                        EntityHider.hideEntity(player, entity, hideType);
+                    }
+                }
+            }
         }
     }
 }
